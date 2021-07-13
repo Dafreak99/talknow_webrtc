@@ -1,4 +1,4 @@
-# Video Conferencing Appllication
+# Video Conferencing Application
 
 This is the final project of my university's life, I aim to build something that applicable to daily life. In the context of Covid-19 pandemic, direct interactions is being limited. I deciced make an app that allows real-time communication between users.
 
