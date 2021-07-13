@@ -45,6 +45,13 @@ export const createRoom = (data: ConfigRoom) => {
   // socket.emit("user-joined", { roomId, username: faker.name.findName() });
 };
 
+export const userJoined = (roomId: string) => {
+  socket.emit("user-joined", {
+    data: { roomId, username: "Haitran" + Math.random() },
+    type: "guest",
+  });
+};
+
 export const getRoomInfo = (roomId: string) => {
   socket.emit("get-room-info", roomId);
 };

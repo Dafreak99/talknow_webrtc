@@ -16,6 +16,7 @@ import React from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { BsCheck } from "react-icons/bs";
 import { GrPowerReset } from "react-icons/gr";
+import { useHistory } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { ConfigRoom } from "../../../types";
 import { createRoom } from "../../../utils/webSocket";
@@ -30,7 +31,12 @@ const Config: React.FC<Props> = () => {
     formState: { errors },
   } = useForm<ConfigRoom>();
 
-  const onSubmit: SubmitHandler<ConfigRoom> = (data) => createRoom(data);
+  const history = useHistory();
+
+  const onSubmit: SubmitHandler<ConfigRoom> = (data) => {
+    createRoom(data);
+    history.push("/stream");
+  };
 
   return (
     <Box gridColumn="span 6" as="form" onSubmit={handleSubmit(onSubmit)}>

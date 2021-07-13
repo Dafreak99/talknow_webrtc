@@ -36,6 +36,7 @@ export const handleUserJoined = async (
   count: number,
   users: User[]
 ) => {
+  console.log("user-joined");
   const localStream = store.getState().stream.localStream;
 
   users.forEach(({ socketId, username }) => {
@@ -65,6 +66,8 @@ export const handleUserJoined = async (
         streams,
       }) => {
         // Set remote streams
+        console.log("get stream");
+
         if (prevRemoteStreamId !== streams[0].id) {
           store.dispatch(
             setRemoteStreams({

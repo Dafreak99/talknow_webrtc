@@ -4,7 +4,6 @@ import {
   getDefaultMiddleware,
   ThunkAction,
 } from "@reduxjs/toolkit";
-import counterSlice from "../features/counter/counterSlice";
 import streamSlice from "../features/stream/streamSlice";
 
 const customizedMiddleware = getDefaultMiddleware({
@@ -13,7 +12,6 @@ const customizedMiddleware = getDefaultMiddleware({
 
 export const store = configureStore({
   reducer: {
-    counter: counterSlice,
     stream: streamSlice,
   },
   middleware: customizedMiddleware,

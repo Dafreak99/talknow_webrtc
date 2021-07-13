@@ -14,7 +14,19 @@ const RemoteStream: React.FC<Props> = ({ remoteStream }) => {
     }
   }, [remoteStream]);
 
-  return <video playsInline autoPlay ref={ref} />;
+  return (
+    <video
+      playsInline
+      autoPlay
+      ref={ref}
+      style={{
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        objectPosition: "top",
+      }}
+    />
+  );
 };
 
 export default RemoteStream;

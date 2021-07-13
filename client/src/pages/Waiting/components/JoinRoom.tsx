@@ -11,7 +11,8 @@ import {
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { AiOutlineCheck } from "react-icons/ai";
-import { confirmRoomPassword } from "../../../utils/webSocket";
+import { useHistory } from "react-router-dom";
+import { confirmRoomPassword, userJoined } from "../../../utils/webSocket";
 
 interface Props {
   admission: string;
@@ -30,21 +31,14 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
     formState: { errors },
   } = useForm<Inputs>();
   const toast = useToast();
+  const history = useHistory();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log("admission", admission);
     if (admission === "password") {
       const res = await confirmRoomPassword(roomId, data.password);
 
       if (res.status === "succeeded") {
-        toast({
-          status: "success",
-          description: "OK",
-          title: "Ok",
-          duration: 2000,
-          isClosable: true,
-          position: "top",
-        });
+        history.push("/stream");
       } else if (res.status === "failed") {
         toast({
           status: "error",
@@ -58,7 +52,7 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
     }
   };
 
-  if (admission === "") {
+  if (admission === "none") {
     return (
       <Button
         leftIcon={<AiOutlineCheck />}
@@ -67,6 +61,10 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
         color="#fff"
         size="lg"
         mt="1rem"
+        onClick={() => {
+          userJoined(roomId);
+          history.push("/stream");
+        }}
       >
         Join Room
       </Button>
