@@ -34,6 +34,10 @@ export const connect = async () => {
 
   socket.on("signal", gotMessageFromServer);
 
+  socket.on("broadcast-message", (data) => {
+    console.log(data);
+  });
+
   socket.on("user-leave", (id) => {
     console.log(id);
     store.dispatch(removeRemoteStream(id));
@@ -78,4 +82,8 @@ const gotMessageFromServer = async (fromId: string, signal: any) => {
 
 export const signaling = (id: string, data: any) => {
   socket.emit("signal", id, data);
+};
+
+export const messaging = () => {
+  socket.emit("broadcast-message", "helloworld");
 };

@@ -79,6 +79,13 @@ export const handleUserJoined = async (
           prevRemoteStreamId = streams[0].id;
         }
       };
+
+      // Listen to data channel
+      (connections[socketId as any] as RTCPeerConnection).ondatachannel = (
+        event
+      ) => {
+        console.log(event);
+      };
     }
   });
 

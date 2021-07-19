@@ -1,26 +1,17 @@
 import { Box } from "@chakra-ui/react";
-import React, { useEffect, useRef } from "react";
-import { useAppSelector } from "../../../app/hooks";
+import React from "react";
+import StreamButtons from "./StreamButtons";
+import UsersStream from "./UsersStream";
 
 interface Props {}
 
-const LeftContent: React.FC<Props> = () => {
-  const localStream = useAppSelector((state) => state.stream.localStream);
-  const localVideoRef = useRef<HTMLVideoElement>(null);
-  //   useEffect(() => {
-  //     getLocalStream();
-  //   }, []);
-  useEffect(() => {
-    if (localStream) {
-      localVideoRef.current!.srcObject = localStream;
-    }
-  }, [localStream]);
-
+const RightContent: React.FC<Props> = () => {
   return (
-    <Box w="20vw">
-      {localStream && <video ref={localVideoRef} muted playsInline autoPlay />}
+    <Box width="80vw" bg="#000">
+      <UsersStream />
+      <StreamButtons />
     </Box>
   );
 };
 
-export default LeftContent;
+export default RightContent;

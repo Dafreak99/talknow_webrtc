@@ -6,10 +6,15 @@ import RightContent from "./components/RightContent";
 interface Props {}
 
 const Stream: React.FC<Props> = () => {
+  // If use Ion-SFU
+  // useEffect(() => {
+  //   getLocalStream();
+  // }, []);
+
   return (
     <Flex height="100vh" width="100vw">
-      <RightContent />
       <LeftContent />
+      <RightContent />
     </Flex>
   );
 };

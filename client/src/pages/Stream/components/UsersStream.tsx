@@ -7,13 +7,6 @@ interface Props {}
 
 const UsersStream: React.FC<Props> = () => {
   const { remoteStreams } = useAppSelector((state) => state.stream);
-  // const localVideoRef = useRef<HTMLVideoElement>(null);
-
-  // useEffect(() => {
-  //   if (localStream) {
-  //     localVideoRef.current!.srcObject = localStream;
-  //   }
-  // }, [localStream]);
 
   return (
     <Flex h="calc(100vh - 100px)" flexWrap="wrap">

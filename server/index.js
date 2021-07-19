@@ -91,8 +91,8 @@ io.on("connection", (socket) => {
     io.to(toId).emit("signal", socket.id, message);
   });
 
-  socket.on("message", function (data) {
-    io.sockets.emit("broadcast-message", socket.id, data);
+  socket.on("broadcast-message", function (data) {
+    io.sockets.emit("broadcast-message", data);
   });
 
   socket.on("disconnect", function () {
