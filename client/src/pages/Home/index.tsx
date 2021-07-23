@@ -30,6 +30,10 @@ const Home: React.FC<Props> = () => {
     handleSubmit,
   } = useForm();
 
+  // useEffect(() => {
+  //   shareScreen();
+  // }, []);
+
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     history.push(`/guest-waiting/${data.roomId}`);
   };

@@ -18,15 +18,6 @@ let rooms = {};
 let myRoomId = null;
 
 io.on("connection", (socket) => {
-  socket.on("create-room", (data) => {
-    let room = {
-      ...data,
-      hostId: socket.id,
-      users: [{ socketId: socket.id, username: data.hostname }],
-    };
-    rooms[data.roomId] = room;
-  });
-
   socket.on("confirm-room-password", (roomId, password) => {
     if (rooms[roomId].password === password) {
       socket.emit("confirm-room-password", { status: "succeeded" });
@@ -88,11 +79,32 @@ io.on("connection", (socket) => {
   });
 
   socket.on("signal", (toId, message) => {
+    console.log("-------------Log-----------\n");
+    console.log("toId", toId);
+    console.log("message", message);
+    console.log("-------------Log-----------");
+
     io.to(toId).emit("signal", socket.id, message);
   });
 
+  socket.on("signal-screen", (toId, message, event) => {
+    console.log("-------------Log-----------\n");
+    console.log("toId", toId);
+    console.log("message", message);
+    console.log("event", event);
+    console.log("-------------Log-----------");
+    if (!toId) {
+      socket.to(myRoomId).emit("signal-screen", socket.id, message, event);
+    } else {
+      io.to(toId).emit("signal-screen", socket.id, message, event);
+    }
+  });
+
   socket.on("broadcast-message", function (data) {
-    io.sockets.emit("broadcast-message", data);
+    io.sockets.emit("broadcast-message", {
+      ...data,
+      socketId: socket.id,
+    });
   });
 
   socket.on("disconnect", function () {
@@ -112,6 +124,8 @@ io.on("connection", (socket) => {
       socket.to(myRoomId).emit("user-leave", socket.id);
     }
   });
+
+  // ION-SFU TEST
 });
 
 httpServer.listen(PORT, function () {

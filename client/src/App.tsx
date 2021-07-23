@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { GuestWaiting, Home, HostWaiting, Stream } from "./pages";
+import { GuestWaiting, Home, HostWaiting, Stream, Test } from "./pages";
 
 function App() {
   // const localStream = useAppSelector((state) => state.stream.localStream);
@@ -25,6 +25,7 @@ function App() {
         <Route path="/host-waiting" component={HostWaiting} exact />
         <Route path="/guest-waiting/:roomId" component={GuestWaiting} />
         <Route path="/stream" component={Stream} />
+        <Route path="/test" component={Test} />
       </Switch>
     </Router>
     // <div style={{ height: "100vh", width: "100vw", background: "#000" }}>

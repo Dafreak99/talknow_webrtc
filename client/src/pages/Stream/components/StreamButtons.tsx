@@ -10,6 +10,7 @@ import {
   setLocalCameraEnabled,
   setLocalMicrophoneEnabled,
 } from "../../../features/stream/streamSlice";
+import { shareScreen } from "../../../utils/ionSFU";
 
 interface Props {}
 
@@ -31,8 +32,8 @@ const StreamButtons: React.FC<Props> = () => {
   return (
     <Flex
       h="100px"
-      bg="#111220"
-      border="1px solid #2b2b2b"
+      bg="#fff"
+      border="1px solid #dbd8d8"
       justify="center"
       alignItems="center"
     >
@@ -79,6 +80,7 @@ const StreamButtons: React.FC<Props> = () => {
           borderRadius="50%"
           bg="#202020"
           cursor="pointer"
+          onClick={shareScreen}
         >
           <Icon as={MdScreenShare} color="#fff" fontSize="1.5rem" />
         </Flex>

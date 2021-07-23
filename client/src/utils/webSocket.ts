@@ -1,12 +1,14 @@
 import io, { Socket } from "socket.io-client";
+import { setMessage } from "../features/message/messageSlice";
 import {
   hostLeave,
   removeRemoteStream,
   setRoomInfo,
+  setSocketId,
 } from "../features/stream/streamSlice";
 import { ConfigRoom } from "../types";
 import { store } from "./../app/store";
-import { handleSignaling, handleUserJoined } from "./webRTC";
+import { handleScreen, handleSignaling, handleUserJoined } from "./webRTC";
 
 let socket: Socket;
 let socketId: undefined | string;
@@ -16,6 +18,8 @@ export const connect = async () => {
 
   socket.on("connect", function () {
     socketId = socket.id;
+
+    store.dispatch(setSocketId(socketId));
   });
 
   socket.on("roominfo", (info) => store.dispatch(setRoomInfo(info)));
@@ -34,8 +38,10 @@ export const connect = async () => {
 
   socket.on("signal", gotMessageFromServer);
 
+  socket.on("signal-screen", handleScreen);
+
   socket.on("broadcast-message", (data) => {
-    console.log(data);
+    store.dispatch(setMessage(data));
   });
 
   socket.on("user-leave", (id) => {
@@ -46,7 +52,6 @@ export const connect = async () => {
 
 export const createRoom = (data: ConfigRoom) => {
   socket.emit("user-joined", { data, type: "host" });
-  // socket.emit("user-joined", { roomId, username: faker.name.findName() });
 };
 
 export const userJoined = (roomId: string) => {
@@ -84,6 +89,28 @@ export const signaling = (id: string, data: any) => {
   socket.emit("signal", id, data);
 };
 
-export const messaging = () => {
-  socket.emit("broadcast-message", "helloworld");
+export const screenShareSignaling = (
+  to: string,
+  data: {
+    sdp: RTCSessionDescriptionInit;
+  },
+  event: string
+) => {
+  socket.emit("signal-screen", to, data, event);
+};
+
+export const screenShareSignaling2 = (
+  to: string,
+  data: { candidate: RTCIceCandidate },
+  event: string
+) => {
+  socket.emit("signal-screen", to, data, event);
+};
+
+export const messaging = (message: string) => {
+  socket.emit("broadcast-message", { from: "haitran", content: message });
+};
+
+export const ionScreen = (initialize: boolean) => {
+  socket.emit("ion-screen", initialize);
 };

@@ -3,9 +3,10 @@ import { RemoteStream as RemoteStreamType } from "../features/stream/streamSlice
 
 interface Props {
   remoteStream: RemoteStreamType;
+  count: number;
 }
 
-const RemoteStream: React.FC<Props> = ({ remoteStream }) => {
+const RemoteStream: React.FC<Props> = ({ remoteStream, count }) => {
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -23,8 +24,8 @@ const RemoteStream: React.FC<Props> = ({ remoteStream }) => {
         width: "100%",
         height: "100%",
         borderRadius: "10px",
-        objectFit: "cover",
-        objectPosition: "top",
+        objectFit: count >= 5 ? "cover" : "contain",
+        // objectPosition: "top",
       }}
     />
   );

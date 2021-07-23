@@ -4,10 +4,15 @@ import {
   setRemoteStreams,
 } from "../features/stream/streamSlice";
 import { User } from "../types";
-import { signaling } from "./webSocket";
+import {
+  screenShareSignaling,
+  screenShareSignaling2,
+  signaling,
+} from "./webSocket";
 
 let connections: RTCPeerConnection[] = [];
 let prevRemoteStreamId: undefined | string;
+let screenPeer: RTCPeerConnection;
 
 const config = {
   iceServers: [
@@ -26,7 +31,11 @@ export const getLocalStream = () => {
     .getUserMedia(defaultConstraints)
     .then((stream) => {
       store.dispatch(setLocalStream(stream));
-      // connect();
+
+      screenPeer = new RTCPeerConnection(config);
+      for (let track of stream!.getTracks()) {
+        screenPeer.addTrack(track, stream as MediaStream);
+      }
     })
     .catch((err) => console.log(err.message));
 };
@@ -43,30 +52,25 @@ export const handleUserJoined = async (
     if (!connections[socketId as any]) {
       connections[socketId as any] = new RTCPeerConnection(config);
 
+      const peer = connections[socketId as any];
+
       for (let track of localStream!.getTracks()) {
-        connections[socketId as any].addTrack(
-          track,
-          localStream as MediaStream
-        );
+        peer.addTrack(track, localStream as MediaStream);
       }
 
-      //   store.dispatch(setConnection(connections[socketId as any]));
-
       //Wait for their ice candidate
-      (connections[socketId as any] as RTCPeerConnection).onicecandidate = (
-        event
-      ) => {
+      peer.onicecandidate = (event) => {
         if (event.candidate) {
           signaling(socketId, { candidate: event.candidate });
         }
       };
 
       // Wait for streams
-      (connections[socketId as any] as RTCPeerConnection).ontrack = ({
-        streams,
-      }) => {
+      peer.ontrack = ({ streams }) => {
         // Set remote streams
         console.log("get stream");
+
+        console.log(streams);
 
         if (prevRemoteStreamId !== streams[0].id) {
           store.dispatch(
@@ -79,19 +83,13 @@ export const handleUserJoined = async (
           prevRemoteStreamId = streams[0].id;
         }
       };
-
-      // Listen to data channel
-      (connections[socketId as any] as RTCPeerConnection).ondatachannel = (
-        event
-      ) => {
-        console.log(event);
-      };
     }
   });
 
   // Create an offer to connect with your local description
 
   if (count >= 2) {
+    console.log("joined id", id);
     // The user who've just joined will send offer
     const offer = await connections[id as any].createOffer();
     await connections[id as any].setLocalDescription(offer);
@@ -120,3 +118,118 @@ export const handleSignaling = async (fromId: string, data: any) => {
       .catch((e: any) => console.log(e));
   }
 };
+
+// With this function, only the sender can receive the stream
+// the recevier does't
+export const shareScreen = async () => {
+  let captureStream: MediaStream;
+
+  try {
+    // @ts-ignore
+    captureStream = await navigator.mediaDevices.getDisplayMedia({
+      video: {
+        cursor: "always",
+      },
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+      },
+    });
+
+    store.dispatch(
+      setRemoteStreams({
+        username: "screen",
+        stream: captureStream,
+        socketId: "123",
+      })
+    );
+
+    screenPeer = new RTCPeerConnection(config);
+
+    for (let track of captureStream!.getTracks()) {
+      screenPeer.addTrack(track, captureStream);
+    }
+
+    const offer = await screenPeer.createOffer();
+
+    await screenPeer.setLocalDescription(offer);
+
+    // Send a broadcast signal contains screen
+    screenShareSignaling("", { sdp: offer }, "SEND_OFFER");
+
+    // //Wait for their ice candidate
+    // screenPeer.onicecandidate = (event) => {
+    //   if (event.candidate) {
+    //     screenShareSignaling2("", { candidate: event.candidate }, "SEND_ICE");
+    //   }
+    // };
+
+    screenPeer.ontrack = ({ streams }) => {
+      console.log(streams);
+    };
+  } catch (err) {
+    console.error("Error: " + err);
+  }
+};
+// 1
+export const handleScreen = async (
+  fromId: string,
+  data: any,
+  event: string
+) => {
+  if (event === "SEND_OFFER") {
+    if (data.sdp) {
+      if (data.sdp.type === "offer") {
+        await screenPeer.setRemoteDescription(
+          new RTCSessionDescription(data.sdp)
+        );
+
+        const anwser = await screenPeer.createAnswer();
+
+        await screenPeer.setLocalDescription(anwser);
+
+        screenShareSignaling(fromId, { sdp: anwser }, "SEND_ANSWER");
+
+        screenPeer.onicecandidate = (event) => {
+          if (event.candidate) {
+            screenShareSignaling2(
+              fromId,
+              { candidate: event.candidate },
+              "SEND_ICE"
+            );
+          }
+        };
+
+        screenPeer.ontrack = (event) => {
+          console.log(event);
+        };
+      }
+    }
+  }
+
+  if (event === "SEND_ANSWER") {
+    await screenPeer.setRemoteDescription(new RTCSessionDescription(data.sdp));
+    screenPeer.onicecandidate = (event) => {
+      if (event.candidate) {
+        screenShareSignaling2(
+          fromId,
+          { candidate: event.candidate },
+          "SEND_ICE"
+        );
+      }
+    };
+  }
+
+  if (event === "SEND_ICE") {
+    console.log("receive ice");
+    if (data.candidate) {
+      console.log(screenPeer);
+      screenPeer
+        .addIceCandidate(new RTCIceCandidate(data.candidate))
+        .catch((e: any) => console.log(e));
+    }
+  }
+};
+
+// TODO: Somehow 1 doesn't continue to send ICE after 2 answer
+// Normally, 1'll keep send ICE even after received answer from 2

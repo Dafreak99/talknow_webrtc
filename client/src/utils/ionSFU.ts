@@ -3,11 +3,15 @@ import { Configuration } from "ion-sdk-js/lib/client";
 import { IonSFUJSONRPCSignal } from "ion-sdk-js/lib/signal/json-rpc-impl";
 import { store } from "../app/store";
 import {
+  removeRemoteStream,
   setLocalStream,
   setRemoteStreams,
 } from "../features/stream/streamSlice";
+import renderer from "../utils/render";
 
 let client: any;
+let prevRemoteStreamId: string = "";
+
 const config = {
   iceServers: [
     {
@@ -17,38 +21,65 @@ const config = {
 };
 
 export const getLocalStream = async () => {
+  renderer.init("video-container", 9 / 16, 8 / 5);
+
   const signal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
 
   client = new Client(signal, config as Configuration);
-  signal.onopen = () => client.join("test session", "haha" + Math.random());
+  signal.onopen = () => client.join("test session");
 
   // Setup handlers
   client.ontrack = (track: MediaStreamTrack, stream: RemoteStream) => {
+    console.log("stream", stream);
+    console.log("track", track);
+
     if (track.kind === "video") {
       store.dispatch(
         setRemoteStreams({
           username: "123",
           stream,
-          //   socketId: socketId,
+          socketId: track.id,
         })
       );
     }
-  };
 
-  client.ondatachannel = (e: any) => {
-    console.log(e);
+    stream.onremovetrack = (e) => {
+      store.dispatch(removeRemoteStream(e.track.id));
+    };
   };
 
   // Get a local stream
   const local = await LocalStream.getUserMedia({
     audio: true,
     video: true,
-    simulcast: true, // enable simulcast
+    resolution: "vga",
+    codec: "vp8",
   } as Constraints);
 
   store.dispatch(setLocalStream(local));
-  client.publish(local);
 
-  const dc = client.createDataChannel("data");
-  dc.onopen = () => dc.send("hello world");
+  client.publish(local);
 };
+
+export const shareScreen = async () => {
+  const signal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
+
+  client = new Client(signal, config as Configuration);
+
+  signal.onopen = () => client.join("test session");
+
+  const screenShare = await LocalStream.getDisplayMedia({
+    resolution: "vga",
+    video: true,
+    audio: true,
+    codec: "vp8",
+  } as Constraints);
+
+  client.publish(screenShare);
+};
+
+// Reference this for auto layout
+// https://github.com/menthays/auto-layout-for-video-call
+
+// Whole screen capture
+// https://developer.mozilla.org/en-US/docs/Web/API/Screen_Capture_API/Using_Screen_Capture

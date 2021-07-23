@@ -8,6 +8,7 @@ interface InitialState {
   connections: any[];
   roomInfo: RoomInfo;
   roomInfoReady: boolean;
+  mySocketId: null | string;
 }
 
 export interface RemoteStream {
@@ -35,6 +36,7 @@ const initialState: InitialState = {
   connections: [],
   roomInfo: {} as RoomInfo,
   roomInfoReady: false,
+  mySocketId: null,
 };
 
 const streamSlice = createSlice({
@@ -70,6 +72,9 @@ const streamSlice = createSlice({
       state.remoteStreams = [];
       state.roomInfo = {} as RoomInfo;
     },
+    setSocketId: (state, action) => {
+      state.mySocketId = action.payload;
+    },
   },
 });
 
@@ -82,6 +87,7 @@ export const {
   setConnection,
   setRoomInfo,
   hostLeave,
+  setSocketId,
 } = streamSlice.actions;
 
 export default streamSlice.reducer;
