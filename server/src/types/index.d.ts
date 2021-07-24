@@ -10,7 +10,7 @@ export interface Room {
   allowVideo: string;
   allowAudio: string;
   admission: string;
-  password: string;
+  password?: string;
   users: Array<User>;
 }
 

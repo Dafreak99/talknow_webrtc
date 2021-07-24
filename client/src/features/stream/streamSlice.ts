@@ -13,9 +13,10 @@ interface InitialState {
 }
 
 export interface RemoteStream {
+  stream: MediaStream;
   username: string;
   socketId: string;
-  stream: MediaStream;
+  trackId: string;
 }
 
 interface RoomInfo {
@@ -54,8 +55,20 @@ const streamSlice = createSlice({
     setLocalMicrophoneEnabled: (state, action) => {
       state.localMicrophoneEnabled = action.payload;
     },
+    // TODO: Continue to handle mic on/off
     setRemoteStreams: (state, action) => {
-      state.remoteStreams.push(action.payload);
+      let index = state.remoteStreams.findIndex(
+        (stream) => stream.trackId === action.payload.trackId
+      );
+      console.log(index);
+
+      if (index !== -1) {
+        console.log("Existed");
+        state.remoteStreams[index] = action.payload;
+      } else {
+        console.log("New");
+        state.remoteStreams.push(action.payload);
+      }
     },
     removeRemoteStream: (state, action) => {
       state.remoteStreams = state.remoteStreams.filter(

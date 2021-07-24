@@ -54,17 +54,33 @@ io.on("connection", (socket: Socket) => {
   });
 
   socket.on("get-room-info", (roomId: string) => {
-    logger.debug("get-room-info");
+    logger.debug("get-room-info", roomId);
+
     if (!rooms[roomId]) {
       socket.emit("get-room-info", {
         status: "failed",
         message: "Room doesn't exist",
       });
     } else {
+      const response = {
+        ...rooms[roomId],
+        users: rooms[roomId].users.length,
+      };
+
+      delete response.password;
+
       socket.emit("get-room-info", {
         status: "succeeded",
-        data: { ...rooms[roomId], users: rooms[roomId].users.length },
+        data: response,
       });
+    }
+  });
+
+  socket.on("confirm-room-password", (roomId: string, password: string) => {
+    if (rooms[roomId].password === password) {
+      socket.emit("confirm-room-password", { status: "succeeded" });
+    } else {
+      socket.emit("confirm-room-password", { status: "failed" });
     }
   });
 

@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Logo from "../../components/Logo";
 import ReviewStream from "../../components/ReviewStream";
-import { getLocalStream } from "../../utils/webRTC";
+import { getLocalStream } from "../../utils/ionSFU";
 import { connectSignallingServer, getRoomInfo } from "../../utils/webSocket";
 import GuestConfig from "./components/GuestConfig";
 

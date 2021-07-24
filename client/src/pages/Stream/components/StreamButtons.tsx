@@ -7,12 +7,8 @@ import { IoVideocam, IoVideocamOff } from "react-icons/io5";
 import { MdScreenShare } from "react-icons/md";
 import { RiRecordCircleLine } from "react-icons/ri";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import {
-  setLocalCameraEnabled,
-  setLocalMicrophoneEnabled,
-  setToggleShowChat,
-} from "../../../features/stream/streamSlice";
-import { shareScreen } from "../../../utils/ionSFU";
+import { setToggleShowChat } from "../../../features/stream/streamSlice";
+import { shareScreen, toggleCamera, toggleMic } from "../../../utils/ionSFU";
 
 interface Props {}
 
@@ -20,16 +16,6 @@ const StreamButtons: React.FC<Props> = () => {
   const { localStream, localCameraEnabled, localMicrophoneEnabled } =
     useAppSelector((state) => state.stream);
   const dispatch = useAppDispatch();
-
-  const onToggleCamera = () => {
-    localStream!.getVideoTracks()[0].enabled = !localCameraEnabled;
-    dispatch(setLocalCameraEnabled(!localCameraEnabled));
-  };
-
-  const onToggleMic = () => {
-    localStream!.getAudioTracks()[0].enabled = !localMicrophoneEnabled;
-    dispatch(setLocalMicrophoneEnabled(!localMicrophoneEnabled));
-  };
 
   const onToggleChat = () => {
     dispatch(setToggleShowChat());
@@ -53,7 +39,7 @@ const StreamButtons: React.FC<Props> = () => {
           borderRadius="50%"
           bg="#202020"
           cursor="pointer"
-          onClick={onToggleCamera}
+          onClick={toggleCamera}
         >
           <Icon
             as={localCameraEnabled ? IoVideocam : IoVideocamOff}
@@ -70,7 +56,7 @@ const StreamButtons: React.FC<Props> = () => {
           borderRadius="50%"
           bg="#202020"
           cursor="pointer"
-          onClick={onToggleMic}
+          onClick={toggleMic}
         >
           <Icon
             as={localMicrophoneEnabled ? IoMdMic : IoMdMicOff}

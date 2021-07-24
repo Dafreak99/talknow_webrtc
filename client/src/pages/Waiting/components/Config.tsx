@@ -4,6 +4,7 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  Grid,
   Input,
   InputGroup,
   InputRightElement,
@@ -40,156 +41,163 @@ const Config: React.FC<Props> = () => {
 
   return (
     <Box gridColumn="span 6" as="form" onSubmit={handleSubmit(onSubmit)}>
-      <FormControl id="hostname">
-        <FormLabel fontWeight="semibold">Hostname</FormLabel>
-        <Input
-          type="text"
-          variant="filled"
-          placeholder="Enter hostname"
-          {...register("hostName", { required: true })}
-        />
-        {errors.hostName && (
-          <Text mt="5px" color="red.500">
-            Host name is required
-          </Text>
-        )}
-      </FormControl>
-      <FormControl id="roomName">
-        <FormLabel fontWeight="semibold">Room Name</FormLabel>
-        <Input
-          type="text"
-          variant="filled"
-          placeholder="Enter roomname"
-          {...register("roomName", { required: true })}
-        />
-
-        {errors.roomName && (
-          <Text mt="5px" color="red.500">
-            Room Name is required
-          </Text>
-        )}
-      </FormControl>
-      <FormControl id="roomId">
-        <FormLabel fontWeight="semibold">Room ID</FormLabel>
-        <Controller
-          name="roomId"
-          rules={{ required: true }}
-          defaultValue={uuidv4()}
-          control={control}
-          render={({ field }) => (
-            <InputGroup {...field}>
-              <Input
-                type="text"
-                variant="filled"
-                value={field.value}
-                onChange={(e) => field.onChange(e.target.value)}
-              />
-              <InputRightElement
-                cursor="pointer"
-                children={<GrPowerReset />}
-                onClick={() => field.onChange(uuidv4())}
-              />
-            </InputGroup>
+      <Grid
+        gridTemplateColumns="repeat(2, 1fr)"
+        gridColumnGap={{ base: "0", md: "1rem", xl: "3rem" }}
+      >
+        <FormControl id="hostname">
+          <FormLabel fontWeight="semibold">Hostname</FormLabel>
+          <Input
+            type="text"
+            variant="filled"
+            placeholder="Enter hostname"
+            {...register("hostName", { required: true })}
+          />
+          {errors.hostName && (
+            <Text mt="5px" color="red.500">
+              Host name is required
+            </Text>
           )}
-        />
+        </FormControl>
+        <FormControl id="roomName">
+          <FormLabel fontWeight="semibold">Room Name</FormLabel>
+          <Input
+            type="text"
+            variant="filled"
+            placeholder="Enter roomname"
+            {...register("roomName", { required: true })}
+          />
 
-        {errors.roomId && (
-          <Text mt="5px" color="red.500">
-            RoomID is required
-          </Text>
-        )}
-      </FormControl>
-      <FormControl id="media">
-        <FormLabel fontWeight="semibold">Participant</FormLabel>
-
-        <Controller
-          name="allowVideo"
-          control={control}
-          defaultValue="true"
-          render={({ field }) => (
-            <RadioGroup {...field}>
-              <Flex>
-                <Text mr="2rem">Video</Text>
-                <Stack direction="row">
-                  <Radio value="true">Yes</Radio>
-                  <Radio value="false">No</Radio>
-                </Stack>
-              </Flex>
-            </RadioGroup>
+          {errors.roomName && (
+            <Text mt="5px" color="red.500">
+              Room Name is required
+            </Text>
           )}
-        />
-
-        <Controller
-          name="allowAudio"
-          control={control}
-          defaultValue="true"
-          render={({ field }) => (
-            <RadioGroup {...field}>
-              <Flex>
-                <Text mr="2rem">Audio</Text>
-                <Stack direction="row">
-                  <Radio value="true">Yes</Radio>
-                  <Radio value="false">No</Radio>
-                </Stack>
-              </Flex>
-            </RadioGroup>
-          )}
-        />
-      </FormControl>
-      <FormControl id="admission">
-        <FormLabel fontWeight="semibold">Admission</FormLabel>
-
-        <Controller
-          name="admission"
-          control={control}
-          defaultValue="none"
-          render={({ field }) => (
-            <RadioGroup {...field}>
-              <Stack direction="column">
-                <Radio value="none">None</Radio>
-                <Radio value="request">Request to join</Radio>
-                <Radio value="password">Require meeting password</Radio>
-
-                <Controller
-                  name="password"
-                  defaultValue={
-                    field.value !== "password" ? "" : uuidv4().slice(0, 8)
-                  }
-                  control={control}
-                  rules={{
-                    required: field.value === "password",
-                  }}
-                  render={({ field: passwordField }) => (
-                    <InputGroup {...passwordField}>
-                      <Input
-                        type="text"
-                        readOnly
-                        value={passwordField.value}
-                        variant="filled"
-                        disabled={field.value !== "password"}
-                        onChange={(e) => passwordField.onChange(e.target.value)}
-                      />
-                      <InputRightElement
-                        cursor="pointer"
-                        children={<GrPowerReset />}
-                        onClick={() =>
-                          passwordField.onChange(uuidv4().slice(0, 8))
-                        }
-                      />
-                    </InputGroup>
-                  )}
+        </FormControl>
+        <FormControl id="roomId" gridColumn="span 2">
+          <FormLabel fontWeight="semibold">Room ID</FormLabel>
+          <Controller
+            name="roomId"
+            rules={{ required: true }}
+            defaultValue={uuidv4()}
+            control={control}
+            render={({ field }) => (
+              <InputGroup {...field}>
+                <Input
+                  type="text"
+                  variant="filled"
+                  value={field.value}
+                  onChange={(e) => field.onChange(e.target.value)}
                 />
-                {errors.password && (
-                  <Text mt="5px" color="red.500">
-                    Please generate password
-                  </Text>
-                )}
-              </Stack>
-            </RadioGroup>
-          )}
-        />
-      </FormControl>
+                <InputRightElement
+                  cursor="pointer"
+                  children={<GrPowerReset />}
+                  onClick={() => field.onChange(uuidv4())}
+                />
+              </InputGroup>
+            )}
+          />
 
+          {errors.roomId && (
+            <Text mt="5px" color="red.500">
+              RoomID is required
+            </Text>
+          )}
+        </FormControl>
+
+        <FormControl id="admission">
+          <FormLabel fontWeight="semibold">Admission</FormLabel>
+
+          <Controller
+            name="admission"
+            control={control}
+            defaultValue="none"
+            render={({ field }) => (
+              <RadioGroup {...field}>
+                <Stack direction="column">
+                  <Radio value="none">None</Radio>
+                  <Radio value="request">Request to join</Radio>
+                  <Radio value="password">Require meeting password</Radio>
+
+                  <Controller
+                    name="password"
+                    defaultValue={
+                      field.value !== "password" ? "" : uuidv4().slice(0, 8)
+                    }
+                    control={control}
+                    rules={{
+                      required: field.value === "password",
+                    }}
+                    render={({ field: passwordField }) => (
+                      <InputGroup {...passwordField}>
+                        <Input
+                          type="text"
+                          readOnly
+                          value={passwordField.value}
+                          variant="filled"
+                          disabled={field.value !== "password"}
+                          onChange={(e) =>
+                            passwordField.onChange(e.target.value)
+                          }
+                        />
+                        <InputRightElement
+                          cursor="pointer"
+                          children={<GrPowerReset />}
+                          onClick={() =>
+                            passwordField.onChange(uuidv4().slice(0, 8))
+                          }
+                        />
+                      </InputGroup>
+                    )}
+                  />
+                  {errors.password && (
+                    <Text mt="5px" color="red.500">
+                      Please generate password
+                    </Text>
+                  )}
+                </Stack>
+              </RadioGroup>
+            )}
+          />
+        </FormControl>
+        <FormControl id="media">
+          <FormLabel fontWeight="semibold">Participant</FormLabel>
+
+          <Controller
+            name="allowVideo"
+            control={control}
+            defaultValue="true"
+            render={({ field }) => (
+              <RadioGroup {...field}>
+                <Flex>
+                  <Text mr="2rem">Video</Text>
+                  <Stack direction="row">
+                    <Radio value="true">Yes</Radio>
+                    <Radio value="false">No</Radio>
+                  </Stack>
+                </Flex>
+              </RadioGroup>
+            )}
+          />
+
+          <Controller
+            name="allowAudio"
+            control={control}
+            defaultValue="true"
+            render={({ field }) => (
+              <RadioGroup {...field}>
+                <Flex>
+                  <Text mr="2rem">Audio</Text>
+                  <Stack direction="row">
+                    <Radio value="true">Yes</Radio>
+                    <Radio value="false">No</Radio>
+                  </Stack>
+                </Flex>
+              </RadioGroup>
+            )}
+          />
+        </FormControl>
+      </Grid>
       <Flex justify="flex-end" mt="6rem">
         <Button
           type="submit"
