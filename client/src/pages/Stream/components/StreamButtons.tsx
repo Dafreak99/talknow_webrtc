@@ -1,5 +1,6 @@
 import { Flex, Icon, Stack } from "@chakra-ui/react";
 import React from "react";
+import { BsFillChatFill } from "react-icons/bs";
 import { FaPhoneAlt } from "react-icons/fa";
 import { IoMdMic, IoMdMicOff } from "react-icons/io";
 import { IoVideocam, IoVideocamOff } from "react-icons/io5";
@@ -9,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import {
   setLocalCameraEnabled,
   setLocalMicrophoneEnabled,
+  setToggleShowChat,
 } from "../../../features/stream/streamSlice";
 import { shareScreen } from "../../../utils/ionSFU";
 
@@ -29,11 +31,16 @@ const StreamButtons: React.FC<Props> = () => {
     dispatch(setLocalMicrophoneEnabled(!localMicrophoneEnabled));
   };
 
+  const onToggleChat = () => {
+    dispatch(setToggleShowChat());
+  };
+
   return (
     <Flex
       h="100px"
-      bg="#fff"
-      border="1px solid #dbd8d8"
+      // bg="#fff"
+      // border="1px solid #dbd8d8"
+      bg="#0e0f10"
       justify="center"
       alignItems="center"
     >
@@ -95,6 +102,18 @@ const StreamButtons: React.FC<Props> = () => {
           cursor="pointer"
         >
           <Icon as={RiRecordCircleLine} color="#fff" fontSize="1.5rem" />
+        </Flex>
+        <Flex
+          justify="center"
+          alignItems="center"
+          h="4rem"
+          w="4rem"
+          borderRadius="50%"
+          bg="#202020"
+          cursor="pointer"
+          onClick={onToggleChat}
+        >
+          <Icon as={BsFillChatFill} color="#fff" fontSize="1.5rem" />
         </Flex>
 
         <Flex

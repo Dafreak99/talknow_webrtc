@@ -13,12 +13,14 @@ import { handleScreen, handleSignaling, handleUserJoined } from "./webRTC";
 let socket: Socket;
 let socketId: undefined | string;
 
-export const connect = async () => {
+/**
+ * Connect to Node.js signalling server
+ */
+export const connectSignallingServer = async () => {
   socket = io("http://localhost:5000");
 
   socket.on("connect", function () {
     socketId = socket.id;
-
     store.dispatch(setSocketId(socketId));
   });
 

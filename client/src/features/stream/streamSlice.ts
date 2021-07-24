@@ -9,6 +9,7 @@ interface InitialState {
   roomInfo: RoomInfo;
   roomInfoReady: boolean;
   mySocketId: null | string;
+  isShowedChat: boolean;
 }
 
 export interface RemoteStream {
@@ -37,6 +38,7 @@ const initialState: InitialState = {
   roomInfo: {} as RoomInfo,
   roomInfoReady: false,
   mySocketId: null,
+  isShowedChat: true,
 };
 
 const streamSlice = createSlice({
@@ -75,6 +77,9 @@ const streamSlice = createSlice({
     setSocketId: (state, action) => {
       state.mySocketId = action.payload;
     },
+    setToggleShowChat: (state) => {
+      state.isShowedChat = !state.isShowedChat;
+    },
   },
 });
 
@@ -88,6 +93,7 @@ export const {
   setRoomInfo,
   hostLeave,
   setSocketId,
+  setToggleShowChat,
 } = streamSlice.actions;
 
 export default streamSlice.reducer;

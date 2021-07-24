@@ -5,6 +5,10 @@
   margin: 0;
 }
 
+body {
+  overflow: hidden;
+}
+
 .container {
   width: 80vw;
   margin: 0 auto;

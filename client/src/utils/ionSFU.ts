@@ -7,7 +7,6 @@ import {
   setLocalStream,
   setRemoteStreams,
 } from "../features/stream/streamSlice";
-import renderer from "../utils/render";
 
 let client: any;
 let prevRemoteStreamId: string = "";
@@ -21,8 +20,6 @@ const config = {
 };
 
 export const getLocalStream = async () => {
-  renderer.init("video-container", 9 / 16, 8 / 5);
-
   const signal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
 
   client = new Client(signal, config as Configuration);

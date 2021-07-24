@@ -1,5 +1,6 @@
 import { Flex } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect } from "react";
+import { getLocalStream } from "../../utils/ionSFU";
 import LeftContent from "./components/LeftContent";
 import RightContent from "./components/RightContent";
 import StreamButtons from "./components/StreamButtons";
@@ -7,13 +8,13 @@ import StreamButtons from "./components/StreamButtons";
 interface Props {}
 
 const Stream: React.FC<Props> = () => {
-  // useEffect(() => {
-  //   getLocalStream();
-  // }, []);
+  useEffect(() => {
+    getLocalStream();
+  }, []);
 
   return (
     <>
-      <Flex w="100vw">
+      <Flex position="relative" p="20px" bg="#000">
         <LeftContent />
         <RightContent />
       </Flex>

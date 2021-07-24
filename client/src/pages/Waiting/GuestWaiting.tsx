@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import Logo from "../../components/Logo";
 import ReviewStream from "../../components/ReviewStream";
 import { getLocalStream } from "../../utils/webRTC";
-import { connect, getRoomInfo } from "../../utils/webSocket";
+import { connectSignallingServer, getRoomInfo } from "../../utils/webSocket";
 import GuestConfig from "./components/GuestConfig";
 
 interface Props {}
@@ -14,7 +14,7 @@ const GuestWaiting: React.FC<Props> = () => {
 
   useEffect(() => {
     getLocalStream();
-    connect();
+    connectSignallingServer();
     getRoomInfo(params.roomId);
   });
 
