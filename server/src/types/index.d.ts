@@ -12,6 +12,8 @@ export interface Room {
   admission: string;
   password?: string;
   users: Array<User>;
+  isShareScreen: boolean;
+  screenId: string;
 }
 
 export interface User {

@@ -43,6 +43,18 @@ io.on("connection", (socket: Socket) => {
         users: [{ socketId: socket.id, username: data.hostname }],
       };
       rooms[roomId] = room;
+
+      const response = {
+        ...rooms[roomId],
+        users: rooms[roomId].users.length,
+      };
+
+      delete response.password;
+
+      socket.emit("get-room-info", {
+        status: "succeeded",
+        data: response,
+      });
     } else {
       rooms[roomId].users.push({
         socketId: socket.id,
@@ -84,11 +96,24 @@ io.on("connection", (socket: Socket) => {
     }
   });
 
+  socket.on("request-to-join", (roomId: string, username: string) => {
+    io.to(rooms[myRoomId as string].hostId).emit(
+      "request-to-join",
+      roomId,
+      username
+    );
+  });
+
   socket.on("broadcast-message", (data) => {
     io.sockets.emit("broadcast-message", {
       ...data,
       socketId: socket.id,
     });
+  });
+
+  socket.on("share-screen", () => {
+    rooms[myRoomId as string].isShareScreen = true;
+    io.in(myRoomId as string).emit("share-screen");
   });
 
   socket.on("disconnect", function () {

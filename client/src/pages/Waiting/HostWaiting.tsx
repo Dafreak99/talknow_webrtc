@@ -2,7 +2,7 @@ import { Box, Grid, Heading } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import Logo from "../../components/Logo";
 import ReviewStream from "../../components/ReviewStream";
-import { getLocalStream } from "../../utils/ionSFU";
+import { connectIonSFU } from "../../utils/ionSFU";
 import { connectSignallingServer } from "../../utils/webSocket";
 import Config from "./components/Config";
 
@@ -10,7 +10,7 @@ interface Props {}
 
 const HostWaiting: React.FC<Props> = () => {
   useEffect(() => {
-    getLocalStream();
+    connectIonSFU();
     connectSignallingServer();
   });
 

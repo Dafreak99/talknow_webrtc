@@ -1,3 +1,4 @@
+import { createStandaloneToast } from "@chakra-ui/react";
 import { Client, Constraints, LocalStream, RemoteStream } from "ion-sdk-js";
 import { Configuration } from "ion-sdk-js/lib/client";
 import { IonSFUJSONRPCSignal } from "ion-sdk-js/lib/signal/json-rpc-impl";
@@ -9,6 +10,7 @@ import {
   setLocalStream,
   setRemoteStreams,
 } from "../features/stream/streamSlice";
+import { shareScreenSignal } from "./webSocket";
 
 let client: any;
 let local: LocalStream;
@@ -22,22 +24,7 @@ const config = {
 };
 
 /**
- * Request to get the audio/video
- */
-export const getLocalStream = async () => {
-  // Get a local stream
-  const local = await LocalStream.getUserMedia({
-    audio: true,
-    video: true,
-    resolution: "vga",
-    codec: "vp8",
-  } as Constraints);
-
-  store.dispatch(setLocalStream(local));
-};
-
-/**
- * Connect to IonSFU server
+ * Connect to IonSFU server as well as get local stream
  */
 export const connectIonSFU = async () => {
   const signal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
@@ -47,7 +34,10 @@ export const connectIonSFU = async () => {
 
   // Setup handlers
   client.ontrack = (track: MediaStreamTrack, stream: RemoteStream) => {
+    console.log("track", track);
+    console.log("stream", stream);
     track.onmute = () => {
+      console.log(track.id);
       hanldeRemoteStreams(track, stream);
     };
 
@@ -56,6 +46,10 @@ export const connectIonSFU = async () => {
       if (track.kind === "video") {
         hanldeRemoteStreams(track, stream);
       }
+    };
+
+    track.onisolationchange = () => {
+      console.log("hey");
     };
 
     stream.onremovetrack = (e) => {
@@ -71,8 +65,11 @@ export const connectIonSFU = async () => {
   } as Constraints);
 
   store.dispatch(setLocalStream(local));
+};
 
-  client.publish(local);
+export const publishPeer = () => {
+  const { localStream } = store.getState().stream;
+  client.publish(localStream);
 };
 
 const hanldeRemoteStreams = (track: MediaStreamTrack, stream: RemoteStream) => {
@@ -88,7 +85,6 @@ const hanldeRemoteStreams = (track: MediaStreamTrack, stream: RemoteStream) => {
 
 export const toggleCamera = () => {
   const { localCameraEnabled } = store.getState().stream;
-  console.log(localCameraEnabled);
 
   if (localCameraEnabled) {
     local.mute("video");
@@ -105,10 +101,10 @@ export const toggleMic = () => {
   const { localMicrophoneEnabled } = store.getState().stream;
 
   if (localMicrophoneEnabled) {
-    local.unmute("audio");
+    local.mute("audio");
     console.log("unmute");
   } else {
-    local.mute("audio");
+    local.unmute("audio");
     console.log("mute");
   }
 
@@ -125,15 +121,38 @@ export const shareScreen = async () => {
 
   signal.onopen = () => client.join("test session");
 
-  const screenShare = await LocalStream.getDisplayMedia({
-    resolution: "vga",
-    video: true,
-    audio: true,
-    codec: "vp8",
-  } as Constraints);
+  try {
+    const screenShare = await LocalStream.getDisplayMedia({
+      video: true,
+      audio: true,
+      resolution: "vga",
+      codec: "vp8",
+    } as Constraints);
 
-  client.publish(screenShare);
+    client.publish(screenShare);
+    shareScreenSignal();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const leave = () => {
+  client.leave();
 };
 
 // Whole screen capture
 // https://developer.mozilla.org/en-US/docs/Web/API/Screen_Capture_API/Using_Screen_Capture
+
+export const handleJoinRequest = (_: string, username: string) => {
+  const toast = createStandaloneToast();
+
+  toast({
+    title: "An error occurred.",
+    description: "Unable to create user account.",
+    status: "success",
+    duration: 9000,
+    isClosable: true,
+  });
+};
+
+// TODO: Debug handle join request

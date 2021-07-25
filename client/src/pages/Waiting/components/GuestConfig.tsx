@@ -15,6 +15,8 @@ import JoinRoom from "./JoinRoom";
 interface Props {}
 
 const GuestConfig: React.FC<Props> = () => {
+  const { roomInfoReady } = useAppSelector((state) => state.room);
+
   const {
     roomId,
     roomName,
@@ -23,9 +25,7 @@ const GuestConfig: React.FC<Props> = () => {
     allowVideo,
     users,
     admission,
-  } = useAppSelector((state) => state.stream.roomInfo);
-
-  const { roomInfoReady } = useAppSelector((state) => state.stream);
+  } = useAppSelector((state) => state.room.roomInfo);
 
   return (
     <Box gridColumn="span 6">

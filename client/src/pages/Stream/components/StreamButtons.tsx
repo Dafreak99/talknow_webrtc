@@ -8,13 +8,19 @@ import { MdScreenShare } from "react-icons/md";
 import { RiRecordCircleLine } from "react-icons/ri";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { setToggleShowChat } from "../../../features/stream/streamSlice";
-import { shareScreen, toggleCamera, toggleMic } from "../../../utils/ionSFU";
+import {
+  leave,
+  shareScreen,
+  toggleCamera,
+  toggleMic,
+} from "../../../utils/ionSFU";
 
 interface Props {}
 
 const StreamButtons: React.FC<Props> = () => {
-  const { localStream, localCameraEnabled, localMicrophoneEnabled } =
-    useAppSelector((state) => state.stream);
+  const { localCameraEnabled, localMicrophoneEnabled } = useAppSelector(
+    (state) => state.stream
+  );
   const dispatch = useAppDispatch();
 
   const onToggleChat = () => {
@@ -110,6 +116,7 @@ const StreamButtons: React.FC<Props> = () => {
           borderRadius="50%"
           bg="red.600"
           cursor="pointer"
+          onClick={leave}
         >
           <Icon as={FaPhoneAlt} color="#fff" fontSize="1.5rem" />
         </Flex>

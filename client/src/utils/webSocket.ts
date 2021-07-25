@@ -1,13 +1,15 @@
 import io, { Socket } from "socket.io-client";
 import { setMessage } from "../features/message/messageSlice";
+import { receiveShareScreen, setRoomInfo } from "../features/room/roomSlice";
 import {
   hostLeave,
   removeRemoteStream,
-  setRoomInfo,
   setSocketId,
+  setUsername,
 } from "../features/stream/streamSlice";
 import { ConfigRoom } from "../types";
 import { store } from "./../app/store";
+import { handleJoinRequest } from "./ionSFU";
 import { handleScreen, handleSignaling, handleUserJoined } from "./webRTC";
 
 let socket: Socket;
@@ -26,14 +28,6 @@ export const connectSignallingServer = async () => {
 
   socket.on("roominfo", (info) => store.dispatch(setRoomInfo(info)));
 
-  socket.on("get-room-info", (data) => {
-    console.log("get-room-info", data);
-    if (data.status === "failed") {
-    } else {
-      store.dispatch(setRoomInfo(data.data));
-    }
-  });
-
   socket.on("host-leave", () => store.dispatch(hostLeave(null)));
 
   socket.on("user-joined", handleUserJoined);
@@ -42,8 +36,14 @@ export const connectSignallingServer = async () => {
 
   socket.on("signal-screen", handleScreen);
 
+  socket.on("request-to-join", handleJoinRequest);
+
   socket.on("broadcast-message", (data) => {
     store.dispatch(setMessage(data));
+  });
+
+  socket.on("share-screen", () => {
+    store.dispatch(receiveShareScreen());
   });
 
   socket.on("user-leave", (id) => {
@@ -53,18 +53,38 @@ export const connectSignallingServer = async () => {
 };
 
 export const createRoom = (data: ConfigRoom) => {
+  store.dispatch(setUsername(data.hostName));
+
   socket.emit("user-joined", { data, type: "host" });
 };
 
-export const userJoined = (roomId: string) => {
+export const userJoined = (roomId: string, username: string) => {
+  store.dispatch(setUsername(username));
+
   socket.emit("user-joined", {
-    data: { roomId, username: "Haitran" + Math.random() },
+    data: { roomId, username },
     type: "guest",
   });
 };
 
+export const requestToJoin = (roomId: string, username: string) => {
+  socket.emit("request-to-join", roomId, username);
+};
+
 export const getRoomInfo = (roomId: string) => {
-  socket.emit("get-room-info", roomId);
+  return new Promise((resolve, reject) => {
+    socket.emit("get-room-info", roomId);
+
+    socket.on("get-room-info", (data) => {
+      console.log("get-room-info", data);
+      if (data.status === "failed") {
+        reject();
+      } else {
+        resolve(data);
+        store.dispatch(setRoomInfo(data.data));
+      }
+    });
+  });
 };
 
 export const confirmRoomPassword = (
@@ -74,9 +94,7 @@ export const confirmRoomPassword = (
   return new Promise((resolve, reject) => {
     socket.emit("confirm-room-password", roomId, password);
 
-    socket.on("confirm-room-password", (data) => {
-      resolve(data);
-    });
+    socket.on("confirm-room-password", (data) => resolve(data));
   });
 };
 
@@ -115,4 +133,10 @@ export const messaging = (message: string) => {
 
 export const ionScreen = (initialize: boolean) => {
   socket.emit("ion-screen", initialize);
+};
+
+// NEW
+
+export const shareScreenSignal = () => {
+  socket.emit("share-screen");
 };

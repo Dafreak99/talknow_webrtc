@@ -11,7 +11,7 @@ import {
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { AiOutlineCheck } from "react-icons/ai";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { confirmRoomPassword, userJoined } from "../../../utils/webSocket";
 
 interface Props {
@@ -30,14 +30,15 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
     handleSubmit,
     formState: { errors },
   } = useForm<Inputs>();
+  const params = useParams<{ roomId: string }>();
   const toast = useToast();
   const history = useHistory();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (admission === "password") {
       const res = await confirmRoomPassword(roomId, data.password);
-
       if (res.status === "succeeded") {
+        userJoined(params.roomId, data.username);
         history.push("/stream");
       } else if (res.status === "failed") {
         toast({
@@ -49,28 +50,80 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
           position: "top",
         });
       }
+    } else if (admission === "none") {
+      userJoined(params.roomId, data.username);
+      history.push("/stream");
     }
   };
 
   if (admission === "none") {
     return (
-      <Button
-        leftIcon={<AiOutlineCheck />}
-        w="100%"
-        bg="primary"
-        color="#fff"
-        size="lg"
-        mt="1rem"
-        onClick={() => {
-          userJoined(roomId);
-          history.push("/stream");
-        }}
-      >
-        Join Room
-      </Button>
+      <Box as="form" onSubmit={handleSubmit(onSubmit)}>
+        <Flex margin="0 -15px">
+          <FormControl id="hostname" p="0 15px">
+            <FormLabel fontWeight="semibold">Username</FormLabel>
+            <Input
+              type="text"
+              variant="filled"
+              placeholder="Enter username"
+              mr="2rem"
+              {...register("username", { required: true })}
+            />
+
+            {errors.username && (
+              <Text mt="5px" color="red.500">
+                Username is required
+              </Text>
+            )}
+          </FormControl>
+        </Flex>
+        <Button
+          type="submit"
+          leftIcon={<AiOutlineCheck />}
+          w="100%"
+          bg="primary"
+          color="#fff"
+          size="lg"
+          mt="1rem"
+        >
+          Join Room
+        </Button>
+      </Box>
     );
   } else if (admission === "request") {
-    return <p>Request to join</p>;
+    return (
+      <Box as="form" onSubmit={handleSubmit(onSubmit)}>
+        <Flex margin="0 -15px">
+          <FormControl id="hostname" p="0 15px">
+            <FormLabel fontWeight="semibold">Username</FormLabel>
+            <Input
+              type="text"
+              variant="filled"
+              placeholder="Enter username"
+              mr="2rem"
+              {...register("username", { required: true })}
+            />
+
+            {errors.username && (
+              <Text mt="5px" color="red.500">
+                Username is required
+              </Text>
+            )}
+          </FormControl>
+        </Flex>
+        <Button
+          type="submit"
+          leftIcon={<AiOutlineCheck />}
+          w="100%"
+          bg="primary"
+          color="#fff"
+          size="lg"
+          mt="1rem"
+        >
+          Request To Join room
+        </Button>
+      </Box>
+    );
   } else {
     return (
       <Box as="form" onSubmit={handleSubmit(onSubmit)}>

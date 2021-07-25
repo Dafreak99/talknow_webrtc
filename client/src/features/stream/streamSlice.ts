@@ -6,9 +6,8 @@ interface InitialState {
   localMicrophoneEnabled: boolean;
   remoteStreams: RemoteStream[];
   connections: any[];
-  roomInfo: RoomInfo;
-  roomInfoReady: boolean;
   mySocketId: null | string;
+  myUsername: null | string;
   isShowedChat: boolean;
 }
 
@@ -19,26 +18,14 @@ export interface RemoteStream {
   trackId: string;
 }
 
-interface RoomInfo {
-  roomId: string;
-  roomName: string;
-  hostId: string;
-  hostName: string;
-  allowVideo: boolean;
-  allowAudio: boolean;
-  admission: string;
-  password: string;
-  users: number;
-}
 const initialState: InitialState = {
   localStream: null,
   localCameraEnabled: true,
   localMicrophoneEnabled: true,
   remoteStreams: [],
   connections: [],
-  roomInfo: {} as RoomInfo,
-  roomInfoReady: false,
   mySocketId: null,
+  myUsername: null,
   isShowedChat: true,
 };
 
@@ -55,7 +42,6 @@ const streamSlice = createSlice({
     setLocalMicrophoneEnabled: (state, action) => {
       state.localMicrophoneEnabled = action.payload;
     },
-    // TODO: Continue to handle mic on/off
     setRemoteStreams: (state, action) => {
       let index = state.remoteStreams.findIndex(
         (stream) => stream.trackId === action.payload.trackId
@@ -78,17 +64,16 @@ const streamSlice = createSlice({
     setConnection: (state, action) => {
       state.connections.push(action.payload);
     },
-    setRoomInfo: (state, action) => {
-      state.roomInfo = action.payload;
-      state.roomInfoReady = true;
-    },
+
     hostLeave: (state, _) => {
       state.connections = [];
       state.remoteStreams = [];
-      state.roomInfo = {} as RoomInfo;
     },
     setSocketId: (state, action) => {
       state.mySocketId = action.payload;
+    },
+    setUsername: (state, action) => {
+      state.myUsername = action.payload;
     },
     setToggleShowChat: (state) => {
       state.isShowedChat = !state.isShowedChat;
@@ -103,9 +88,9 @@ export const {
   setRemoteStreams,
   removeRemoteStream,
   setConnection,
-  setRoomInfo,
   hostLeave,
   setSocketId,
+  setUsername,
   setToggleShowChat,
 } = streamSlice.actions;
 

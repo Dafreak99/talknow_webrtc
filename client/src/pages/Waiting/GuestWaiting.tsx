@@ -1,9 +1,9 @@
 import { Box, Grid, Heading } from "@chakra-ui/react";
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import Logo from "../../components/Logo";
 import ReviewStream from "../../components/ReviewStream";
-import { getLocalStream } from "../../utils/ionSFU";
+import { connectIonSFU } from "../../utils/ionSFU";
 import { connectSignallingServer, getRoomInfo } from "../../utils/webSocket";
 import GuestConfig from "./components/GuestConfig";
 
@@ -11,12 +11,21 @@ interface Props {}
 
 const GuestWaiting: React.FC<Props> = () => {
   const params = useParams<{ roomId: string }>();
+  const history = useHistory();
 
   useEffect(() => {
-    getLocalStream();
+    connectIonSFU();
     connectSignallingServer();
-    getRoomInfo(params.roomId);
-  });
+    roomInfo();
+  }, []);
+
+  const roomInfo = async () => {
+    try {
+      await getRoomInfo(params.roomId);
+    } catch (error) {
+      history.goBack();
+    }
+  };
 
   return (
     <Box h="100vh" w="100vw">

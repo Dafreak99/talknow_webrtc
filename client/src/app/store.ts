@@ -5,6 +5,7 @@ import {
   ThunkAction,
 } from "@reduxjs/toolkit";
 import messageSlice from "../features/message/messageSlice";
+import roomSlice from "../features/room/roomSlice";
 import streamSlice from "../features/stream/streamSlice";
 
 const customizedMiddleware = getDefaultMiddleware({
@@ -15,6 +16,7 @@ export const store = configureStore({
   reducer: {
     stream: streamSlice,
     message: messageSlice,
+    room: roomSlice,
   },
   middleware: customizedMiddleware,
 });
