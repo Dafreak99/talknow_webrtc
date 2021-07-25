@@ -28,7 +28,7 @@ const Stream: React.FC<Props> = () => {
 
   return (
     <>
-      <Flex position="relative" p="20px" bg="#000">
+      <Flex position="relative" p="20px" bg="#13141b">
         <LeftContent />
         <RightContent />
       </Flex>

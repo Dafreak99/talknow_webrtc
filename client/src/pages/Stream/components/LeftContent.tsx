@@ -7,7 +7,7 @@ import UsersStream from "./UsersStream";
 interface Props {}
 
 const RightContent: React.FC<Props> = () => {
-  const { isShowedChat } = useAppSelector((state) => state.stream);
+  const { isShowedChat } = useAppSelector((state) => state.message);
 
   return (
     <Box

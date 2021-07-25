@@ -1,3 +1,4 @@
+import { genConfig } from "react-nice-avatar";
 import io, { Socket } from "socket.io-client";
 import { setMessage } from "../features/message/messageSlice";
 import { receiveShareScreen, setRoomInfo } from "../features/room/roomSlice";
@@ -54,15 +55,17 @@ export const connectSignallingServer = async () => {
 
 export const createRoom = (data: ConfigRoom) => {
   store.dispatch(setUsername(data.hostName));
+  const config = genConfig();
 
-  socket.emit("user-joined", { data, type: "host" });
+  socket.emit("user-joined", { data: { ...data, config }, type: "host" });
 };
 
 export const userJoined = (roomId: string, username: string) => {
   store.dispatch(setUsername(username));
+  const config = genConfig();
 
   socket.emit("user-joined", {
-    data: { roomId, username },
+    data: { roomId, username, config },
     type: "guest",
   });
 };
@@ -128,7 +131,11 @@ export const screenShareSignaling2 = (
 };
 
 export const messaging = (message: string) => {
-  socket.emit("broadcast-message", { from: "haitran", content: message });
+  socket.emit("broadcast-message", {
+    from: "haitran",
+    content: message,
+    timestamp: new Date(),
+  });
 };
 
 export const ionScreen = (initialize: boolean) => {

@@ -4,11 +4,12 @@ interface InitialState {
   localStream: null | MediaStream;
   localCameraEnabled: boolean;
   localMicrophoneEnabled: boolean;
+  shareScreenEnabled: boolean;
+  recordScreenEnabled: boolean;
   remoteStreams: RemoteStream[];
   connections: any[];
   mySocketId: null | string;
   myUsername: null | string;
-  isShowedChat: boolean;
 }
 
 export interface RemoteStream {
@@ -22,11 +23,12 @@ const initialState: InitialState = {
   localStream: null,
   localCameraEnabled: true,
   localMicrophoneEnabled: true,
+  shareScreenEnabled: false,
+  recordScreenEnabled: false,
   remoteStreams: [],
   connections: [],
   mySocketId: null,
   myUsername: null,
-  isShowedChat: true,
 };
 
 const streamSlice = createSlice({
@@ -41,6 +43,12 @@ const streamSlice = createSlice({
     },
     setLocalMicrophoneEnabled: (state, action) => {
       state.localMicrophoneEnabled = action.payload;
+    },
+    setShareScreenEnabled: (state, action) => {
+      state.shareScreenEnabled = action.payload;
+    },
+    setRecordScreenEnabled: (state, action) => {
+      state.recordScreenEnabled = action.payload;
     },
     setRemoteStreams: (state, action) => {
       let index = state.remoteStreams.findIndex(
@@ -64,7 +72,6 @@ const streamSlice = createSlice({
     setConnection: (state, action) => {
       state.connections.push(action.payload);
     },
-
     hostLeave: (state, _) => {
       state.connections = [];
       state.remoteStreams = [];
@@ -75,9 +82,6 @@ const streamSlice = createSlice({
     setUsername: (state, action) => {
       state.myUsername = action.payload;
     },
-    setToggleShowChat: (state) => {
-      state.isShowedChat = !state.isShowedChat;
-    },
   },
 });
 
@@ -85,13 +89,14 @@ export const {
   setLocalStream,
   setLocalCameraEnabled,
   setLocalMicrophoneEnabled,
+  setShareScreenEnabled,
+  setRecordScreenEnabled,
   setRemoteStreams,
   removeRemoteStream,
   setConnection,
   hostLeave,
   setSocketId,
   setUsername,
-  setToggleShowChat,
 } = streamSlice.actions;
 
 export default streamSlice.reducer;

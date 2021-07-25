@@ -2,17 +2,21 @@ import { createStandaloneToast } from "@chakra-ui/react";
 import { Client, Constraints, LocalStream, RemoteStream } from "ion-sdk-js";
 import { Configuration } from "ion-sdk-js/lib/client";
 import { IonSFUJSONRPCSignal } from "ion-sdk-js/lib/signal/json-rpc-impl";
+import RecordRTC from "recordrtc";
 import { store } from "../app/store";
 import {
   removeRemoteStream,
   setLocalCameraEnabled,
   setLocalMicrophoneEnabled,
   setLocalStream,
+  setRecordScreenEnabled,
   setRemoteStreams,
+  setShareScreenEnabled,
 } from "../features/stream/streamSlice";
 import { shareScreenSignal } from "./webSocket";
 
 let client: any;
+let screenClient: any;
 let local: LocalStream;
 
 const config = {
@@ -34,8 +38,6 @@ export const connectIonSFU = async () => {
 
   // Setup handlers
   client.ontrack = (track: MediaStreamTrack, stream: RemoteStream) => {
-    console.log("track", track);
-    console.log("stream", stream);
     track.onmute = () => {
       console.log(track.id);
       hanldeRemoteStreams(track, stream);
@@ -48,11 +50,8 @@ export const connectIonSFU = async () => {
       }
     };
 
-    track.onisolationchange = () => {
-      console.log("hey");
-    };
-
     stream.onremovetrack = (e) => {
+      console.log("removed");
       store.dispatch(removeRemoteStream(e.track.id));
     };
   };
@@ -111,15 +110,49 @@ export const toggleMic = () => {
   store.dispatch(setLocalMicrophoneEnabled(!localMicrophoneEnabled));
 };
 
+export const toggleShareScreen = () => {
+  const { shareScreenEnabled } = store.getState().stream;
+
+  if (shareScreenEnabled) {
+    screenClient.leave();
+  } else {
+    shareScreen();
+  }
+
+  store.dispatch(setShareScreenEnabled(!shareScreenEnabled));
+};
+
+export const toggleRecord = () => {
+  const { recordScreenEnabled } = store.getState().stream;
+  let recorder = new RecordRTC(document.documentElement, {
+    type: "video",
+    showMousePointer: true,
+  } as {});
+
+  if (recordScreenEnabled) {
+    recorder.stopRecording(((url: string) => {
+      console.log("stop recording");
+      let blob = recorder.getBlob();
+      console.log(blob);
+      // window.open(blo);
+    }) as () => void);
+  } else {
+    console.log("start recording");
+    recorder.startRecording();
+  }
+
+  store.dispatch(setRecordScreenEnabled(!recordScreenEnabled));
+};
+
 /**
  * Share screen
  */
 export const shareScreen = async () => {
   const signal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
 
-  client = new Client(signal, config as Configuration);
+  screenClient = new Client(signal, config as Configuration);
 
-  signal.onopen = () => client.join("test session");
+  signal.onopen = () => screenClient.join("test session");
 
   try {
     const screenShare = await LocalStream.getDisplayMedia({
@@ -129,7 +162,7 @@ export const shareScreen = async () => {
       codec: "vp8",
     } as Constraints);
 
-    client.publish(screenShare);
+    screenClient.publish(screenShare);
     shareScreenSignal();
   } catch (error) {
     throw error;
@@ -155,4 +188,5 @@ export const handleJoinRequest = (_: string, username: string) => {
   });
 };
 
-// TODO: Debug handle join request
+// TODO: Debug handle join request. Figure out how to display Join Request as a form with Accept and Reject buttons
+// https://clerk.dev/

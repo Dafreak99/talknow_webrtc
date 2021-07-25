@@ -12,7 +12,11 @@ import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { AiOutlineCheck } from "react-icons/ai";
 import { useHistory, useParams } from "react-router-dom";
-import { confirmRoomPassword, userJoined } from "../../../utils/webSocket";
+import {
+  confirmRoomPassword,
+  requestToJoin,
+  userJoined,
+} from "../../../utils/webSocket";
 
 interface Props {
   admission: string;
@@ -53,6 +57,8 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
     } else if (admission === "none") {
       userJoined(params.roomId, data.username);
       history.push("/stream");
+    } else if (admission === "request") {
+      requestToJoin(params.roomId, data.username);
     }
   };
 

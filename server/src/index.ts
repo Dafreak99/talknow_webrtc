@@ -42,6 +42,7 @@ io.on("connection", (socket: Socket) => {
         allowAudio: Boolean(data.allowAudio),
         users: [{ socketId: socket.id, username: data.hostname }],
       };
+
       rooms[roomId] = room;
 
       const response = {

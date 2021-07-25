@@ -7,12 +7,14 @@ import {
   InputRightElement,
   Text,
 } from "@chakra-ui/react";
+import { format } from "date-fns";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { CgClose } from "react-icons/cg";
 import { FiSend } from "react-icons/fi";
+import Avatar, { genConfig } from "react-nice-avatar";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { setToggleShowChat } from "../../../features/stream/streamSlice";
+import { setToggleShowChat } from "../../../features/message/messageSlice";
 import { messaging } from "../../../utils/webSocket";
 
 interface Props {}
@@ -26,8 +28,10 @@ const RightContent: React.FC<Props> = () => {
   const [index, setIndex] = useState(0);
   const { register, handleSubmit, reset } = useForm<FormValue>();
 
-  const { mySocketId, isShowedChat } = useAppSelector((state) => state.stream);
+  const { mySocketId } = useAppSelector((state) => state.stream);
+  const { isShowedChat } = useAppSelector((state) => state.message);
   const { messages } = useAppSelector((state) => state.message);
+  const config = genConfig();
 
   const onSubmit: SubmitHandler<FormValue> = (data) => {
     messaging(data.message);
@@ -38,8 +42,8 @@ const RightContent: React.FC<Props> = () => {
     <Flex
       w="20vw"
       flexDirection="column"
-      // bg="#fff"
-      bg="#212020"
+      boxShadow="0 4px 16px rgb(209 209 226 / 10%)"
+      bg="#1a1d28"
       h="calc(100% - 40px)"
       borderRadius="10px"
       transition="350ms all"
@@ -50,8 +54,7 @@ const RightContent: React.FC<Props> = () => {
         p="1rem 2rem"
         justify="space-between"
         alignItems="center"
-        // bg="gray.100"
-        bg="#27bdb6"
+        bg="primary"
         borderTopLeftRadius="10px"
         borderTopRightRadius="10px"
       >
@@ -83,22 +86,29 @@ const RightContent: React.FC<Props> = () => {
           as={CgClose}
           fontSize="1.5rem"
           cursor="pointer"
+          color="gray.300"
           onClick={() => dispatch(setToggleShowChat())}
         />
       </Flex>
       <Box p="2rem">
-        {messages.map(({ from, socketId, content }) => (
+        {messages.map(({ from, socketId, content, timestamp }) => (
           <Flex
             alignItems={socketId === mySocketId ? "flex-end" : "flex-start"}
-            flexDirection="column"
-            mb="5px"
+            mb="15px"
           >
-            <Box>
-              {socketId !== mySocketId && (
-                <Text mb="5px" color="gray.300">
-                  {from}
-                </Text>
-              )}
+            {socketId !== mySocketId && (
+              <Avatar
+                style={{ width: "2rem", height: "2rem", marginRight: "1rem" }}
+                {...config}
+              />
+            )}
+            <Box marginLeft={socketId === mySocketId ? "auto" : "0"}>
+              <Text mb="5px" color="gray.300">
+                {socketId !== mySocketId
+                  ? `${from}, ${format(new Date(timestamp), "hh:mm")}`
+                  : "You, " + format(new Date(timestamp), "hh:mm")}
+              </Text>
+
               <Box p="8px 30px" bg="#e7eff8" borderRadius="10px">
                 {content}
               </Box>
@@ -110,11 +120,11 @@ const RightContent: React.FC<Props> = () => {
         <Flex as="form" onSubmit={handleSubmit(onSubmit)}>
           <InputGroup>
             <Input
-              variant="filled"
-              borderColor="#f3f3f3"
+              border="2px solid #75777d"
               placeholder="Write a message"
               mr="5px"
               {...register("message", { required: true })}
+              color="#fff"
             />
             <InputRightElement
               children={<FiSend color="rgb(146, 158, 150)" />}
