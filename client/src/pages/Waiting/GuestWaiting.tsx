@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import Logo from "../../components/Logo";
 import ReviewStream from "../../components/ReviewStream";
-import { connectIonSFU } from "../../utils/ionSFU";
 import { connectSignallingServer, getRoomInfo } from "../../utils/webSocket";
 import GuestConfig from "./components/GuestConfig";
 
@@ -14,7 +13,6 @@ const GuestWaiting: React.FC<Props> = () => {
   const history = useHistory();
 
   useEffect(() => {
-    connectIonSFU();
     connectSignallingServer();
     roomInfo();
   }, []);

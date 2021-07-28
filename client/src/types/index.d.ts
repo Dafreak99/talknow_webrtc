@@ -18,7 +18,18 @@ export interface Room {
 
 interface User {
   username: string;
-  socketId: string;
   streamId: string;
+  socketId: string;
+  stream: MediaStream;
   streamType: string;
+}
+
+export interface ConfigRoom {
+  hostName: string;
+  roomId: string;
+  roomName: string;
+  allowVideo: string;
+  allowAudio: string;
+  admission: string;
+  password: string;
 }

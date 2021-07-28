@@ -24,7 +24,7 @@ Written in Typescript
   - ❌ Emoji
   - ❌ File Transfer
 - ✅ Screen sharing
-- ❌ Record stream
+- ✅ Record stream
 - ❌ Remove user from the room
 - ❌ Whiteboard
 - ❌ Invite to join via email

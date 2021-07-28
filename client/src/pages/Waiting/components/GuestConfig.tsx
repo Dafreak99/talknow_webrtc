@@ -54,7 +54,7 @@ const GuestConfig: React.FC<Props> = () => {
                 <Box as="span" fontWeight="semibold" mr="5px">
                   <Icon as={AiFillThunderbolt} /> Number of Users:
                 </Box>
-                {users}
+                {users.length}
               </ListItem>
               <ListItem>
                 <Box as="span" fontWeight="semibold" mr="5px">

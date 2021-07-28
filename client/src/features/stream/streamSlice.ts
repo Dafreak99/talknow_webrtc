@@ -54,7 +54,6 @@ const streamSlice = createSlice({
       let index = state.remoteStreams.findIndex(
         (stream) => stream.trackId === action.payload.trackId
       );
-      console.log(index);
 
       if (index !== -1) {
         console.log("Existed");

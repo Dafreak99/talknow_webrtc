@@ -1,7 +1,11 @@
-import { genConfig } from "react-nice-avatar";
+import { LocalStream } from "ion-sdk-js";
 import io, { Socket } from "socket.io-client";
 import { setMessage } from "../features/message/messageSlice";
-import { receiveShareScreen, setRoomInfo } from "../features/room/roomSlice";
+import {
+  receiveShareScreen,
+  removeUserScreen,
+  setRoomInfo,
+} from "../features/room/roomSlice";
 import {
   hostLeave,
   removeRemoteStream,
@@ -10,8 +14,8 @@ import {
 } from "../features/stream/streamSlice";
 import { ConfigRoom } from "../types";
 import { store } from "./../app/store";
-import { handleJoinRequest } from "./ionSFU";
-import { handleScreen, handleSignaling, handleUserJoined } from "./webRTC";
+import { connectIonSFU, handleJoinRequest, handleUserJoined } from "./ionSFU";
+import { handleScreen, handleSignaling } from "./webRTC";
 
 let socket: Socket;
 let socketId: undefined | string;
@@ -25,6 +29,7 @@ export const connectSignallingServer = async () => {
   socket.on("connect", function () {
     socketId = socket.id;
     store.dispatch(setSocketId(socketId));
+    connectIonSFU();
   });
 
   socket.on("roominfo", (info) => store.dispatch(setRoomInfo(info)));
@@ -44,7 +49,12 @@ export const connectSignallingServer = async () => {
   });
 
   socket.on("share-screen", () => {
-    store.dispatch(receiveShareScreen());
+    const { isShareScreen } = store.getState().room.roomInfo;
+
+    if (isShareScreen) {
+      store.dispatch(removeUserScreen());
+    }
+    store.dispatch(receiveShareScreen(!isShareScreen));
   });
 
   socket.on("user-leave", (id) => {
@@ -54,19 +64,38 @@ export const connectSignallingServer = async () => {
 };
 
 export const createRoom = (data: ConfigRoom) => {
-  store.dispatch(setUsername(data.hostName));
-  const config = genConfig();
-
-  socket.emit("user-joined", { data: { ...data, config }, type: "host" });
-};
-
-export const userJoined = (roomId: string, username: string) => {
-  store.dispatch(setUsername(username));
-  const config = genConfig();
+  const { localStream } = store.getState().stream;
 
   socket.emit("user-joined", {
-    data: { roomId, username, config },
-    type: "guest",
+    data: { ...data, streamType: "host", streamId: localStream!.id },
+    type: "host",
+  });
+
+  store.dispatch(setUsername(data.hostName));
+
+  store.dispatch(
+    setRoomInfo({ ...data, streamId: localStream!.id, users: [] })
+  );
+};
+
+export const userJoined = (
+  roomId: string,
+  username: string,
+  type: "guest" | "screen",
+  screenShare?: LocalStream
+) => {
+  let localStream: LocalStream;
+
+  if (type === "guest") {
+    localStream = store.getState().stream.localStream as LocalStream;
+    store.dispatch(setUsername(username));
+  } else {
+    localStream = screenShare as LocalStream;
+  }
+
+  socket.emit("user-joined", {
+    data: { roomId, username, streamId: localStream!.id, streamType: type },
+    type,
   });
 };
 
@@ -79,7 +108,6 @@ export const getRoomInfo = (roomId: string) => {
     socket.emit("get-room-info", roomId);
 
     socket.on("get-room-info", (data) => {
-      console.log("get-room-info", data);
       if (data.status === "failed") {
         reject();
       } else {

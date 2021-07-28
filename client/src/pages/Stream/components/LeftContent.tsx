@@ -2,7 +2,7 @@ import { Box } from "@chakra-ui/react";
 import React from "react";
 import { useAppSelector } from "../../../app/hooks";
 import LocalStream from "./LocalStream";
-import UsersStream from "./UsersStream";
+import Whiteboard from "./Whiteboard";
 
 interface Props {}
 
@@ -15,7 +15,8 @@ const RightContent: React.FC<Props> = () => {
       width={isShowedChat ? "77vw" : "100vw"}
       position="relative"
     >
-      <UsersStream />
+      {/* <UsersStream /> */}
+      <Whiteboard />
       <LocalStream />
     </Box>
   );

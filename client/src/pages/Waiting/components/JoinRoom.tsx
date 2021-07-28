@@ -42,7 +42,7 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
     if (admission === "password") {
       const res = await confirmRoomPassword(roomId, data.password);
       if (res.status === "succeeded") {
-        userJoined(params.roomId, data.username);
+        userJoined(params.roomId, data.username, "guest");
         history.push("/stream");
       } else if (res.status === "failed") {
         toast({
@@ -55,7 +55,7 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
         });
       }
     } else if (admission === "none") {
-      userJoined(params.roomId, data.username);
+      userJoined(params.roomId, data.username, "guest");
       history.push("/stream");
     } else if (admission === "request") {
       requestToJoin(params.roomId, data.username);

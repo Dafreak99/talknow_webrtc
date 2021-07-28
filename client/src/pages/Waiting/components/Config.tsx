@@ -31,7 +31,6 @@ const Config: React.FC<Props> = () => {
     control,
     formState: { errors },
   } = useForm<ConfigRoom>();
-
   const history = useHistory();
 
   const onSubmit: SubmitHandler<ConfigRoom> = (data) => {

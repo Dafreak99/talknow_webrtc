@@ -6,12 +6,15 @@ import {
   InputGroup,
   InputRightElement,
   Text,
+  useOutsideClick,
 } from "@chakra-ui/react";
 import { format } from "date-fns";
-import React, { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { BaseEmoji, Picker } from "emoji-mart";
+import "emoji-mart/css/emoji-mart.css";
+import React, { FormEvent, useRef, useState } from "react";
 import { CgClose } from "react-icons/cg";
 import { FiSend } from "react-icons/fi";
+import { MdInsertEmoticon } from "react-icons/md";
 import Avatar, { genConfig } from "react-nice-avatar";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { setToggleShowChat } from "../../../features/message/messageSlice";
@@ -19,23 +22,31 @@ import { messaging } from "../../../utils/webSocket";
 
 interface Props {}
 
-interface FormValue {
-  message: string;
-}
-
 const RightContent: React.FC<Props> = () => {
   const dispatch = useAppDispatch();
   const [index, setIndex] = useState(0);
-  const { register, handleSubmit, reset } = useForm<FormValue>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
+
+  useOutsideClick({
+    ref: ref,
+    handler: () => setIsModalOpen(false),
+  });
 
   const { mySocketId } = useAppSelector((state) => state.stream);
   const { isShowedChat } = useAppSelector((state) => state.message);
   const { messages } = useAppSelector((state) => state.message);
   const config = genConfig();
 
-  const onSubmit: SubmitHandler<FormValue> = (data) => {
-    messaging(data.message);
-    reset();
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    messaging(message);
+    setMessage("");
+  };
+
+  const onSelectEmoji = (data: BaseEmoji) => {
+    setMessage(message + data.native);
   };
 
   return (
@@ -117,19 +128,51 @@ const RightContent: React.FC<Props> = () => {
         ))}
       </Box>
       <Box p="2rem" marginTop="auto">
-        <Flex as="form" onSubmit={handleSubmit(onSubmit)}>
+        <Flex
+          as="form"
+          onSubmit={onSubmit}
+          position="relative"
+          alignItems="center"
+        >
           <InputGroup>
             <Input
               border="2px solid #75777d"
               placeholder="Write a message"
               mr="5px"
-              {...register("message", { required: true })}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               color="#fff"
+              autoComplete="off"
+            />
+            <InputRightElement
+              children={<FiSend color="rgb(146, 158, 150)" />}
             />
             <InputRightElement
               children={<FiSend color="rgb(146, 158, 150)" />}
             />
           </InputGroup>
+
+          {isModalOpen ? (
+            <Box ref={ref as any} cursor="pointer">
+              <Picker
+                onSelect={onSelectEmoji}
+                style={{ position: "absolute", bottom: "150%", right: 0 }}
+              />
+              <Icon
+                as={MdInsertEmoticon}
+                boxSize="1.5rem"
+                color="#fff"
+                onClick={() => setIsModalOpen(!isModalOpen)}
+              />
+            </Box>
+          ) : (
+            <Icon
+              as={MdInsertEmoticon}
+              boxSize="1.5rem"
+              color="#fff"
+              onClick={() => setIsModalOpen(!isModalOpen)}
+            />
+          )}
         </Flex>
       </Box>
     </Flex>

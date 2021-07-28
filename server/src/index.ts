@@ -2,7 +2,7 @@ import express from "express";
 import http from "http";
 import log4js from "log4js";
 import { Server, Socket } from "socket.io";
-import { Rooms, User } from "./types";
+import { Room, Rooms, User } from "./types";
 
 const logger = log4js.getLogger();
 
@@ -28,6 +28,8 @@ let myRoomId: string | null = null;
 
 io.on("connection", (socket: Socket) => {
   socket.on("user-joined", ({ data, type }) => {
+    if (!data) return;
+
     logger.debug("User joined");
     const { roomId } = data;
 
@@ -35,34 +37,44 @@ io.on("connection", (socket: Socket) => {
     socket.join(roomId);
 
     if (type === "host") {
-      let room = {
+      const { roomId, allowVideo, allowAudio } = data;
+      let room: Room = {
         ...data,
         hostId: socket.id,
-        allowVideo: Boolean(data.allowVideo),
-        allowAudio: Boolean(data.allowAudio),
-        users: [{ socketId: socket.id, username: data.hostname }],
+        allowVideo: Boolean(allowVideo),
+        allowAudio: Boolean(allowAudio),
+        users: [],
       };
 
       rooms[roomId] = room;
-
-      const response = {
-        ...rooms[roomId],
-        users: rooms[roomId].users.length,
-      };
-
-      delete response.password;
-
-      socket.emit("get-room-info", {
-        status: "succeeded",
-        data: response,
-      });
-    } else {
-      rooms[roomId].users.push({
-        socketId: socket.id,
-        username: data.username,
-        avatarUrl: "",
-      } as User);
     }
+
+    // Treat host as normal user
+
+    const user = {
+      username: type === "host" ? data.hostName : data.username,
+      streamId: data.streamId,
+      streamType: data.streamType,
+      socketId: socket.id,
+      avatarUrl: "",
+    } as User;
+
+    rooms[roomId].users.push(user);
+
+    // socket.to(roomId).emit("user-joined", user);
+    io.in(roomId).emit("user-joined", user);
+
+    // const response = {
+    //   ...rooms[roomId],
+    // };
+
+    // delete response.password;
+
+    // socket.emit("get-room-info", {
+    //   status: "succeeded",
+    //   data: response,
+    // });
+
     logger.info("Rooms", rooms);
   });
 
@@ -77,7 +89,6 @@ io.on("connection", (socket: Socket) => {
     } else {
       const response = {
         ...rooms[roomId],
-        users: rooms[roomId].users.length,
       };
 
       delete response.password;

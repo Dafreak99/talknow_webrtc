@@ -5,7 +5,7 @@ import { FaPhoneAlt } from "react-icons/fa";
 import { IoMdMic, IoMdMicOff } from "react-icons/io";
 import { IoVideocam, IoVideocamOff } from "react-icons/io5";
 import { MdScreenShare, MdStopScreenShare } from "react-icons/md";
-import { RiRecordCircleLine } from "react-icons/ri";
+import { RiArtboardLine, RiRecordCircleLine } from "react-icons/ri";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { setToggleShowChat } from "../../../features/message/messageSlice";
 import {
@@ -19,8 +19,12 @@ import {
 interface Props {}
 
 const StreamButtons: React.FC<Props> = () => {
-  const { localCameraEnabled, localMicrophoneEnabled, shareScreenEnabled } =
-    useAppSelector((state) => state.stream);
+  const {
+    localCameraEnabled,
+    localMicrophoneEnabled,
+    shareScreenEnabled,
+    recordScreenEnabled,
+  } = useAppSelector((state) => state.stream);
   const dispatch = useAppDispatch();
 
   const onToggleChat = () => {
@@ -46,9 +50,16 @@ const StreamButtons: React.FC<Props> = () => {
       icon: shareScreenEnabled ? MdStopScreenShare : MdScreenShare,
     },
     {
-      tooltip: "Record this meeting",
+      tooltip: recordScreenEnabled
+        ? "Stop record this meeting"
+        : "Record this meeting",
       onClick: toggleRecord,
       icon: RiRecordCircleLine,
+    },
+    {
+      tooltip: "Whiteboard",
+      onClick: toggleRecord,
+      icon: RiArtboardLine,
     },
     { tooltip: "Chat", onClick: onToggleChat, icon: BsChatFill },
     { tooltip: "Hang up", onClick: leave, icon: FaPhoneAlt },

@@ -1,10 +1,10 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 import React, { useEffect, useRef } from "react";
 import { BsArrowsFullscreen } from "react-icons/bs";
-import { RemoteStream as RemoteStreamType } from "../features/stream/streamSlice";
+import { User } from "../types";
 
 interface Props {
-  remoteStream: RemoteStreamType;
+  user: User;
   count: number;
 }
 
@@ -14,14 +14,14 @@ interface Video extends HTMLVideoElement {
   msRequestFullscreen: () => Promise<void>;
 }
 
-const RemoteStream: React.FC<Props> = ({ remoteStream, count }) => {
+const RemoteStream: React.FC<Props> = ({ user, count }) => {
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (remoteStream) {
-      ref.current!.srcObject = remoteStream.stream;
+    if (user) {
+      ref.current!.srcObject = user.stream;
     }
-  }, [remoteStream]);
+  }, [user]);
 
   const onOpenFullScreen = () => {
     if (ref.current) {
@@ -41,6 +41,19 @@ const RemoteStream: React.FC<Props> = ({ remoteStream, count }) => {
 
   return (
     <>
+      <Text
+        position="absolute"
+        top="5px"
+        left="2rem"
+        zIndex="100"
+        fontWeight="semibold"
+        color="#fff"
+        background="#07070e6b"
+        p="5px 15px"
+        borderRadius="3px"
+      >
+        {user.username}
+      </Text>
       <video
         playsInline
         autoPlay

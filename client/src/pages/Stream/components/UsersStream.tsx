@@ -7,22 +7,23 @@ import calcSize from "../../../utils/render/calcSize";
 interface Props {}
 
 const UsersStream: React.FC<Props> = () => {
-  const { remoteStreams } = useAppSelector((state) => state.stream);
+  const { mySocketId } = useAppSelector((state) => state.stream);
+  const { users } = useAppSelector((state) => state.room.roomInfo);
   const { isShareScreen } = useAppSelector((state) => state.room.roomInfo);
 
   const [height, setHeight] = useState<number>(0);
   const [width, setWidth] = useState<number>(0);
-  const [screenIndex, setScreenIndex] = useState<number>(0);
 
   useEffect(() => {
     // Only use for normal mode
-    if (remoteStreams.length > 0 && !isShareScreen) {
+    if (users.length - 1 > 0 && !isShareScreen) {
       let { width, height } = calcSize({
         width: document.getElementById("video-container")!.clientWidth,
         height: document.getElementById("video-container")!.clientHeight,
         minRatio: 9 / 16,
         maxRatio: 8 / 5,
-        count: remoteStreams.length,
+        // count: users.length - 1,
+        count: 4,
       });
       if (width) {
         setWidth(width);
@@ -31,7 +32,7 @@ const UsersStream: React.FC<Props> = () => {
         setHeight(height);
       }
     }
-  }, [remoteStreams]);
+  }, [users]);
 
   return (
     <>
@@ -42,13 +43,20 @@ const UsersStream: React.FC<Props> = () => {
           h="calc(100vh - 100px - 40px)"
           justifyContent="center"
         >
-          {remoteStreams.map((remoteStream, i) => (
-            <Box w={width} h={height} key={i} className="overlay__container">
-              <RemoteStream
-                remoteStream={remoteStream}
-                count={remoteStreams.length}
-              />
-            </Box>
+          {users.map((user, i) => (
+            <>
+              {(user.socketId !== mySocketId ||
+                user.streamType === "screen") && (
+                <Box
+                  w={width}
+                  h={height}
+                  key={i}
+                  className={`overlay__container ` + user.socketId}
+                >
+                  <RemoteStream user={user} count={users.length - 1} />
+                </Box>
+              )}
+            </>
           ))}
         </Flex>
       ) : (
@@ -57,31 +65,31 @@ const UsersStream: React.FC<Props> = () => {
           gridTemplateColumns="repeat(24,1fr)"
           h="calc(100vh - 100px - 40px)"
         >
-          {remoteStreams.map((remoteStream, i) => (
+          {users.map((user, i) => (
             <>
-              {i === screenIndex ? (
-                <Box
-                  gridArea="span 12/span 18"
-                  key={i}
-                  className="overlay__container"
-                >
-                  <RemoteStream
-                    remoteStream={remoteStream}
-                    count={remoteStreams.length}
-                  />
-                </Box>
-              ) : (
-                <Box
-                  gridArea="span 4/span 6"
-                  onClick={() => setScreenIndex(i)}
-                  key={i}
-                  className="overlay__container"
-                >
-                  <RemoteStream
-                    remoteStream={remoteStream}
-                    count={remoteStreams.length}
-                  />
-                </Box>
+              {(user.socketId !== mySocketId ||
+                user.streamType === "screen") && (
+                <>
+                  {user.streamType === "screen" ? (
+                    <Box
+                      gridColumn="1/18"
+                      gridRow="1/12"
+                      key={i}
+                      className="overlay__container"
+                    >
+                      <RemoteStream user={user} count={users.length - 1} />
+                    </Box>
+                  ) : (
+                    <Box
+                      gridColumn="18/span 6"
+                      gridRow="span 4"
+                      key={i}
+                      className="overlay__container"
+                    >
+                      <RemoteStream user={user} count={users.length - 1} />
+                    </Box>
+                  )}
+                </>
               )}
             </>
           ))}
