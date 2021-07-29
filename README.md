@@ -13,18 +13,18 @@ Written in Typescript
 
 ## Features
 
-- ✅ Multiples users - Video/Audio Call
-- ✅ Join/Create Room
-- ✅ Admission:
-  - ✅ None: Everyone can join
+- :heavy_check_mark: Multiples users - Video/Audio Call
+- :heavy_check_mark: Join/Create Room
+- :heavy_check_mark: Admission:
+  - :heavy_check_mark: None: Everyone can join
   - ❌ Request: Need host's acceptance to join
-  - ✅ Password: Provide room password to join
-- ✅ Message Channel:
-  - ✅ Text
-  - ❌ Emoji
+  - :heavy_check_mark: Password: Provide room password to join
+- :heavy_check_mark: Message Channel:
+  - :heavy_check_mark: Text
+  - :heavy_check_mark: Emoji
   - ❌ File Transfer
-- ✅ Screen sharing
-- ✅ Record stream
+- :heavy_check_mark: Screen sharing
+- :heavy_check_mark: Record stream
+- :heavy_check_mark: Whiteboard
 - ❌ Remove user from the room
-- ❌ Whiteboard
 - ❌ Invite to join via email

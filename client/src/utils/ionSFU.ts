@@ -148,7 +148,7 @@ export const shareScreen = async () => {
 
   try {
     const { roomId } = store.getState().room.roomInfo;
-    const { mySocketId } = store.getState().stream;
+    const { myUsername } = store.getState().stream;
 
     const screenShare = await LocalStream.getDisplayMedia({
       video: true,
@@ -163,7 +163,7 @@ export const shareScreen = async () => {
 
     screenClient.publish(screenShare);
     shareScreenSignal();
-    userJoined(roomId, `${mySocketId}  screen`, "screen", screenShare);
+    userJoined(roomId, `${myUsername}  screen`, "screen", screenShare);
   } catch (error) {
     throw error;
   }

@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface InitialState {
+  minimizeLocalStream: boolean;
   localStream: null | MediaStream;
   localCameraEnabled: boolean;
   localMicrophoneEnabled: boolean;
@@ -20,6 +21,7 @@ export interface RemoteStream {
 }
 
 const initialState: InitialState = {
+  minimizeLocalStream: false,
   localStream: null,
   localCameraEnabled: true,
   localMicrophoneEnabled: true,
@@ -35,6 +37,9 @@ const streamSlice = createSlice({
   name: "stream",
   initialState,
   reducers: {
+    setMinimizeLocalstream: (state, action) => {
+      state.minimizeLocalStream = action.payload;
+    },
     setLocalStream: (state, action) => {
       state.localStream = action.payload;
     },
@@ -85,6 +90,7 @@ const streamSlice = createSlice({
 });
 
 export const {
+  setMinimizeLocalstream,
   setLocalStream,
   setLocalCameraEnabled,
   setLocalMicrophoneEnabled,

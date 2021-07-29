@@ -8,6 +8,7 @@ import Whiteboard from "./Whiteboard";
 interface Props {}
 
 const RightContent: React.FC<Props> = () => {
+  const { minimizeLocalStream } = useAppSelector((state) => state.stream);
   const { isShowedChat } = useAppSelector((state) => state.message);
   const { isWhiteBoard } = useAppSelector((state) => state.room.roomInfo);
 
@@ -18,7 +19,7 @@ const RightContent: React.FC<Props> = () => {
       position="relative"
     >
       {isWhiteBoard ? <Whiteboard /> : <UsersStream />}
-      <LocalStream />
+      {!minimizeLocalStream && <LocalStream />}
     </Box>
   );
 };

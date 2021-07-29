@@ -1,13 +1,15 @@
 import { Box, Flex, Grid } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useAppSelector } from "../../../app/hooks";
-import RemoteStream from "../../../components/RemoteStream2";
+import RemoteStream from "../../../components/RemoteStream";
 import calcSize from "../../../utils/render/calcSize";
 
 interface Props {}
 
 const UsersStream: React.FC<Props> = () => {
-  const { mySocketId } = useAppSelector((state) => state.stream);
+  const { mySocketId, minimizeLocalStream } = useAppSelector(
+    (state) => state.stream
+  );
   const { users } = useAppSelector((state) => state.room.roomInfo);
   const { isShareScreen } = useAppSelector((state) => state.room.roomInfo);
 
