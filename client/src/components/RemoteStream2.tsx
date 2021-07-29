@@ -62,7 +62,7 @@ const RemoteStream: React.FC<Props> = ({ user, count }) => {
           width: "100%",
           height: "100%",
           borderRadius: "10px",
-          objectFit: count >= 5 ? "cover" : "contain",
+          objectFit: count >= 5 ? "cover" : "fill",
         }}
       />
       <Box

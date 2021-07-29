@@ -21,12 +21,15 @@ body {
 .overlay__container {
   position: relative;
 }
+
 .overlay__container video {
   transition: 350ms all;
+  border: 6px solid transparent;
 }
 
 .overlay__container:hover {
   cursor: pointer;
+  border-color: teal;
 }
 
 .overlay__content {
@@ -37,6 +40,7 @@ body {
 
 .overlay__container:hover video {
   opacity: 0.7;
+  border-color: teal;
 }
 .overlay__container:hover .overlay__content {
   opacity: 1;

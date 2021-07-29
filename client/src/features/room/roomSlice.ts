@@ -10,6 +10,7 @@ const initialState: InitialState = {
   roomInfoReady: false,
   roomInfo: {
     isShareScreen: false,
+    isWhiteBoard: false,
   } as Room,
 };
 
@@ -55,6 +56,10 @@ const roomSlice = createSlice({
     receiveShareScreen: (state, action) => {
       state.roomInfo.isShareScreen = action.payload;
     },
+    setIsWhiteBoard: (state) => {
+      const { isWhiteBoard } = state.roomInfo;
+      state.roomInfo.isWhiteBoard = !isWhiteBoard;
+    },
   },
 });
 
@@ -66,6 +71,7 @@ export const {
   appendStreamToUser,
   removeUser,
   removeUserScreen,
+  setIsWhiteBoard,
 } = roomSlice.actions;
 
 export default roomSlice.reducer;

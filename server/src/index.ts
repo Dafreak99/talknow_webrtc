@@ -128,6 +128,11 @@ io.on("connection", (socket: Socket) => {
     io.in(myRoomId as string).emit("share-screen");
   });
 
+  socket.on("white-board", () => {
+    logger.debug("white-board");
+    io.in(myRoomId as string).emit("white-board");
+  });
+
   socket.on("disconnect", function () {
     logger.debug("disconnect");
 

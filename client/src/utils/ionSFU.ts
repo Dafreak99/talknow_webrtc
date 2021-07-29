@@ -17,7 +17,7 @@ import {
   setShareScreenEnabled,
 } from "../features/stream/streamSlice";
 import { User } from "../types";
-import { shareScreenSignal, userJoined } from "./webSocket";
+import { shareScreenSignal, userJoined, whiteBoardSignal } from "./webSocket";
 
 let client: any;
 let screenClient: any;
@@ -252,6 +252,11 @@ const invokeSaveAsDialog = (file: Blob, fileName: string) => {
   }
 
   URL.revokeObjectURL(hyperlink.href);
+};
+
+export const toggleWhiteboard = () => {
+  console.log("yey");
+  whiteBoardSignal();
 };
 
 export const leave = () => {

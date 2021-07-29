@@ -22,8 +22,7 @@ const UsersStream: React.FC<Props> = () => {
         height: document.getElementById("video-container")!.clientHeight,
         minRatio: 9 / 16,
         maxRatio: 8 / 5,
-        // count: users.length - 1,
-        count: 4,
+        count: users.length - 1,
       });
       if (width) {
         setWidth(width);

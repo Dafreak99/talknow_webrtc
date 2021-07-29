@@ -13,6 +13,7 @@ export interface Room {
   password?: string;
   users: Array<User>;
   isShareScreen: boolean;
+  isWhiteBoard: boolean;
   screenId: string;
 }
 

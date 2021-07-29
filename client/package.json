@@ -43,6 +43,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "dev": "concurrently \"yarn start\"  \"cd ../server && yarn start\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -65,6 +66,7 @@
   "devDependencies": {
     "@types/emoji-mart": "^3.0.5",
     "@types/faker": "^5.5.7",
-    "@types/react-router-dom": "^5.1.8"
+    "@types/react-router-dom": "^5.1.8",
+    "concurrently": "^6.2.0"
   }
 }

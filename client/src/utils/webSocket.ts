@@ -4,6 +4,7 @@ import { setMessage } from "../features/message/messageSlice";
 import {
   receiveShareScreen,
   removeUserScreen,
+  setIsWhiteBoard,
   setRoomInfo,
 } from "../features/room/roomSlice";
 import {
@@ -55,6 +56,11 @@ export const connectSignallingServer = async () => {
       store.dispatch(removeUserScreen());
     }
     store.dispatch(receiveShareScreen(!isShareScreen));
+  });
+
+  socket.on("white-board", () => {
+    console.log("hey");
+    store.dispatch(setIsWhiteBoard());
   });
 
   socket.on("user-leave", (id) => {
@@ -174,4 +180,8 @@ export const ionScreen = (initialize: boolean) => {
 
 export const shareScreenSignal = () => {
   socket.emit("share-screen");
+};
+
+export const whiteBoardSignal = () => {
+  socket.emit("white-board");
 };
