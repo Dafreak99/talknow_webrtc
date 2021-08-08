@@ -39,7 +39,7 @@ const Home: React.FC<Props> = () => {
       <Box gridColumn="span 6" p="2rem 4rem">
         <Logo />
         <Heading color="#505C66" fontSize="6xl" mt="4rem">
-          Video Conf.
+          Video Conf. {process.env.REACT_APP_NAME}
         </Heading>
         <Text w="500px" mt="2rem">
           Real-time meetings by Google. Using your browser, share your video,

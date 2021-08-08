@@ -14,8 +14,8 @@ import {
   setUsername,
 } from "../features/stream/streamSlice";
 import { ConfigRoom } from "../types";
-import { store } from "./../app/store";
-import { connectIonSFU, handleJoinRequest, handleUserJoined } from "./ionSFU";
+import { store } from "../app/store";
+import { connectIonSFU, handleUserJoined } from "./ionSFU";
 import { handleScreen, handleSignaling } from "./webRTC";
 
 let socket: Socket;
@@ -42,8 +42,6 @@ export const connectSignallingServer = async () => {
   socket.on("signal", gotMessageFromServer);
 
   socket.on("signal-screen", handleScreen);
-
-  socket.on("request-to-join", handleJoinRequest);
 
   socket.on("broadcast-message", (data) => {
     store.dispatch(setMessage(data));
@@ -107,6 +105,17 @@ export const userJoined = (
 
 export const requestToJoin = (roomId: string, username: string) => {
   socket.emit("request-to-join", roomId, username);
+};
+
+export const listenToRequestToJoin = (): Promise<{
+  username: string;
+  socketId: string;
+}> => {
+  return new Promise((resolve, reject) => {
+    socket.on("request-to-join", (socketId, username) => {
+      resolve({ socketId, username });
+    });
+  });
 };
 
 export const getRoomInfo = (roomId: string) => {

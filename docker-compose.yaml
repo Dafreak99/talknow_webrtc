@@ -1,5 +1,8 @@
 version: "3"
 services:
+  react-app:
+    image: react-app
+    ports: 3000:3000
   sfu:
     image: pionwebrtc/ion-sfu:latest-jsonrpc
     ports:

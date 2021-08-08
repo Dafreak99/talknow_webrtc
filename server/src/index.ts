@@ -109,9 +109,10 @@ io.on("connection", (socket: Socket) => {
   });
 
   socket.on("request-to-join", (roomId: string, username: string) => {
+    logger.debug("request-to-join");
     io.to(rooms[myRoomId as string].hostId).emit(
       "request-to-join",
-      roomId,
+      socket.id,
       username
     );
   });

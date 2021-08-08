@@ -1,6 +1,7 @@
 import { Flex } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { publishPeer } from "../../utils/ionSFU";
+import { listenToRequestToJoin } from "../../utils/webSocket";
 import LeftContent from "./components/LeftContent";
 import RightContent from "./components/RightContent";
 import StreamButtons from "./components/StreamButtons";
@@ -9,22 +10,15 @@ interface Props {}
 
 const Stream: React.FC<Props> = () => {
   useEffect(() => {
-    // For testing now, delete this later
-    // connectIonSFU();
-
     // Normal
     publishPeer();
-    // window.addEventListener("beforeunload", alertUser);
-
-    // return () => {
-    //   window.removeEventListener("beforeunload", alertUser);
-    // };
+    listen();
   }, []);
 
-  // const alertUser = (e: BeforeUnloadEvent) => {
-  //   e.preventDefault();
-  //   e.returnValue = "";
-  // };
+  const listen = async () => {
+    const { socketId, username } = await listenToRequestToJoin();
+    console.log(socketId, username);
+  };
 
   return (
     <>
