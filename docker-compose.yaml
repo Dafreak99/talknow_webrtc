@@ -1,8 +1,21 @@
 version: "3"
 services:
   react-app:
-    image: react-app
-    ports: 3000:3000
+    build:
+      context: client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client/src:/app/src
+  signalling-server:
+    build:
+      context: server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./server/src:/app/src
   sfu:
     image: pionwebrtc/ion-sfu:latest-jsonrpc
     ports:
