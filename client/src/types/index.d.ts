@@ -23,6 +23,7 @@ interface User {
   socketId: string;
   stream: MediaStream;
   streamType: string;
+  isSpeaking: boolean;
 }
 
 export interface ConfigRoom {

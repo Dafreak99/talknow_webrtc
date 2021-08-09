@@ -8,6 +8,8 @@ import {
   appendNewUser,
   appendStreamToUser,
   removeUser,
+  speaking,
+  stopSpeaking,
 } from "../features/room/roomSlice";
 import {
   setLocalCameraEnabled,
@@ -17,12 +19,14 @@ import {
   setShareScreenEnabled,
 } from "../features/stream/streamSlice";
 import { User } from "../types";
+import SoundMeter from "./soundmeter";
 import { shareScreenSignal, userJoined, whiteBoardSignal } from "./webSocket";
 
 let client: any;
 let screenClient: any;
 let local: LocalStream;
 let recorder: RecordRTC;
+let datachannel: RTCDataChannel;
 
 const config = {
   iceServers: [
@@ -32,9 +36,20 @@ const config = {
   ],
 };
 
+// Config for recording
+const displaymediastreamconstraints = {
+  video: {
+    displaySurface: "application", // monitor, window, application, browser
+    logicalSurface: true,
+    cursor: "always", // never, always, motion
+  },
+  audio: true,
+};
+
 /**
- * Connect to IonSFU server as well as get local stream
+ * @description: Connect to IonSFU server as well as get local stream
  */
+
 export const connectIonSFU = async () => {
   const { mySocketId } = store.getState().stream;
   const signal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
@@ -59,13 +74,6 @@ export const connectIonSFU = async () => {
     };
   };
 
-  client.ondatachannel = (e: RTCDataChannelEvent) => {
-    console.log(e);
-    e.channel.onmessage = (e: MessageEvent) => {
-      console.log("speaking...");
-    };
-  };
-
   local = await LocalStream.getUserMedia({
     audio: true,
     video: true,
@@ -74,47 +82,84 @@ export const connectIonSFU = async () => {
   } as Constraints);
 
   store.dispatch(setLocalStream(local));
-  const dc = client.createDataChannel("data");
-  dc.onopen = () => dc.send("hello world");
+
+  datachannel = client.createDataChannel("data");
+
+  datachannel.onmessage = ({ data }) => {
+    store.dispatch(speaking(data));
+    setTimeout(() => {
+      store.dispatch(stopSpeaking(data));
+    }, 300);
+  };
+
+  const audioContext = new AudioContext();
+
+  const soundMeter = new SoundMeter(audioContext);
+
+  soundMeter.connectToSource(local, function (e: any) {
+    if (e) {
+      alert(e);
+      return;
+    }
+    setInterval(() => {
+      if (soundMeter.instant > 0.05) {
+        if (datachannel.readyState === "open") {
+          datachannel.send(mySocketId as string);
+        }
+      }
+    }, 200);
+  });
 };
 
+/**
+ * @description: Publish peer connection
+ */
 export const publishPeer = () => {
   const { localStream } = store.getState().stream;
   client.publish(localStream);
 };
 
+/**
+ * @param user: User
+ * @description: Handle user join
+ */
 export const handleUserJoined = (user: User) => {
   store.dispatch(appendNewUser(user));
 };
 
+/**
+ * @description: Turn on/off camera
+ */
 export const toggleCamera = () => {
   const { localCameraEnabled } = store.getState().stream;
 
   if (localCameraEnabled) {
     local.mute("video");
-    console.log("mute");
   } else {
     local.unmute("video");
-    console.log("unmute");
   }
 
   store.dispatch(setLocalCameraEnabled(!localCameraEnabled));
 };
 
+/**
+ * @description: Turn on/off microphone
+ */
 export const toggleMic = () => {
   const { localMicrophoneEnabled } = store.getState().stream;
 
   if (localMicrophoneEnabled) {
     local.mute("audio");
-    console.log("unmute");
   } else {
     local.unmute("audio");
-    console.log("mute");
   }
 
   store.dispatch(setLocalMicrophoneEnabled(!localMicrophoneEnabled));
 };
 
+/**
+ * @description: Turn on/off sharescreen
+ */
 export const toggleShareScreen = () => {
   const { shareScreenEnabled } = store.getState().stream;
 
@@ -127,17 +172,8 @@ export const toggleShareScreen = () => {
   store.dispatch(setShareScreenEnabled(!shareScreenEnabled));
 };
 
-const displaymediastreamconstraints = {
-  video: {
-    displaySurface: "application", // monitor, window, application, browser
-    logicalSurface: true,
-    cursor: "always", // never, always, motion
-  },
-  audio: true,
-};
-
 /**
- * Share screen
+ * @description: Share screen
  */
 export const shareScreen = async () => {
   const signal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
@@ -169,6 +205,9 @@ export const shareScreen = async () => {
   }
 };
 
+/**
+ * @description: Turn on/off record
+ */
 export const toggleRecord = async () => {
   const { recordScreenEnabled } = store.getState().stream;
 
@@ -204,26 +243,11 @@ export const toggleRecord = async () => {
   store.dispatch(setRecordScreenEnabled(!recordScreenEnabled));
 };
 
-const generateFileFullName = (file: Blob, fileName: string) => {
-  let fileExtension = (file.type || "video/webm").split("/")[1];
-  if (fileExtension.indexOf(";") !== -1) {
-    // extended mimetype, e.g. 'video/webm;codecs=vp8,opus'
-    fileExtension = fileExtension.split(";")[0];
-  }
-  if (fileName && fileName.indexOf(".") !== -1) {
-    let splitted = fileName.split(".");
-    fileName = splitted[0];
-    fileExtension = splitted[1];
-  }
-
-  const fileFullName =
-    (fileName || Math.round(Math.random() * 9999999999) + 888888888) +
-    "." +
-    fileExtension;
-
-  return fileFullName;
-};
-
+/**
+ * @param file
+ * @param fileName
+ * @description: Open the dialog to save video into your machine
+ */
 const invokeSaveAsDialog = (file: Blob, fileName: string) => {
   if (typeof navigator.msSaveBlob !== "undefined") {
     return navigator.msSaveBlob(file, "ok");
@@ -253,12 +277,41 @@ const invokeSaveAsDialog = (file: Blob, fileName: string) => {
 
   URL.revokeObjectURL(hyperlink.href);
 };
+/**
+ * @param file
+ * @param fileName
+ * @description: Generate the file full name from file and fileName
+ */
+const generateFileFullName = (file: Blob, fileName: string) => {
+  let fileExtension = (file.type || "video/webm").split("/")[1];
+  if (fileExtension.indexOf(";") !== -1) {
+    // extended mimetype, e.g. 'video/webm;codecs=vp8,opus'
+    fileExtension = fileExtension.split(";")[0];
+  }
+  if (fileName && fileName.indexOf(".") !== -1) {
+    let splitted = fileName.split(".");
+    fileName = splitted[0];
+    fileExtension = splitted[1];
+  }
 
+  const fileFullName =
+    (fileName || Math.round(Math.random() * 9999999999) + 888888888) +
+    "." +
+    fileExtension;
+
+  return fileFullName;
+};
+
+/**
+ * @description: Turn on/off whiteboard
+ */
 export const toggleWhiteboard = () => {
-  console.log("yey");
   whiteBoardSignal();
 };
 
+/**
+ * @description: Peer leave room
+ */
 export const leave = () => {
   client.leave();
 };

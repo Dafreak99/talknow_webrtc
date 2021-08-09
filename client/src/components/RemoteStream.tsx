@@ -20,9 +20,15 @@ const RemoteStream: React.FC<Props> = ({ user, count }) => {
 
   useEffect(() => {
     if (user) {
-      ref.current!.srcObject = user.stream;
+      ref.current!.srcObject = user.stream as MediaStream;
     }
-  }, [user]);
+  }, [user.stream]);
+
+  // TODO: There is an issue
+  // If I set the useEffect dependency is user. Every single time when someone speaking, the useEffect will be re-render
+  // and the video set to the old stream even though the only thing that changed is isSpeaking props
+
+  // But if I set the useEffect dependency is user.stream. When I turn on/off the receivers won't be reflected
 
   const onOpenFullScreen = () => {
     if (ref.current) {
@@ -64,6 +70,7 @@ const RemoteStream: React.FC<Props> = ({ user, count }) => {
           height: "100%",
           borderRadius: "10px",
           objectFit: count >= 5 ? "cover" : "fill",
+          borderColor: user.isSpeaking ? "teal" : "transparent",
         }}
       />
       <Box

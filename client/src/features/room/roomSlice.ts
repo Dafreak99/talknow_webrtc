@@ -18,14 +18,18 @@ const roomSlice = createSlice({
   name: "room",
   initialState,
   reducers: {
-    setRoomInfo: (state, action) => {
+    setRoomInfo: (state: InitialState, action) => {
       state.roomInfo = action.payload;
       state.roomInfoReady = true;
     },
-    appendNewUser: (state, action) => {
-      state.roomInfo.users.push(action.payload);
+    appendNewUser: (state: InitialState, action) => {
+      state.roomInfo.users.push({
+        ...action.payload,
+        isSpeaking: false,
+        stream: null,
+      });
     },
-    appendStreamToUser: (state, action) => {
+    appendStreamToUser: (state: InitialState, action) => {
       let index = state.roomInfo.users.findIndex(
         (user) => user.streamId === action.payload.id
       );
@@ -37,28 +41,48 @@ const roomSlice = createSlice({
         stream: action.payload,
       };
 
-      state.roomInfo.users[index] = user;
+      // state.roomInfo.users[index] = user;
+      state.roomInfo.users[index].stream = new MediaStream(action.payload);
     },
-    removeUser: (state, action) => {
+    removeUser: (state: InitialState, action) => {
       state.roomInfo.users = state.roomInfo.users.filter(
         (user) => user.streamId !== action.payload.id
       );
     },
-    removeUserScreen: (state) => {
+    removeUserScreen: (state: InitialState) => {
       state.roomInfo.users = state.roomInfo.users.filter(
         (user) => user.streamType !== "screen"
       );
     },
-    clearRoomInfo: (state, action) => {
+    clearRoomInfo: (state: InitialState, action) => {
       state.roomInfo = {} as Room;
       state.roomInfoReady = false;
     },
-    receiveShareScreen: (state, action) => {
+    receiveShareScreen: (state: InitialState, action) => {
       state.roomInfo.isShareScreen = action.payload;
     },
-    setIsWhiteBoard: (state) => {
+    setIsWhiteBoard: (state: InitialState) => {
       const { isWhiteBoard } = state.roomInfo;
       state.roomInfo.isWhiteBoard = !isWhiteBoard;
+    },
+
+    speaking: (state: InitialState, action) => {
+      const index = state.roomInfo.users.findIndex(
+        (user) => user.socketId === action.payload
+      );
+
+      if (index === -1) return;
+
+      state.roomInfo.users[index].isSpeaking = true;
+    },
+    stopSpeaking: (state: InitialState, action) => {
+      const index = state.roomInfo.users.findIndex(
+        (user) => user.socketId === action.payload
+      );
+
+      if (index === -1) return;
+
+      state.roomInfo.users[index].isSpeaking = false;
     },
   },
 });
@@ -72,6 +96,8 @@ export const {
   removeUser,
   removeUserScreen,
   setIsWhiteBoard,
+  speaking,
+  stopSpeaking,
 } = roomSlice.actions;
 
 export default roomSlice.reducer;
