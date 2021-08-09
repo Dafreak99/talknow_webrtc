@@ -88,6 +88,7 @@ const StreamButtons: React.FC<Props> = () => {
         fontSize="1.2rem"
         transform="translateY(-50%)"
         cursor="pointer"
+        display={{ base: "none", "2xl": "block" }}
         onClick={() => {
           toast({
             description: "Copy to clipboard",

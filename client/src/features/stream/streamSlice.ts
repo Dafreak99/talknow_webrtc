@@ -37,29 +37,28 @@ const streamSlice = createSlice({
   name: "stream",
   initialState,
   reducers: {
-    setMinimizeLocalstream: (state, action) => {
+    setMinimizeLocalstream: (state: InitialState, action) => {
       state.minimizeLocalStream = action.payload;
     },
-    setLocalStream: (state, action) => {
+    setLocalStream: (state: InitialState, action) => {
       state.localStream = action.payload;
     },
-    setLocalCameraEnabled: (state, action) => {
+    setLocalCameraEnabled: (state: InitialState, action) => {
       state.localCameraEnabled = action.payload;
     },
-    setLocalMicrophoneEnabled: (state, action) => {
+    setLocalMicrophoneEnabled: (state: InitialState, action) => {
       state.localMicrophoneEnabled = action.payload;
     },
-    setShareScreenEnabled: (state, action) => {
+    setShareScreenEnabled: (state: InitialState, action) => {
       state.shareScreenEnabled = action.payload;
     },
-    setRecordScreenEnabled: (state, action) => {
+    setRecordScreenEnabled: (state: InitialState, action) => {
       state.recordScreenEnabled = action.payload;
     },
-    setRemoteStreams: (state, action) => {
+    setRemoteStreams: (state: InitialState, action) => {
       let index = state.remoteStreams.findIndex(
         (stream) => stream.trackId === action.payload.trackId
       );
-
       if (index !== -1) {
         console.log("Existed");
         state.remoteStreams[index] = action.payload;
@@ -68,22 +67,22 @@ const streamSlice = createSlice({
         state.remoteStreams.push(action.payload);
       }
     },
-    removeRemoteStream: (state, action) => {
+    removeRemoteStream: (state: InitialState, action) => {
       state.remoteStreams = state.remoteStreams.filter(
         (stream) => stream.socketId !== action.payload
       );
     },
-    setConnection: (state, action) => {
+    setConnection: (state: InitialState, action) => {
       state.connections.push(action.payload);
     },
-    hostLeave: (state, _) => {
+    hostLeave: (state: InitialState, _) => {
       state.connections = [];
       state.remoteStreams = [];
     },
-    setSocketId: (state, action) => {
+    setSocketId: (state: InitialState, action) => {
       state.mySocketId = action.payload;
     },
-    setUsername: (state, action) => {
+    setUsername: (state: InitialState, action) => {
       state.myUsername = action.payload;
     },
   },

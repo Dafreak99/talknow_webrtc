@@ -40,7 +40,7 @@ body {
 
 .overlay__container:hover video {
   opacity: 0.7;
-  border-color: teal;
+  border-color: teal !important;
 }
 .overlay__container:hover .overlay__content {
   opacity: 1;
