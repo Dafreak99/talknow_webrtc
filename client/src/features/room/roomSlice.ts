@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { Room } from "../../types";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Request, Room } from "../../types";
 
 interface InitialState {
   roomInfoReady: boolean;
@@ -11,6 +11,7 @@ const initialState: InitialState = {
   roomInfo: {
     isShareScreen: false,
     isWhiteBoard: false,
+    joinRequests: [] as Request[],
   } as Room,
 };
 
@@ -19,7 +20,7 @@ const roomSlice = createSlice({
   initialState,
   reducers: {
     setRoomInfo: (state: InitialState, action) => {
-      state.roomInfo = action.payload;
+      state.roomInfo = { ...state.roomInfo, ...action.payload };
       state.roomInfoReady = true;
     },
     appendNewUser: (state: InitialState, action) => {
@@ -36,12 +37,6 @@ const roomSlice = createSlice({
 
       if (index === -1) return;
 
-      const user = {
-        ...state.roomInfo.users[index],
-        stream: action.payload,
-      };
-
-      // state.roomInfo.users[index] = user;
       state.roomInfo.users[index].stream = new MediaStream(action.payload);
     },
     removeUser: (state: InitialState, action) => {
@@ -84,6 +79,19 @@ const roomSlice = createSlice({
 
       state.roomInfo.users[index].isSpeaking = false;
     },
+    enqueueJoinRequests: (
+      state: InitialState,
+      { payload }: PayloadAction<Request>
+    ) => {
+      state.roomInfo.joinRequests.push(payload);
+    },
+    dequeueJoinRequests: (state: InitialState) => {
+      if (state.roomInfo.joinRequests.length === 1) {
+        state.roomInfo.joinRequests = [];
+      } else {
+        state.roomInfo.joinRequests.shift();
+      }
+    },
   },
 });
 
@@ -98,6 +106,8 @@ export const {
   setIsWhiteBoard,
   speaking,
   stopSpeaking,
+  enqueueJoinRequests,
+  dequeueJoinRequests,
 } = roomSlice.actions;
 
 export default roomSlice.reducer;

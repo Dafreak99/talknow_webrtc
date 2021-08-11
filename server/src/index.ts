@@ -61,19 +61,7 @@ io.on("connection", (socket: Socket) => {
 
     rooms[roomId].users.push(user);
 
-    // socket.to(roomId).emit("user-joined", user);
     io.in(roomId).emit("user-joined", user);
-
-    // const response = {
-    //   ...rooms[roomId],
-    // };
-
-    // delete response.password;
-
-    // socket.emit("get-room-info", {
-    //   status: "succeeded",
-    //   data: response,
-    // });
 
     logger.info("Rooms", rooms);
   });
@@ -116,6 +104,13 @@ io.on("connection", (socket: Socket) => {
       username
     );
   });
+
+  socket.on(
+    "answer-request-to-join",
+    (data: { socketId: string; isAccepted: boolean }) => {
+      io.to(data.socketId).emit("answer-requeqst-to-join", data.isAccepted);
+    }
+  );
 
   socket.on("broadcast-message", (data) => {
     io.sockets.emit("broadcast-message", {

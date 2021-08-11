@@ -1,4 +1,3 @@
-import { createStandaloneToast } from "@chakra-ui/react";
 import { Client, Constraints, LocalStream, RemoteStream } from "ion-sdk-js";
 import { Configuration } from "ion-sdk-js/lib/client";
 import { IonSFUJSONRPCSignal } from "ion-sdk-js/lib/signal/json-rpc-impl";
@@ -315,21 +314,3 @@ export const toggleWhiteboard = () => {
 export const leave = () => {
   client.leave();
 };
-
-// Whole screen capture
-// https://developer.mozilla.org/en-US/docs/Web/API/Screen_Capture_API/Using_Screen_Capture
-
-export const handleJoinRequest = (_: string, username: string) => {
-  const toast = createStandaloneToast();
-
-  toast({
-    title: "An error occurred.",
-    description: "Unable to create user account.",
-    status: "success",
-    duration: 9000,
-    isClosable: true,
-  });
-};
-
-// TODO: Debug handle join request. Figure out how to display Join Request as a form with Accept and Reject buttons
-// https://clerk.dev/

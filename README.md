@@ -9,7 +9,7 @@ Written in Typescript
 - Frontend: WebRTC, React, Redux-toolkit, React-router-dom, React-hook-form
 - Backend:
   - NodeJS: Signalling server
-  - Ion-SFU: Media Server
+  - [Ion-SFU](https://github.com/pion/ion-sfu): Media Server
 
 ## Features
 
@@ -17,7 +17,7 @@ Written in Typescript
 - :heavy_check_mark: Join/Create Room
 - :heavy_check_mark: Admission:
   - :heavy_check_mark: None: Everyone can join
-  - ❌ Request: Need host's acceptance to join
+  - :heavy_check_mark: Request: Need host's acceptance to join
   - :heavy_check_mark: Password: Provide room password to join
 - :heavy_check_mark: Message Channel:
   - :heavy_check_mark: Text

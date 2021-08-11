@@ -11,10 +11,11 @@ export interface Room {
   allowAudio: string;
   admission: string;
   password?: string;
-  users: Array<User>;
   isShareScreen: boolean;
   isWhiteBoard: boolean;
   screenId: string;
+  users: Array<User>;
+  joinRequests: Array<Request>;
 }
 
 interface User {
@@ -24,6 +25,11 @@ interface User {
   stream: MediaStream;
   streamType: string;
   isSpeaking: boolean;
+}
+
+export interface Request {
+  socketId: string;
+  username: string;
 }
 
 export interface ConfigRoom {
