@@ -1,7 +1,9 @@
 import { LocalStream } from "ion-sdk-js";
 import io, { Socket } from "socket.io-client";
+import { store } from "../app/store";
 import { setMessage } from "../features/message/messageSlice";
 import {
+  enqueueJoinRequests,
   receiveShareScreen,
   removeUserScreen,
   setIsWhiteBoard,
@@ -14,7 +16,6 @@ import {
   setUsername,
 } from "../features/stream/streamSlice";
 import { ConfigRoom } from "../types";
-import { store } from "../app/store";
 import { connectIonSFU, handleUserJoined } from "./ionSFU";
 import { handleScreen, handleSignaling } from "./webRTC";
 
@@ -57,8 +58,11 @@ export const connectSignallingServer = async () => {
   });
 
   socket.on("white-board", () => {
-    console.log("hey");
     store.dispatch(setIsWhiteBoard());
+  });
+
+  socket.on("request-to-join", (socketId, username) => {
+    store.dispatch(enqueueJoinRequests({ socketId, username }));
   });
 
   socket.on("user-leave", (id) => {
@@ -103,19 +107,24 @@ export const userJoined = (
   });
 };
 
-export const requestToJoin = (roomId: string, username: string) => {
+export const requestToJoin = (
+  roomId: string,
+  username: string
+): Promise<boolean> => {
   socket.emit("request-to-join", roomId, username);
-};
 
-export const listenToRequestToJoin = (): Promise<{
-  username: string;
-  socketId: string;
-}> => {
   return new Promise((resolve, reject) => {
-    socket.on("request-to-join", (socketId, username) => {
-      resolve({ socketId, username });
+    socket.on("answer-requeqst-to-join", (isAccepted) => {
+      resolve(isAccepted);
     });
   });
+};
+
+export const answerRequestToJoin = (data: {
+  socketId: string;
+  isAccepted: boolean;
+}) => {
+  socket.emit("answer-request-to-join", data);
 };
 
 export const getRoomInfo = (roomId: string) => {

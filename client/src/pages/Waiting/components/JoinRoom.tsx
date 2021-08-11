@@ -8,9 +8,9 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { AiOutlineCheck } from "react-icons/ai";
+import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
 import { useHistory, useParams } from "react-router-dom";
 import {
   confirmRoomPassword,
@@ -34,12 +34,27 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
     handleSubmit,
     formState: { errors },
   } = useForm<Inputs>();
+
+  const [requested, setRequested] = useState(false);
+  const [isDeclined, setIsDeclined] = useState(false);
+
   const params = useParams<{ roomId: string }>();
   const toast = useToast();
   const history = useHistory();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    if (admission === "password") {
+    if (admission === "none") {
+      userJoined(params.roomId, data.username, "guest");
+      history.push("/stream");
+    } else if (admission === "request") {
+      setRequested(true);
+      const isAccepted = await requestToJoin(params.roomId, data.username);
+      if (isAccepted) {
+        history.push("/stream");
+      } else {
+        setIsDeclined(true);
+      }
+    } else {
       const res = await confirmRoomPassword(roomId, data.password);
       if (res.status === "succeeded") {
         userJoined(params.roomId, data.username, "guest");
@@ -54,11 +69,6 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
           position: "top",
         });
       }
-    } else if (admission === "none") {
-      userJoined(params.roomId, data.username, "guest");
-      history.push("/stream");
-    } else if (admission === "request") {
-      requestToJoin(params.roomId, data.username);
     }
   };
 
@@ -117,17 +127,34 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
             )}
           </FormControl>
         </Flex>
-        <Button
-          type="submit"
-          leftIcon={<AiOutlineCheck />}
-          w="100%"
-          bg="primary"
-          color="#fff"
-          size="lg"
-          mt="1rem"
-        >
-          Request To Join room
-        </Button>
+        {isDeclined ? (
+          <Button
+            type="submit"
+            leftIcon={<AiOutlineClose />}
+            w="100%"
+            colorScheme="red"
+            size="lg"
+            mt="1rem"
+            disabled={requested}
+          >
+            Host declined your join request
+          </Button>
+        ) : (
+          <Button
+            type="submit"
+            leftIcon={<AiOutlineCheck />}
+            isLoading={requested}
+            loadingText="Wait For Host's Admission"
+            w="100%"
+            bg="primary"
+            color="#fff"
+            size="lg"
+            mt="1rem"
+            disabled={requested}
+          >
+            Request To Join Room
+          </Button>
+        )}
       </Box>
     );
   } else {
