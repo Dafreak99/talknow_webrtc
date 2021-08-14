@@ -47,6 +47,7 @@ io.on("connection", (socket: Socket) => {
       };
 
       rooms[roomId] = room;
+      io.to(socket.id).emit("host-room-info", rooms[roomId]);
     }
 
     // Treat host as normal user
@@ -129,6 +130,12 @@ io.on("connection", (socket: Socket) => {
     io.in(myRoomId as string).emit("white-board");
   });
 
+  socket.on("kick-user", (socketId: string) => {
+    logger.debug("kick-user " + socketId);
+
+    io.to(socketId).emit("kick-user");
+  });
+
   socket.on("disconnect", function () {
     logger.debug("disconnect");
 
@@ -139,15 +146,16 @@ io.on("connection", (socket: Socket) => {
       socket.to(myRoomId as string).emit("host-leave");
       delete rooms[myRoomId as string];
       myRoomId = null;
-
-      logger.info("Rooms", rooms);
     } else {
       rooms[myRoomId as string].users = rooms[myRoomId as string].users.filter(
         (user) => user.socketId !== socket.id
       );
 
-      socket.to(myRoomId as string).emit("user-leave", socket.id);
+      // socket.to(myRoomId as string).emit("user-leave", socket.id);
+
+      io.to(socket.id).emit("close-media-stream");
     }
+    logger.info("Rooms", rooms);
   });
 });
 
