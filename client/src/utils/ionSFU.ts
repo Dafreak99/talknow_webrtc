@@ -7,6 +7,7 @@ import {
   appendNewUser,
   appendStreamToUser,
   removeUser,
+  removeUserBySocketId,
   speaking,
   stopSpeaking,
 } from "../features/room/roomSlice";
@@ -68,7 +69,12 @@ export const connectIonSFU = async () => {
       }
     };
 
+    track.onended = () => {
+      store.dispatch(removeUser(stream));
+    };
+
     stream.onremovetrack = (e) => {
+      // get call when user close tab
       store.dispatch(removeUser(stream));
     };
   };
@@ -211,8 +217,6 @@ export const toggleRecord = async () => {
   const { recordScreenEnabled } = store.getState().stream;
 
   if (!recordScreenEnabled) {
-    console.log("start recording");
-
     // @ts-ignore
     let screen = await navigator.mediaDevices.getDisplayMedia(
       displaymediastreamconstraints
@@ -312,5 +316,16 @@ export const toggleWhiteboard = () => {
  * @description: Peer leave room
  */
 export const leave = () => {
-  client.leave();
+  const { mySocketId } = store.getState().stream;
+
+  client.close();
+
+  store.dispatch(removeUserBySocketId(mySocketId));
+};
+
+/**
+ * @description: Stop browser from using cam/mic
+ */
+export const closeMediaStream = () => {
+  local.getTracks().forEach((track) => track.stop());
 };

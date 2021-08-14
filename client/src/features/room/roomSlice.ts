@@ -30,6 +30,9 @@ const roomSlice = createSlice({
         stream: null,
       });
     },
+    // removeUser: (state: InitialState, action) => {
+    //     state.roomInfo.users = state.roomInfo.users.filter(user=> user.socketId !== action.payload)
+    // },
     appendStreamToUser: (state: InitialState, action) => {
       let index = state.roomInfo.users.findIndex(
         (user) => user.streamId === action.payload.id
@@ -42,6 +45,11 @@ const roomSlice = createSlice({
     removeUser: (state: InitialState, action) => {
       state.roomInfo.users = state.roomInfo.users.filter(
         (user) => user.streamId !== action.payload.id
+      );
+    },
+    removeUserBySocketId: (state: InitialState, action) => {
+      state.roomInfo.users = state.roomInfo.users.filter(
+        (user) => user.socketId !== action.payload
       );
     },
     removeUserScreen: (state: InitialState) => {
@@ -102,6 +110,7 @@ export const {
   appendNewUser,
   appendStreamToUser,
   removeUser,
+  removeUserBySocketId,
   removeUserScreen,
   setIsWhiteBoard,
   speaking,

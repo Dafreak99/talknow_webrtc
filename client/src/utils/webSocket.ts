@@ -11,7 +11,6 @@ import {
 } from "../features/room/roomSlice";
 import {
   hostLeave,
-  removeRemoteStream,
   setSocketId,
   setUsername,
 } from "../features/stream/streamSlice";
@@ -31,6 +30,8 @@ export const connectSignallingServer = async () => {
   socket.on("connect", function () {
     socketId = socket.id;
     store.dispatch(setSocketId(socketId));
+
+    //Connect Media Server
     connectIonSFU();
   });
 
@@ -64,11 +65,6 @@ export const connectSignallingServer = async () => {
   socket.on("request-to-join", (socketId, username) => {
     store.dispatch(enqueueJoinRequests({ socketId, username }));
   });
-
-  socket.on("user-leave", (id) => {
-    console.log(id);
-    store.dispatch(removeRemoteStream(id));
-  });
 };
 
 export const createRoom = (data: ConfigRoom) => {
@@ -78,12 +74,15 @@ export const createRoom = (data: ConfigRoom) => {
     data: { ...data, streamType: "host", streamId: localStream!.id },
     type: "host",
   });
-
   store.dispatch(setUsername(data.hostName));
 
   store.dispatch(
     setRoomInfo({ ...data, streamId: localStream!.id, users: [] })
   );
+
+  socket.on("host-room-info", (data) => {
+    store.dispatch(setRoomInfo({ ...data, streamId: localStream!.id }));
+  });
 };
 
 export const userJoined = (
@@ -194,12 +193,29 @@ export const ionScreen = (initialize: boolean) => {
   socket.emit("ion-screen", initialize);
 };
 
-// NEW
-
 export const shareScreenSignal = () => {
   socket.emit("share-screen");
 };
 
 export const whiteBoardSignal = () => {
   socket.emit("white-board");
+};
+
+export const kickUser = (socketId: string) => {
+  socket.emit("kick-user", socketId);
+};
+
+export const listenToKickUser = (): Promise<boolean> => {
+  return new Promise((resolve, _) => {
+    socket.on("kick-user", () => {
+      resolve(true);
+    });
+  });
+};
+
+/**
+ * @description: Trigger disconnection event in the server
+ */
+export const forceToLeave = () => {
+  socket.disconnect();
 };

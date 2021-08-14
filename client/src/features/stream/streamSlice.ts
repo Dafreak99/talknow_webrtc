@@ -60,18 +60,12 @@ const streamSlice = createSlice({
         (stream) => stream.trackId === action.payload.trackId
       );
       if (index !== -1) {
-        console.log("Existed");
         state.remoteStreams[index] = action.payload;
       } else {
-        console.log("New");
         state.remoteStreams.push(action.payload);
       }
     },
-    removeRemoteStream: (state: InitialState, action) => {
-      state.remoteStreams = state.remoteStreams.filter(
-        (stream) => stream.socketId !== action.payload
-      );
-    },
+
     setConnection: (state: InitialState, action) => {
       state.connections.push(action.payload);
     },
@@ -96,7 +90,6 @@ export const {
   setShareScreenEnabled,
   setRecordScreenEnabled,
   setRemoteStreams,
-  removeRemoteStream,
   setConnection,
   hostLeave,
   setSocketId,
