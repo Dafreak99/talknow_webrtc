@@ -27,5 +27,5 @@ Written in Typescript
 - :heavy_check_mark: Screen sharing
 - :heavy_check_mark: Record stream
 - :heavy_check_mark: Whiteboard
-- ❌ Remove user from the room
+- :heavy_check_mark Remove user from the room
 - ❌ Invite to join via email

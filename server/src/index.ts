@@ -152,8 +152,6 @@ io.on("connection", (socket: Socket) => {
       );
 
       // socket.to(myRoomId as string).emit("user-leave", socket.id);
-
-      io.to(socket.id).emit("close-media-stream");
     }
     logger.info("Rooms", rooms);
   });
