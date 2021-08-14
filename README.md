@@ -1,6 +1,6 @@
 # Video Conferencing Application
 
-This is the final project of my university's life, I aim to build something that applies to daily life. In the context of the Covid-19 pandemic, direct interactions are being limited. I decided to make an app that allows real-time communication between users based on WebRTC peer-to-peer technology .
+This is my capstone project, I aim to build something that practical enough in order to strengthen my skills. In the context of the Covid-19 pandemic, direct interactions are being limited. For that reason, I decided to build an application that allows real-time communication between users based on WebRTC peer-to-peer technology.
 
 ## Techs
 
@@ -10,6 +10,7 @@ Written in Typescript
 - Backend:
   - NodeJS: Signalling server
   - [Ion-SFU](https://github.com/pion/ion-sfu): Media Server
+- Other services: SendGrid
 
 ## Features
 

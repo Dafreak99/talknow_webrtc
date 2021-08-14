@@ -2,9 +2,8 @@ import { Flex, Image, Text } from "@chakra-ui/react";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import flash from "../images/flash.svg";
-interface Props {}
 
-const Logo: React.FC<Props> = () => {
+const Logo = () => {
   const history = useHistory();
 
   return (
