@@ -1,8 +1,21 @@
-import { Flex, Icon, Stack, Text, Tooltip, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Icon,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Stack,
+  Text,
+  Tooltip,
+  useToast,
+} from "@chakra-ui/react";
 import React from "react";
 import { AiFillStop } from "react-icons/ai";
-import { BsChatFill } from "react-icons/bs";
+import { BsChatFill, BsFillInfoCircleFill } from "react-icons/bs";
 import { FaCircle, FaPhoneAlt, FaStopCircle } from "react-icons/fa";
+import { HiDotsVertical } from "react-icons/hi";
 import { IoMdMic, IoMdMicOff } from "react-icons/io";
 import { IoVideocam, IoVideocamOff } from "react-icons/io5";
 import { MdScreenShare, MdStopScreenShare } from "react-icons/md";
@@ -17,6 +30,7 @@ import {
   toggleShareScreen,
   toggleWhiteboard,
 } from "../../../utils/ionSFU";
+import InviteDialog from "./InviteDialog";
 
 interface Props {}
 
@@ -102,7 +116,7 @@ const StreamButtons: React.FC<Props> = () => {
       </Text>
       <Stack direction="row" spacing={8}>
         {buttons.map(({ tooltip, icon, onClick }, i) => (
-          <Tooltip label={tooltip} fontSize="md" aria-label="A tooltip">
+          <Tooltip label={tooltip} fontSize="md" aria-label="A tooltip" key={i}>
             <Flex
               justify="center"
               alignItems="center"
@@ -118,6 +132,21 @@ const StreamButtons: React.FC<Props> = () => {
           </Tooltip>
         ))}
       </Stack>
+      <Box position="absolute" right="2rem">
+        <Menu>
+          <MenuButton>
+            <Box as={HiDotsVertical} boxSize="1.5rem" color="#fff" />
+          </MenuButton>
+          <MenuList>
+            <MenuItem
+              icon={<BsFillInfoCircleFill size="1rem" color="primary" />}
+            >
+              Room Info
+            </MenuItem>
+            <InviteDialog />
+          </MenuList>
+        </Menu>
+      </Box>
     </Flex>
   );
 };

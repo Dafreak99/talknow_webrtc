@@ -28,4 +28,4 @@ Written in Typescript
 - :heavy_check_mark: Record stream
 - :heavy_check_mark: Whiteboard
 - :heavy_check_mark: Remove user from the room
-- ❌ Invite to join via email
+- :heavy_check_mark: Invite to join via email

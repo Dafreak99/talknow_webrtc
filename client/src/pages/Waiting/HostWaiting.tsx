@@ -1,4 +1,4 @@
-import { Box, Grid, Heading } from "@chakra-ui/react";
+import { Box, Flex, Heading } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import Logo from "../../components/Logo";
 import ReviewStream from "../../components/ReviewStream";
@@ -20,10 +20,10 @@ const HostWaiting: React.FC<Props> = () => {
 
       <Box className="container">
         <Heading mb="3rem">Config Meeting Room</Heading>
-        <Grid gridTemplateColumns="repeat(12, 1fr)" gridGap="8rem">
-          <ReviewStream style={{ gridColumn: "span 6" }} />
+        <Flex style={{ gap: "40px" }}>
+          <ReviewStream />
           <Config />
-        </Grid>
+        </Flex>
       </Box>
     </Box>
   );

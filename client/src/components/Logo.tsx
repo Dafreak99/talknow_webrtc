@@ -1,7 +1,8 @@
 import { Flex, Image, Text } from "@chakra-ui/react";
 import React from "react";
 import { useHistory } from "react-router-dom";
-import flash from "../images/flash.svg";
+// import flash from "../images/flash.svg";
+import flash from "../images/flash-2.svg";
 
 const Logo = () => {
   const history = useHistory();

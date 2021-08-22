@@ -58,6 +58,7 @@ const MessageTab: React.FC<Props> = () => {
       <Box h="60vh" overflow="scroll" className="hide-scroll-bar">
         {messages.map(({ from, socketId, content, timestamp }) => (
           <Flex
+            key={timestamp}
             alignItems={socketId === mySocketId ? "flex-end" : "flex-start"}
             mb="15px"
           >

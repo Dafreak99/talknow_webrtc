@@ -1,4 +1,4 @@
-import { Box, Grid, Heading } from "@chakra-ui/react";
+import { Box, Flex, Heading } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import Logo from "../../components/Logo";
@@ -33,10 +33,10 @@ const GuestWaiting: React.FC<Props> = () => {
 
       <Box className="container">
         <Heading mb="3rem">Pre-meeting Decision</Heading>
-        <Grid gridTemplateColumns="repeat(12, 1fr)" gridGap="8rem">
-          <ReviewStream style={{ gridColumn: "span 6" }} />
+        <Flex style={{ gap: "40px" }}>
+          <ReviewStream />
           <GuestConfig />
-        </Grid>
+        </Flex>
       </Box>
     </Box>
   );

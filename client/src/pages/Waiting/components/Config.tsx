@@ -39,7 +39,11 @@ const Config: React.FC<Props> = () => {
   };
 
   return (
-    <Box gridColumn="span 6" as="form" onSubmit={handleSubmit(onSubmit)}>
+    <Box
+      width={{ base: "60%", md: "50%" }}
+      as="form"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <Grid
         gridTemplateColumns="repeat(2, 1fr)"
         gridColumnGap={{ base: "0", md: "1rem", xl: "3rem" }}

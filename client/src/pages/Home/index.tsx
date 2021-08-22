@@ -4,6 +4,7 @@ import {
   Flex,
   Grid,
   Heading,
+  Image,
   Input,
   InputGroup,
   InputLeftElement,
@@ -16,6 +17,7 @@ import { IoEnterOutline } from "react-icons/io5";
 import { SiGoogleclassroom } from "react-icons/si";
 import { useHistory } from "react-router-dom";
 import Logo from "../../components/Logo";
+import Video from "../../images/video.svg";
 
 interface Props {}
 interface Inputs {
@@ -35,61 +37,77 @@ const Home: React.FC<Props> = () => {
   };
 
   return (
-    <Grid h="100vh" w="100vw" gridTemplateColumns="repeat(12,1fr)">
-      <Box gridColumn="span 6" p="2rem 4rem">
-        <Logo />
-        <Heading color="#505C66" fontSize="6xl" mt="4rem">
-          Video Conf.
-        </Heading>
-        <Text w="500px" mt="2rem">
-          Real-time meetings by Google. Using your browser, share your video,
-          desktop, and presentations with teammates and customers. Working
-          remotely with ease,
-        </Text>
-        <Flex
-          alignItems="center"
-          mt="4rem"
-          as="form"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <InputGroup w="20rem" mr="1rem">
-            <InputLeftElement
-              pointerEvents="none"
-              children={<SiGoogleclassroom color="gray" />}
-            />
-            <Input
-              variant="filled"
-              placeholder="Enter room ID"
-              {...register("roomId", { required: true })}
-            />
-          </InputGroup>
-
-          <Button leftIcon={<IoEnterOutline />} type="submit">
-            Join room
-          </Button>
-        </Flex>
-        {errors.roomId && (
-          <Text mt="5px" color="red.500">
-            Please enter room ID
+    <Box h="100vh" w="100vw">
+      <Grid gridTemplateColumns="repeat(12,1fr)" className="container">
+        <Box gridColumn="span 12" p="3rem 0">
+          <Logo />
+        </Box>
+        <Box gridColumn={{ base: "span 12", lg: "span 6" }}>
+          <Heading
+            color="gray.900"
+            fontSize={{ base: "2xl", md: "4xl", xl: "5xl" }}
+          >
+            Real time communation powered by webRTC peer to peer connection.
+          </Heading>
+          <Text mt="2rem" fontSize={{ base: "14px", lg: "1rem" }}>
+            Real-time meetings by Video Conf. Using your browser, share your
+            video, desktop, and presentations with teammates and customers.
+            Working remotely with ease.
           </Text>
-        )}
-        <Text fontSize="3xl" my="2rem" fontWeight="semibold">
-          OR
-        </Text>
-        {/* TODO: Turn off light signal(enable getting media) in cam when comeback to home page */}
-        <Button
-          bg="primary"
-          color="#fff"
-          leftIcon={<AiOutlinePlus style={{ color: "#f3f3f3" }} />}
-          onClick={() => history.push("/host-waiting")}
-        >
-          {" "}
-          Create room
-        </Button>
-      </Box>
+          <Flex
+            flexWrap="nowrap"
+            alignItems="center"
+            mt="4rem"
+            as="form"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <InputGroup w="20rem" mr="1rem" mb="1rem">
+              <InputLeftElement
+                pointerEvents="none"
+                children={<SiGoogleclassroom color="gray" />}
+              />
+              <Input
+                variant="filled"
+                placeholder="Enter room ID"
+                {...register("roomId", { required: true })}
+              />
+            </InputGroup>
 
-      <Box gridColumn="span 6" p="6rem 4rem" bg="primary"></Box>
-    </Grid>
+            <Button leftIcon={<IoEnterOutline />} type="submit">
+              Join room
+            </Button>
+          </Flex>
+          {errors.roomId && (
+            <Text mt="5px" color="red.500">
+              Please enter room ID
+            </Text>
+          )}
+          <Text
+            fontSize={{ lg: "2xl", xl: "3xl" }}
+            my="2rem"
+            fontWeight="semibold"
+          >
+            OR
+          </Text>
+          <Button
+            bg="primary"
+            color="#fff"
+            leftIcon={<AiOutlinePlus style={{ color: "#f3f3f3" }} />}
+            onClick={() => history.push("/host-waiting")}
+          >
+            {" "}
+            Create room
+          </Button>
+        </Box>
+
+        <Box
+          gridColumn={{ lg: "span 6" }}
+          display={{ base: "none", lg: "block" }}
+        >
+          <Image src={Video} />
+        </Box>
+      </Grid>
+    </Box>
   );
 };
 export default Home;

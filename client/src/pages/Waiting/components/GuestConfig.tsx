@@ -28,7 +28,7 @@ const GuestConfig: React.FC<Props> = () => {
   } = useAppSelector((state) => state.room.roomInfo);
 
   return (
-    <Box gridColumn="span 6">
+    <Box width={{ base: "60%", md: "50%" }}>
       <Box
         p="3rem 2rem"
         bg="#fff"
@@ -37,8 +37,13 @@ const GuestConfig: React.FC<Props> = () => {
       >
         {roomInfoReady ? (
           <>
-            <List spacing={2} mb="2rem">
-              <ListItem>
+            <List
+              spacing={2}
+              mb="2rem"
+              display="grid"
+              gridTemplateColumns="1fr 1fr"
+            >
+              <ListItem gridColumn="span 2" mb="1rem">
                 <Box as="span" fontWeight="semibold" mr="5px">
                   <Icon as={AiFillThunderbolt} /> Room:
                 </Box>
@@ -46,15 +51,9 @@ const GuestConfig: React.FC<Props> = () => {
               </ListItem>
               <ListItem>
                 <Box as="span" fontWeight="semibold" mr="5px">
-                  <Icon as={AiFillThunderbolt} /> Hostname
+                  <Icon as={AiFillThunderbolt} /> Hostname:
                 </Box>
                 {hostName}
-              </ListItem>
-              <ListItem>
-                <Box as="span" fontWeight="semibold" mr="5px">
-                  <Icon as={AiFillThunderbolt} /> Number of Users:
-                </Box>
-                {users.length}
               </ListItem>
               <ListItem>
                 <Box as="span" fontWeight="semibold" mr="5px">
@@ -66,7 +65,14 @@ const GuestConfig: React.FC<Props> = () => {
               </ListItem>
               <ListItem>
                 <Box as="span" fontWeight="semibold" mr="5px">
-                  <Icon as={AiFillThunderbolt} /> Allow audio:
+                  <Icon as={AiFillThunderbolt} /> Number of Users:
+                </Box>
+                {users.length}
+              </ListItem>
+
+              <ListItem>
+                <Box as="span" fontWeight="semibold" mr="5px">
+                  <Icon as={AiFillThunderbolt} /> Audio:
                 </Box>
                 <Badge colorScheme={allowAudio ? "green" : "red"}>
                   {allowAudio.toString()}

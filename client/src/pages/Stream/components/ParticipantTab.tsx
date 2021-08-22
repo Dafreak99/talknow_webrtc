@@ -21,7 +21,7 @@ const ParticipantTab: React.FC<Props> = () => {
       {users.map(({ socketId, username }) => (
         <>
           {socketId !== mySocketId && (
-            <Flex alignItems="center">
+            <Flex alignItems="center" key={socketId}>
               <Avatar
                 style={{ width: "3rem", height: "3rem", marginRight: "1rem" }}
                 {...config}

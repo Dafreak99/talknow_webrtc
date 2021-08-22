@@ -22,6 +22,7 @@ const RemoteStream: React.FC<Props> = ({ user, count }) => {
     if (user) {
       ref.current!.srcObject = user.stream as MediaStream;
     }
+    // @ts-ignore
   }, [user.stream]);
 
   // TODO: There is an issue

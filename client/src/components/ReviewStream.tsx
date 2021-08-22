@@ -3,11 +3,9 @@ import React, { useEffect, useRef } from "react";
 import { useAppSelector } from "../app/hooks";
 import MediaButton from "./MediaButton";
 
-interface Props {
-  style: {};
-}
+interface Props {}
 
-const ReviewStream: React.FC<Props> = ({ style }) => {
+const ReviewStream: React.FC<Props> = () => {
   const localStream = useAppSelector((state) => state.stream.localStream);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -18,7 +16,7 @@ const ReviewStream: React.FC<Props> = ({ style }) => {
   }, [localStream]);
 
   return (
-    <Box {...style}>
+    <Box width={{ base: "40%", md: "50%" }}>
       <Box height="auto" position="relative">
         {/* Video */}
         <video
@@ -36,7 +34,6 @@ const ReviewStream: React.FC<Props> = ({ style }) => {
           }}
         />
 
-        {/* Video/Audio Button or Loading Indicator*/}
         {localStream ? (
           <MediaButton />
         ) : (
@@ -49,7 +46,9 @@ const ReviewStream: React.FC<Props> = ({ style }) => {
             left="50%"
           >
             <Spinner mr="1rem" />
-            <Text fontSize="1.5rem">Loading your video/audio</Text>
+            <Text fontSize="1.5rem" whiteSpace="nowrap">
+              Loading your video/audio
+            </Text>
           </Flex>
         )}
       </Box>
