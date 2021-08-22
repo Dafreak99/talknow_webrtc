@@ -3,15 +3,22 @@ services:
   react-app:
     build:
       context: client
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
+      args:
+        - REACT_APP_EMAILJS_USER_ID=user_Nk5K6vJsY70XsxiqaAwp8
+        - REACT_APP_EMAILJS_SERVICE=service_1f9lyrn
+        - REACT_APP_EMAILJS_TEMPLATE_ID=contact_form
     ports:
-      - "3000:3000"
+      - "8080:80"
+
   signalling-server:
     build:
       context: server
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
+    volumes:
+      - ./server/src:/app/src
   sfu:
     image: pionwebrtc/ion-sfu:latest-jsonrpc
     ports:

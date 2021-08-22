@@ -47,7 +47,7 @@ const Home: React.FC<Props> = () => {
             color="gray.900"
             fontSize={{ base: "2xl", md: "4xl", xl: "5xl" }}
           >
-            Real time communation powered by webRTC peer to peer connection.
+            Real time communation powered by webRTC peer to peer connection.{" "}
           </Heading>
           <Text mt="2rem" fontSize={{ base: "14px", lg: "1rem" }}>
             Real-time meetings by Video Conf. Using your browser, share your

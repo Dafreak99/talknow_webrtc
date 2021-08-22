@@ -1,0 +1,28 @@
+version: "3"
+services:
+  react-app:
+    build:
+      context: client
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client/src:/app/src
+    environment:
+      - REACT_APP_NAME=haitran-dev
+      - REACT_APP_EMAILJS_USER_ID=user_Nk5K6vJsY70XsxiqaAwp8
+      - REACT_APP_EMAILJS_SERVICE=service_1f9lyrn
+      - REACT_APP_EMAILJS_TEMPLATE_ID=contact_form
+  signalling-server:
+    build:
+      context: server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./server/src:/app/src
+  sfu:
+    image: pionwebrtc/ion-sfu:latest-jsonrpc
+    ports:
+      - "5000-5200:5000-5200/udp"
+      - 7000:7000
