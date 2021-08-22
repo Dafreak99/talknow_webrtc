@@ -10,7 +10,7 @@ Written in Typescript
 - Backend:
   - NodeJS: Signalling server
   - [Ion-SFU](https://github.com/pion/ion-sfu): Media Server
-- Other services: SendGrid
+- Mail services: EmailJS, Gmail
 
 ## Features
 
