@@ -11,6 +11,10 @@ logger.level = "debug";
 
 const app = express();
 
+app.get("/", (req, res) => {
+  res.send("hello");
+});
+
 const httpServer = http.createServer(app);
 
 const PORT = 5000;

@@ -1,0 +1,15 @@
+version: "3"
+services:
+  signalling-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./src:/app/src
+  sfu:
+    image: pionwebrtc/ion-sfu:latest-jsonrpc
+    ports:
+      - "5000-5200:5000-5200/udp"
+      - 7000:7000
