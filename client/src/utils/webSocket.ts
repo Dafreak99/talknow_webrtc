@@ -1,4 +1,5 @@
 import { LocalStream } from "ion-sdk-js";
+import { AvatarFullConfig } from "react-nice-avatar";
 import io, { Socket } from "socket.io-client";
 import { store } from "../app/store";
 import { setMessage } from "../features/message/messageSlice";
@@ -26,6 +27,7 @@ let socketId: undefined | string;
  */
 export const connectSignallingServer = async () => {
   socket = io("http://localhost:5000");
+  // socket = io("http://64.227.104.252:5000");
 
   socket.on("connect", function () {
     socketId = socket.id;
@@ -67,14 +69,23 @@ export const connectSignallingServer = async () => {
   });
 };
 
-export const createRoom = (data: ConfigRoom) => {
+export const createRoom = (
+  data: ConfigRoom,
+  avatarConfig: Required<AvatarFullConfig>
+) => {
   const { localStream } = store.getState().stream;
 
   socket.emit("user-joined", {
-    data: { ...data, streamType: "host", streamId: localStream!.id },
+    data: {
+      ...data,
+      streamType: "host",
+      streamId: localStream!.id,
+      avatar: avatarConfig,
+    },
     type: "host",
   });
   store.dispatch(setUsername(data.hostName));
+  // TODO: SEND AVATAR WISELY TO SERVER AND BACK TO ALL PEERS
 
   store.dispatch(
     setRoomInfo({ ...data, streamId: localStream!.id, users: [] })

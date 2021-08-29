@@ -70,6 +70,8 @@ const roomSlice = createSlice({
     },
 
     speaking: (state: InitialState, action) => {
+      if (!state.roomInfo.users) return;
+
       const index = state.roomInfo.users.findIndex(
         (user) => user.socketId === action.payload
       );

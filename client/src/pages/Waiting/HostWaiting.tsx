@@ -19,7 +19,9 @@ const HostWaiting: React.FC<Props> = () => {
       </Box>
 
       <Box className="container">
-        <Heading mb="3rem">Config Meeting Room</Heading>
+        <Flex justify="space-between" alignItems="center">
+          <Heading mb="3rem">Config Meeting Room</Heading>
+        </Flex>
         <Flex style={{ gap: "40px" }}>
           <ReviewStream />
           <Config />

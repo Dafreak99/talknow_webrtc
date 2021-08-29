@@ -13,10 +13,11 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { BsCheck } from "react-icons/bs";
 import { GrPowerReset } from "react-icons/gr";
+import Avatar, { genConfig } from "react-nice-avatar";
 import { useHistory } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { ConfigRoom } from "../../../types";
@@ -32,9 +33,11 @@ const Config: React.FC<Props> = () => {
     formState: { errors },
   } = useForm<ConfigRoom>();
   const history = useHistory();
+  const [avatarGender, setAvatarGender] = useState("man");
+  const config = genConfig({ sex: avatarGender as any });
 
   const onSubmit: SubmitHandler<ConfigRoom> = (data) => {
-    createRoom(data);
+    createRoom(data, config);
     history.push("/stream");
   };
 
@@ -48,6 +51,28 @@ const Config: React.FC<Props> = () => {
         gridTemplateColumns="repeat(2, 1fr)"
         gridColumnGap={{ base: "0", md: "1rem", xl: "3rem" }}
       >
+        <FormControl gridColumn="span 2">
+          <FormLabel fontWeight="semibold">Avatar</FormLabel>
+          <Flex alignItems="center">
+            <Avatar
+              style={{
+                width: "3rem",
+                height: "3rem",
+                marginRight: "1rem",
+              }}
+              {...config}
+            />
+            <RadioGroup
+              onChange={(value) => setAvatarGender(value)}
+              value={avatarGender}
+            >
+              <Stack direction="row">
+                <Radio value="man">Male</Radio>
+                <Radio value="woman">Female</Radio>
+              </Stack>
+            </RadioGroup>
+          </Flex>
+        </FormControl>
         <FormControl id="hostname">
           <FormLabel fontWeight="semibold">Hostname</FormLabel>
           <Input
@@ -108,7 +133,7 @@ const Config: React.FC<Props> = () => {
           )}
         </FormControl>
 
-        <FormControl id="admission">
+        <FormControl id="admission" gridRow="span 2">
           <FormLabel fontWeight="semibold">Admission</FormLabel>
 
           <Controller
@@ -163,6 +188,7 @@ const Config: React.FC<Props> = () => {
             )}
           />
         </FormControl>
+
         <FormControl id="media">
           <FormLabel fontWeight="semibold">Participant</FormLabel>
 
@@ -201,7 +227,7 @@ const Config: React.FC<Props> = () => {
           />
         </FormControl>
       </Grid>
-      <Flex justify="flex-end" mt="6rem">
+      <Flex justify="flex-end" mt="3rem">
         <Button
           type="submit"
           bg="primary"

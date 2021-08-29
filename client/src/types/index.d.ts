@@ -25,6 +25,8 @@ interface User {
   stream: MediaStream;
   streamType: string;
   isSpeaking: boolean;
+  camera: boolean;
+  microphone: boolean;
 }
 
 export interface Request {

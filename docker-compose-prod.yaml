@@ -10,7 +10,6 @@ services:
         - REACT_APP_EMAILJS_TEMPLATE_ID=contact_form
     ports:
       - "8080:80"
-
   signalling-server:
     build:
       context: server

@@ -52,68 +52,80 @@ const displaymediastreamconstraints = {
 
 export const connectIonSFU = async () => {
   const { mySocketId } = store.getState().stream;
-  const signal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
+  // const signal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
+  const signal = new IonSFUJSONRPCSignal("ws://159.65.141.136/ws");
 
   client = new Client(signal, config as Configuration);
-  signal.onopen = () => client.join("test session", mySocketId);
 
-  // Setup handlers
-  client.ontrack = (track: MediaStreamTrack, stream: RemoteStream) => {
-    track.onmute = () => {
-      store.dispatch(appendStreamToUser(stream));
-    };
+  // TODO: Maybe this one doesn't run yet
+  signal.onopen = async () => {
+    client.join("test session", mySocketId);
 
-    track.onunmute = () => {
-      if (track.kind === "video") {
+    // Setup handlers
+    client.ontrack = (track: MediaStreamTrack, stream: RemoteStream) => {
+      console.log("on track");
+      track.onmute = () => {
         store.dispatch(appendStreamToUser(stream));
-      }
-    };
+      };
 
-    track.onended = () => {
-      store.dispatch(removeUser(stream));
-    };
-
-    stream.onremovetrack = (e) => {
-      // get call when user close tab
-      store.dispatch(removeUser(stream));
-    };
-  };
-
-  local = await LocalStream.getUserMedia({
-    audio: true,
-    video: true,
-    resolution: "vga",
-    codec: "vp8",
-  } as Constraints);
-
-  store.dispatch(setLocalStream(local));
-
-  datachannel = client.createDataChannel("data");
-
-  datachannel.onmessage = ({ data }) => {
-    store.dispatch(speaking(data));
-    setTimeout(() => {
-      store.dispatch(stopSpeaking(data));
-    }, 300);
-  };
-
-  const audioContext = new AudioContext();
-
-  const soundMeter = new SoundMeter(audioContext);
-
-  soundMeter.connectToSource(local, function (e: any) {
-    if (e) {
-      alert(e);
-      return;
-    }
-    setInterval(() => {
-      if (soundMeter.instant > 0.05) {
-        if (datachannel.readyState === "open") {
-          datachannel.send(mySocketId as string);
+      track.onunmute = () => {
+        if (track.kind === "video") {
+          store.dispatch(appendStreamToUser(stream));
         }
+      };
+
+      track.onmute = () => {
+        if (track.kind === "video") {
+          console.log("mute hey");
+        }
+      };
+
+      track.onended = () => {
+        store.dispatch(removeUser(stream));
+      };
+
+      stream.onremovetrack = (e) => {
+        // get call when user close tab
+        store.dispatch(removeUser(stream));
+      };
+    };
+
+    local = await LocalStream.getUserMedia({
+      audio: true,
+      video: true,
+      resolution: "vga",
+      codec: "vp8",
+    } as Constraints);
+
+    store.dispatch(setLocalStream(local));
+
+    datachannel = client.createDataChannel("data");
+
+    datachannel.onmessage = ({ data }) => {
+      store.dispatch(speaking(data));
+      setTimeout(() => {
+        store.dispatch(stopSpeaking(data));
+      }, 300);
+    };
+
+    const audioContext = new AudioContext();
+
+    const soundMeter = new SoundMeter(audioContext);
+
+    soundMeter.connectToSource(local, function (e: any) {
+      if (e) {
+        alert(e);
+        return;
       }
-    }, 200);
-  });
+      setInterval(() => {
+        if (soundMeter.instant > 0.05) {
+          if (datachannel.readyState === "open") {
+            datachannel.send(mySocketId as string);
+          }
+        }
+      }, 200);
+    });
+  };
 };
 
 /**
@@ -140,6 +152,7 @@ export const toggleCamera = () => {
 
   if (localCameraEnabled) {
     local.mute("video");
+    // HOW TO KNOW IF SOMEONE TURN OFF THERE CAM
   } else {
     local.unmute("video");
   }
@@ -181,7 +194,8 @@ export const toggleShareScreen = () => {
  * @description: Share screen
  */
 export const shareScreen = async () => {
-  const signal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
+  // const signal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
+  const signal = new IonSFUJSONRPCSignal("wss://159.65.141.136/ws");
 
   screenClient = new Client(signal, config as Configuration);
 
