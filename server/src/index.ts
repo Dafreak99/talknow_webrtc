@@ -56,13 +56,16 @@ io.on("connection", (socket: Socket) => {
 
     // Treat host as normal user
 
+    const { hostName, username, streamId, streamType, avatar } = data;
     const user = {
-      username: type === "host" ? data.hostName : data.username,
-      streamId: data.streamId,
-      streamType: data.streamType,
+      username: type === "host" ? hostName : username,
+      streamId,
+      streamType: streamType,
       socketId: socket.id,
-      avatarUrl: "",
+      avatar,
     } as User;
+
+    logger.info("user", user);
 
     rooms[roomId].users.push(user);
 

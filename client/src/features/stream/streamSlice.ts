@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { AvatarFullConfig, genConfig } from "react-nice-avatar";
 
 interface InitialState {
   minimizeLocalStream: boolean;
@@ -12,7 +11,7 @@ interface InitialState {
   connections: any[];
   mySocketId: null | string;
   myUsername: null | string;
-  avatar: Required<AvatarFullConfig>;
+  myAvatar: null | string;
 }
 
 export interface RemoteStream {
@@ -33,7 +32,7 @@ const initialState: InitialState = {
   connections: [],
   mySocketId: null,
   myUsername: null,
-  avatar: genConfig(),
+  myAvatar: null,
 };
 
 const streamSlice = createSlice({
@@ -82,6 +81,9 @@ const streamSlice = createSlice({
     setUsername: (state: InitialState, action) => {
       state.myUsername = action.payload;
     },
+    setAvatar: (state: InitialState, action) => {
+      state.myAvatar = action.payload;
+    },
   },
 });
 
@@ -97,6 +99,7 @@ export const {
   hostLeave,
   setSocketId,
   setUsername,
+  setAvatar,
 } = streamSlice.actions;
 
 export default streamSlice.reducer;

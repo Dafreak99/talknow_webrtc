@@ -10,6 +10,7 @@ interface Message {
   socketId: string;
   content: string;
   timestamp: string;
+  avatar: string;
 }
 
 const initialState: InitialState = {

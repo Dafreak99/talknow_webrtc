@@ -12,6 +12,7 @@ import {
 } from "../features/room/roomSlice";
 import {
   hostLeave,
+  setAvatar,
   setSocketId,
   setUsername,
 } from "../features/stream/streamSlice";
@@ -26,8 +27,11 @@ let socketId: undefined | string;
  * Connect to Node.js signalling server
  */
 export const connectSignallingServer = async () => {
-  socket = io("http://localhost:5000");
-  // socket = io("http://64.227.104.252:5000");
+  if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
+    socket = io("http://localhost:5000");
+  } else {
+    socket = io("https://talkserver.tk/");
+  }
 
   socket.on("connect", function () {
     socketId = socket.id;
@@ -48,6 +52,8 @@ export const connectSignallingServer = async () => {
   socket.on("signal-screen", handleScreen);
 
   socket.on("broadcast-message", (data) => {
+    console.log(data);
+
     store.dispatch(setMessage(data));
   });
 
@@ -85,7 +91,7 @@ export const createRoom = (
     type: "host",
   });
   store.dispatch(setUsername(data.hostName));
-  // TODO: SEND AVATAR WISELY TO SERVER AND BACK TO ALL PEERS
+  store.dispatch(setAvatar(avatarConfig));
 
   store.dispatch(
     setRoomInfo({ ...data, streamId: localStream!.id, users: [] })
@@ -100,6 +106,7 @@ export const userJoined = (
   roomId: string,
   username: string,
   type: "guest" | "screen",
+  avatar: Required<AvatarFullConfig> | string,
   screenShare?: LocalStream
 ) => {
   let localStream: LocalStream;
@@ -112,9 +119,16 @@ export const userJoined = (
   }
 
   socket.emit("user-joined", {
-    data: { roomId, username, streamId: localStream!.id, streamType: type },
+    data: {
+      roomId,
+      username,
+      streamId: localStream!.id,
+      streamType: type,
+      avatar,
+    },
     type,
   });
+  store.dispatch(setAvatar(avatar));
 };
 
 export const requestToJoin = (
@@ -193,10 +207,13 @@ export const screenShareSignaling2 = (
 };
 
 export const messaging = (message: string) => {
+  const { myAvatar } = store.getState().stream;
+
   socket.emit("broadcast-message", {
     from: "haitran",
     content: message,
     timestamp: new Date(),
+    avatar: myAvatar,
   });
 };
 

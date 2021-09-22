@@ -13,7 +13,7 @@ import { BaseEmoji, Picker } from "emoji-mart";
 import React, { FormEvent, useRef, useState } from "react";
 import { FiSend } from "react-icons/fi";
 import { MdInsertEmoticon } from "react-icons/md";
-import Avatar, { genConfig } from "react-nice-avatar";
+import Avatar, { AvatarConfig, genConfig } from "react-nice-avatar";
 import { useAppSelector } from "../../../app/hooks";
 import { messaging } from "../../../utils/webSocket";
 
@@ -56,7 +56,7 @@ const MessageTab: React.FC<Props> = () => {
   return (
     <>
       <Box h="60vh" overflow="scroll" className="hide-scroll-bar">
-        {messages.map(({ from, socketId, content, timestamp }) => (
+        {messages.map(({ from, socketId, content, timestamp, avatar }) => (
           <Flex
             key={timestamp}
             alignItems={socketId === mySocketId ? "flex-end" : "flex-start"}
@@ -65,7 +65,7 @@ const MessageTab: React.FC<Props> = () => {
             {socketId !== mySocketId && (
               <Avatar
                 style={{ width: "2rem", height: "2rem", marginRight: "1rem" }}
-                {...config}
+                {...genConfig(avatar as AvatarConfig)}
               />
             )}
             <Box marginLeft={socketId === mySocketId ? "auto" : "0"}>

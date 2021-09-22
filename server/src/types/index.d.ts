@@ -21,4 +21,5 @@ interface User {
   socketId: string;
   streamId: string;
   streamType: string;
+  avatar: String;
 }

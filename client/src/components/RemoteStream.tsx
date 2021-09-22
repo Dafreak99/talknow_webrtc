@@ -2,6 +2,7 @@ import { Box, Icon, Text } from "@chakra-ui/react";
 import React, { useEffect, useRef } from "react";
 import { BsArrowsFullscreen } from "react-icons/bs";
 import { IoMic } from "react-icons/io5";
+import ReactNiceAvatar, { AvatarConfig, genConfig } from "react-nice-avatar";
 import { User } from "../types";
 
 interface Props {
@@ -25,12 +26,6 @@ const RemoteStream: React.FC<Props> = ({ user, count }) => {
     // @ts-ignore
   }, [user.stream]);
 
-  // TODO: There is an issue
-  // If I set the useEffect dependency is user. Every single time when someone speaking, the useEffect will be re-render
-  // and the video set to the old stream even though the only thing that changed is isSpeaking props
-
-  // But if I set the useEffect dependency is user.stream. When I turn on/off the receivers won't be reflected
-
   const onOpenFullScreen = () => {
     if (ref.current) {
       const video = ref.current as Video;
@@ -47,6 +42,8 @@ const RemoteStream: React.FC<Props> = ({ user, count }) => {
     }
   };
 
+  const config = genConfig(user.avatar as AvatarConfig);
+
   return (
     <>
       <Text
@@ -62,6 +59,19 @@ const RemoteStream: React.FC<Props> = ({ user, count }) => {
       >
         <Icon as={IoMic} /> {user.username}
       </Text>
+      {!user.isCameraEnabled && (
+        <Box
+          position="absolute"
+          top="50%"
+          left="50%"
+          transform="translate(-50%, -50%)"
+        >
+          <ReactNiceAvatar
+            {...config}
+            style={{ width: "3rem", height: "3rem" }}
+          />
+        </Box>
+      )}
       <video
         playsInline
         autoPlay
@@ -71,7 +81,11 @@ const RemoteStream: React.FC<Props> = ({ user, count }) => {
           height: "100%",
           borderRadius: "10px",
           objectFit: count >= 5 ? "cover" : "fill",
-          borderColor: user.isSpeaking ? "teal" : "transparent",
+          borderColor: !user.isCameraEnabled
+            ? "#414144"
+            : user.isSpeaking
+            ? "teal"
+            : "transparent",
         }}
       />
       <Box

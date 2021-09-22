@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import Logo from "../../components/Logo";
 import ReviewStream from "../../components/ReviewStream";
 import { connectSignallingServer } from "../../utils/webSocket";
-import Config from "./components/Config";
+import HostConfig from "./components/HostConfig";
 
 interface Props {}
 
@@ -24,7 +24,7 @@ const HostWaiting: React.FC<Props> = () => {
         </Flex>
         <Flex style={{ gap: "40px" }}>
           <ReviewStream />
-          <Config />
+          <HostConfig />
         </Flex>
       </Box>
     </Box>

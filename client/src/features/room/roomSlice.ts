@@ -28,11 +28,11 @@ const roomSlice = createSlice({
         ...action.payload,
         isSpeaking: false,
         stream: null,
+        // TODO: Some how get from individual's config
+        isCameraEnabled: false,
+        isMicrophoneEnabled: true,
       });
     },
-    // removeUser: (state: InitialState, action) => {
-    //     state.roomInfo.users = state.roomInfo.users.filter(user=> user.socketId !== action.payload)
-    // },
     appendStreamToUser: (state: InitialState, action) => {
       let index = state.roomInfo.users.findIndex(
         (user) => user.streamId === action.payload.id
@@ -41,6 +41,16 @@ const roomSlice = createSlice({
       if (index === -1) return;
 
       state.roomInfo.users[index].stream = new MediaStream(action.payload);
+    },
+    userToggleVideo: (state: InitialState, action) => {
+      let index = state.roomInfo.users.findIndex(
+        (user) => user.streamId === action.payload.id
+      );
+
+      if (index === -1) return;
+
+      state.roomInfo.users[index].isCameraEnabled =
+        !state.roomInfo.users[index].isCameraEnabled;
     },
     removeUser: (state: InitialState, action) => {
       state.roomInfo.users = state.roomInfo.users.filter(
@@ -114,6 +124,7 @@ export const {
   removeUser,
   removeUserBySocketId,
   removeUserScreen,
+  userToggleVideo,
   setIsWhiteBoard,
   speaking,
   stopSpeaking,

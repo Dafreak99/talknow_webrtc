@@ -10,6 +10,7 @@ import {
   removeUserBySocketId,
   speaking,
   stopSpeaking,
+  userToggleVideo,
 } from "../features/room/roomSlice";
 import {
   setLocalCameraEnabled,
@@ -46,14 +47,18 @@ const displaymediastreamconstraints = {
   audio: true,
 };
 
+const SERVER_URL =
+  process.env.NODE_ENV === "development"
+    ? "ws://localhost:7000/ws"
+    : "wss://talkserver.tk/ws";
+
 /**
  * @description: Connect to IonSFU server as well as get local stream
  */
 
 export const connectIonSFU = async () => {
   const { mySocketId } = store.getState().stream;
-  // const signal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
-  const signal = new IonSFUJSONRPCSignal("ws://159.65.141.136/ws");
+  const signal = new IonSFUJSONRPCSignal(SERVER_URL);
 
   client = new Client(signal, config as Configuration);
 
@@ -63,20 +68,21 @@ export const connectIonSFU = async () => {
 
     // Setup handlers
     client.ontrack = (track: MediaStreamTrack, stream: RemoteStream) => {
-      console.log("on track");
       track.onmute = () => {
         store.dispatch(appendStreamToUser(stream));
+      };
+
+      track.onmute = () => {
+        if (track.kind === "video") {
+          store.dispatch(appendStreamToUser(stream));
+          store.dispatch(userToggleVideo(stream));
+        }
       };
 
       track.onunmute = () => {
         if (track.kind === "video") {
           store.dispatch(appendStreamToUser(stream));
-        }
-      };
-
-      track.onmute = () => {
-        if (track.kind === "video") {
-          console.log("mute hey");
+          store.dispatch(userToggleVideo(stream));
         }
       };
 
@@ -194,8 +200,7 @@ export const toggleShareScreen = () => {
  * @description: Share screen
  */
 export const shareScreen = async () => {
-  // const signal = new IonSFUJSONRPCSignal("ws://localhost:7000/ws");
-  const signal = new IonSFUJSONRPCSignal("wss://159.65.141.136/ws");
+  const signal = new IonSFUJSONRPCSignal(SERVER_URL);
 
   screenClient = new Client(signal, config as Configuration);
 
@@ -203,7 +208,7 @@ export const shareScreen = async () => {
 
   try {
     const { roomId } = store.getState().room.roomInfo;
-    const { myUsername } = store.getState().stream;
+    const { myUsername, myAvatar } = store.getState().stream;
 
     const screenShare = await LocalStream.getDisplayMedia({
       video: true,
@@ -218,7 +223,13 @@ export const shareScreen = async () => {
 
     screenClient.publish(screenShare);
     shareScreenSignal();
-    userJoined(roomId, `${myUsername}  screen`, "screen", screenShare);
+    userJoined(
+      roomId,
+      `${myUsername}  screen`,
+      "screen",
+      myAvatar as string,
+      screenShare
+    );
   } catch (error) {
     throw error;
   }

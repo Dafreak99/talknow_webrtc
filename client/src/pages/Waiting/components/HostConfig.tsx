@@ -25,7 +25,7 @@ import { createRoom } from "../../../utils/webSocket";
 
 interface Props {}
 
-const Config: React.FC<Props> = () => {
+const HostConfig: React.FC<Props> = () => {
   const {
     register,
     handleSubmit,
@@ -243,4 +243,4 @@ const Config: React.FC<Props> = () => {
   );
 };
 
-export default Config;
+export default HostConfig;

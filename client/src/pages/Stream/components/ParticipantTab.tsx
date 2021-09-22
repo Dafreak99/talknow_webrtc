@@ -2,13 +2,11 @@ import { Box, Flex, Icon, Text } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { IoMdMic } from "react-icons/io";
 import { IoBan, IoVideocam } from "react-icons/io5";
-import Avatar, { genConfig } from "react-nice-avatar";
+import Avatar, { AvatarConfig, genConfig } from "react-nice-avatar";
 import { useAppSelector } from "../../../app/hooks";
 import KickDialog from "./KickDialog";
 
 interface Props {}
-
-const config = genConfig();
 
 const ParticipantTab: React.FC<Props> = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,13 +16,13 @@ const ParticipantTab: React.FC<Props> = () => {
 
   return (
     <Box color="#fff">
-      {users.map(({ socketId, username }) => (
+      {users.map(({ socketId, username, avatar }) => (
         <>
           {socketId !== mySocketId && (
             <Flex alignItems="center" key={socketId}>
               <Avatar
                 style={{ width: "3rem", height: "3rem", marginRight: "1rem" }}
-                {...config}
+                {...genConfig(avatar as AvatarConfig)}
               />
               <Text>{username}</Text>
               <Box marginLeft="auto">
