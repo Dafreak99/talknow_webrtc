@@ -1,23 +1,23 @@
-import { LocalStream } from "ion-sdk-js";
-import io, { Socket } from "socket.io-client";
-import { store } from "../app/store";
-import { setMessage } from "../features/message/messageSlice";
+import { LocalStream } from 'ion-sdk-js';
+import io, { Socket } from 'socket.io-client';
+import { store } from '../app/store';
+import { setMessage } from '../features/message/messageSlice';
 import {
-	enqueueJoinRequests,
-	receiveShareScreen,
-	removeUserScreen,
-	setIsWhiteBoard,
-	setRoomInfo,
-} from "../features/room/roomSlice";
+  enqueueJoinRequests,
+  receiveShareScreen,
+  removeUserScreen,
+  setIsWhiteBoard,
+  setRoomInfo,
+} from '../features/room/roomSlice';
 import {
-	hostLeave,
-	setAvatar,
-	setSocketId,
-	setUsername,
-} from "../features/stream/streamSlice";
-import { ConfigRoom } from "../types";
-import { handleUserJoined } from "./ionSFU";
-import { handleScreen, handleSignaling } from "./webRTC";
+  hostLeave,
+  setAvatar,
+  setSocketId,
+  setUsername,
+} from '../features/stream/streamSlice';
+import { ConfigRoom } from '../types';
+import { handleUserJoined } from './ionSFU';
+import { handleScreen, handleSignaling } from './webRTC';
 
 let socket: Socket;
 let socketId: undefined | string;
@@ -26,222 +26,223 @@ let socketId: undefined | string;
  * Connect to Node.js signalling server
  */
 export const connectSignallingServer = async () => {
-	if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-		socket = io("http://localhost:5000");
-	} else {
-		socket = io("https://talkserver.tk/");
-	}
+  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+    socket = io('http://localhost:5000');
+    // socket = io('http://178.128.100.156:5000');
+  } else {
+    socket = io('https://talknowserver.tk/');
+  }
 
-	socket.on("connect", function () {
-		socketId = socket.id;
-		store.dispatch(setSocketId(socketId));
-	});
+  socket.on('connect', function () {
+    socketId = socket.id;
+    store.dispatch(setSocketId(socketId));
+  });
 
-	socket.on("roominfo", (info) => store.dispatch(setRoomInfo(info)));
+  socket.on('roominfo', (info) => store.dispatch(setRoomInfo(info)));
 
-	socket.on("host-leave", () => store.dispatch(hostLeave(null)));
+  socket.on('host-leave', () => store.dispatch(hostLeave(null)));
 
-	socket.on("user-joined", handleUserJoined);
+  socket.on('user-joined', handleUserJoined);
 
-	socket.on("signal", gotMessageFromServer);
+  socket.on('signal', gotMessageFromServer);
 
-	socket.on("signal-screen", handleScreen);
+  socket.on('signal-screen', handleScreen);
 
-	socket.on("broadcast-message", (data) => {
-		console.log(data);
+  socket.on('broadcast-message', (data) => {
+    console.log(data);
 
-		store.dispatch(setMessage(data));
-	});
+    store.dispatch(setMessage(data));
+  });
 
-	socket.on("share-screen", () => {
-		const { isShareScreen } = store.getState().room.roomInfo;
+  socket.on('share-screen', () => {
+    const { isShareScreen } = store.getState().room.roomInfo;
 
-		if (isShareScreen) {
-			store.dispatch(removeUserScreen());
-		}
-		store.dispatch(receiveShareScreen(!isShareScreen));
-	});
+    if (isShareScreen) {
+      store.dispatch(removeUserScreen());
+    }
+    store.dispatch(receiveShareScreen(!isShareScreen));
+  });
 
-	socket.on("white-board", () => {
-		store.dispatch(setIsWhiteBoard());
-	});
+  socket.on('white-board', () => {
+    store.dispatch(setIsWhiteBoard());
+  });
 
-	socket.on("request-to-join", (socketId, username) => {
-		store.dispatch(enqueueJoinRequests({ socketId, username }));
-	});
+  socket.on('request-to-join', (socketId, username) => {
+    store.dispatch(enqueueJoinRequests({ socketId, username }));
+  });
 };
 
 export const createRoom = (data: ConfigRoom) => {
-	const { localStream } = store.getState().stream;
+  const { localStream } = store.getState().stream;
 
-	socket.emit("user-joined", {
-		data: {
-			...data,
-			streamType: "host",
-			streamId: localStream!.id,
-		},
-		type: "host",
-	});
+  socket.emit('user-joined', {
+    data: {
+      ...data,
+      streamType: 'host',
+      streamId: localStream!.id,
+    },
+    type: 'host',
+  });
 
-	store.dispatch(setUsername(data.hostName));
-	store.dispatch(setAvatar(data.avatar));
+  store.dispatch(setUsername(data.hostName));
+  store.dispatch(setAvatar(data.avatar));
 
-	store.dispatch(
-		setRoomInfo({ ...data, streamId: localStream!.id, users: [] })
-	);
+  store.dispatch(
+    setRoomInfo({ ...data, streamId: localStream!.id, users: [] })
+  );
 
-	socket.on("host-room-info", (data) => {
-		store.dispatch(setRoomInfo({ ...data, streamId: localStream!.id }));
-	});
+  socket.on('host-room-info', (data) => {
+    store.dispatch(setRoomInfo({ ...data, streamId: localStream!.id }));
+  });
 };
 
 export const userJoined = (
-	roomId: string,
-	username: string,
-	type: "guest" | "screen",
-	avatar: string,
-	screenShare?: LocalStream
+  roomId: string,
+  username: string,
+  type: 'guest' | 'screen',
+  avatar: string,
+  screenShare?: LocalStream
 ) => {
-	let localStream: LocalStream;
+  let localStream: LocalStream;
 
-	if (type === "guest") {
-		localStream = store.getState().stream.localStream as LocalStream;
-		store.dispatch(setUsername(username));
-	} else {
-		localStream = screenShare as LocalStream;
-	}
+  if (type === 'guest') {
+    localStream = store.getState().stream.localStream as LocalStream;
+    store.dispatch(setUsername(username));
+  } else {
+    localStream = screenShare as LocalStream;
+  }
 
-	store.dispatch(setAvatar(avatar));
+  store.dispatch(setAvatar(avatar));
 
-	socket.emit("user-joined", {
-		data: {
-			roomId,
-			username,
-			streamId: localStream!.id,
-			streamType: type,
-			avatar,
-		},
-		type,
-	});
+  socket.emit('user-joined', {
+    data: {
+      roomId,
+      username,
+      streamId: localStream!.id,
+      streamType: type,
+      avatar,
+    },
+    type,
+  });
 };
 
 export const requestToJoin = (
-	roomId: string,
-	username: string
+  roomId: string,
+  username: string
 ): Promise<boolean> => {
-	socket.emit("request-to-join", roomId, username);
+  socket.emit('request-to-join', roomId, username);
 
-	return new Promise((resolve, reject) => {
-		socket.on("answer-requeqst-to-join", (isAccepted) => {
-			resolve(isAccepted);
-		});
-	});
+  return new Promise((resolve, reject) => {
+    socket.on('answer-requeqst-to-join', (isAccepted) => {
+      resolve(isAccepted);
+    });
+  });
 };
 
 export const answerRequestToJoin = (data: {
-	socketId: string;
-	isAccepted: boolean;
+  socketId: string;
+  isAccepted: boolean;
 }) => {
-	socket.emit("answer-request-to-join", data);
+  socket.emit('answer-request-to-join', data);
 };
 
 export const getRoomInfo = (roomId: string) => {
-	return new Promise((resolve, reject) => {
-		socket.emit("get-room-info", roomId);
+  return new Promise((resolve, reject) => {
+    socket.emit('get-room-info', roomId);
 
-		socket.on("get-room-info", (data) => {
-			if (data.status === "failed") {
-				reject();
-			} else {
-				resolve(data);
-				store.dispatch(setRoomInfo(data.data));
-			}
-		});
-	});
+    socket.on('get-room-info', (data) => {
+      if (data.status === 'failed') {
+        reject();
+      } else {
+        resolve(data);
+        store.dispatch(setRoomInfo(data.data));
+      }
+    });
+  });
 };
 
 export const confirmRoomPassword = (
-	roomId: string,
-	password: string
+  roomId: string,
+  password: string
 ): Promise<{ status: string }> => {
-	return new Promise((resolve, reject) => {
-		socket.emit("confirm-room-password", roomId, password);
+  return new Promise((resolve, reject) => {
+    socket.emit('confirm-room-password', roomId, password);
 
-		socket.on("confirm-room-password", (data) => resolve(data));
-	});
+    socket.on('confirm-room-password', (data) => resolve(data));
+  });
 };
 
 const gotMessageFromServer = async (fromId: string, signal: any) => {
-	//Make sure it's not coming from yourself
-	if (fromId !== socketId) {
-		handleSignaling(fromId, signal);
-	}
+  //Make sure it's not coming from yourself
+  if (fromId !== socketId) {
+    handleSignaling(fromId, signal);
+  }
 };
 
 export const signaling = (id: string, data: any) => {
-	socket.emit("signal", id, data);
+  socket.emit('signal', id, data);
 };
 
 export const screenShareSignaling = (
-	to: string,
-	data: {
-		sdp: RTCSessionDescriptionInit;
-	},
-	event: string
+  to: string,
+  data: {
+    sdp: RTCSessionDescriptionInit;
+  },
+  event: string
 ) => {
-	socket.emit("signal-screen", to, data, event);
+  socket.emit('signal-screen', to, data, event);
 };
 
 export const screenShareSignaling2 = (
-	to: string,
-	data: { candidate: RTCIceCandidate },
-	event: string
+  to: string,
+  data: { candidate: RTCIceCandidate },
+  event: string
 ) => {
-	socket.emit("signal-screen", to, data, event);
+  socket.emit('signal-screen', to, data, event);
 };
 
 export const messaging = (message: string) => {
-	const { myAvatar } = store.getState().stream;
+  const { myAvatar } = store.getState().stream;
 
-	socket.emit("broadcast-message", {
-		from: "haitran",
-		content: message,
-		timestamp: new Date(),
-		avatar: myAvatar,
-	});
+  socket.emit('broadcast-message', {
+    from: 'haitran',
+    content: message,
+    timestamp: new Date(),
+    avatar: myAvatar,
+  });
 };
 
 export const ionScreen = (initialize: boolean) => {
-	socket.emit("ion-screen", initialize);
+  socket.emit('ion-screen', initialize);
 };
 
 export const shareScreenSignal = () => {
-	const { roomId } = store.getState().room.roomInfo;
+  const { roomId } = store.getState().room.roomInfo;
 
-	socket.emit("share-screen", roomId);
+  socket.emit('share-screen', roomId);
 };
 
 export const whiteBoardSignal = () => {
-	const { roomId } = store.getState().room.roomInfo;
+  const { roomId } = store.getState().room.roomInfo;
 
-	socket.emit("white-board", roomId);
+  socket.emit('white-board', roomId);
 };
 
 export const kickUser = (socketId: string) => {
-	socket.emit("kick-user", socketId);
+  socket.emit('kick-user', socketId);
 };
 
 export const listenToKickUser = (): Promise<boolean> => {
-	return new Promise((resolve, _) => {
-		socket.on("kick-user", () => {
-			resolve(true);
-		});
-	});
+  return new Promise((resolve, _) => {
+    socket.on('kick-user', () => {
+      resolve(true);
+    });
+  });
 };
 
 /**
  * @description: Trigger disconnection event in the server
  */
 export const forceToLeave = () => {
-	socket.disconnect();
+  socket.disconnect();
 };
