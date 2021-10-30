@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@chakra-ui/react": "^1.6.5",
+    "@clerk/clerk-react": "^1.21.2",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@fontsource/nunito": "^4.5.0",

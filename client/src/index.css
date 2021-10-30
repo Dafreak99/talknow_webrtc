@@ -68,3 +68,8 @@ video::-webkit-media-controls {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+.cl-component.cl-user-button {
+  height: 3rem;
+  width: 3rem;
+}

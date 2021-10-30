@@ -1,8 +1,7 @@
-import { Box, Flex, Icon, Text } from "@chakra-ui/react";
+import { Box, Flex, Icon, Image, Text } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { IoMdMic } from "react-icons/io";
 import { IoBan, IoVideocam } from "react-icons/io5";
-import Avatar, { AvatarConfig, genConfig } from "react-nice-avatar";
 import { useAppSelector } from "../../../app/hooks";
 import KickDialog from "./KickDialog";
 
@@ -20,10 +19,8 @@ const ParticipantTab: React.FC<Props> = () => {
         <>
           {socketId !== mySocketId && (
             <Flex alignItems="center" key={socketId}>
-              <Avatar
-                style={{ width: "3rem", height: "3rem", marginRight: "1rem" }}
-                {...genConfig(avatar as AvatarConfig)}
-              />
+              <Image src={avatar} boxSize="3rem" borderRadius="50%" mr="5px" />
+
               <Text>{username}</Text>
               <Box marginLeft="auto">
                 <Icon

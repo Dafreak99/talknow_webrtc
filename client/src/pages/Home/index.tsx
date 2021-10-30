@@ -16,7 +16,7 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { IoEnterOutline } from "react-icons/io5";
 import { SiGoogleclassroom } from "react-icons/si";
 import { useHistory } from "react-router-dom";
-import Logo from "../../components/Logo";
+import Navbar from "../../components/Navbar";
 import Video from "../../images/video.svg";
 
 interface Props {}
@@ -39,9 +39,7 @@ const Home: React.FC<Props> = () => {
   return (
     <Box h="100vh" w="100vw">
       <Grid gridTemplateColumns="repeat(12,1fr)" className="container">
-        <Box gridColumn="span 12" p="3rem 0">
-          <Logo />
-        </Box>
+        <Navbar />
         <Box gridColumn={{ base: "span 12", lg: "span 6" }}>
           <Heading
             color="gray.900"
@@ -61,7 +59,7 @@ const Home: React.FC<Props> = () => {
             as="form"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <InputGroup w="20rem" mr="1rem" mb="1rem">
+            <InputGroup w="20rem" mr="1rem">
               <InputLeftElement
                 pointerEvents="none"
                 children={<SiGoogleclassroom color="gray" />}

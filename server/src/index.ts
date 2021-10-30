@@ -1,9 +1,10 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import http from "http";
 import log4js from "log4js";
+import mongoose from "mongoose";
 import { Server, Socket } from "socket.io";
-import { Room, Rooms, User } from "./types";
-
+import Room from "./models/Room";
+import User from "./models/User";
 const logger = log4js.getLogger();
 
 // log4js by default will not output any logs
@@ -11,159 +12,254 @@ logger.level = "debug";
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("hello");
-});
-
 const httpServer = http.createServer(app);
 
 const PORT = 5000;
 
 const io = new Server(httpServer, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
+	cors: {
+		origin: "*",
+		methods: ["GET", "POST"],
+	},
 });
 
-let rooms: Rooms = {};
+const getCurrentRoom = async (socketId: string) => {
+	let user = await User.findOne({ socketId });
 
-let myRoomId: string | null = null;
+	return user.currentRoomId;
+};
+
+async function main() {
+	await mongoose.connect(
+		"mongodb+srv://haitran99:programmer2211@cluster0.xpopo.mongodb.net/talknow?retryWrites=true&w=majority"
+	);
+
+	app.get("/", (req, res) => {
+		res.send("hello");
+	});
+
+	app.get("/room", async (req: Request, res: Response) => {
+		const room = new Room({
+			hostId: "123",
+			hostName: "Haitran",
+			admission: "none",
+			allowAudio: true,
+			allowVideo: true,
+			password: "",
+			isShareScreen: false,
+			roomId: "123",
+			roomName: "Room 1",
+			screenId: "",
+			users: [],
+		});
+
+		await room.save();
+
+		return res.send("Finish");
+	});
+
+	app.get("/user", async (req: Request, res: Response) => {
+		const user = new User({
+			username: "haitran",
+			socketId: "123",
+			streamId: "33333",
+			streamType: "ok",
+			avatar: "kdaokdskaod",
+		});
+
+		await user.save();
+
+		return res.send("Finish");
+	});
+
+	app.get("/show", async (req, res) => {
+		let room = await Room.find().populate("users");
+		res.send(room);
+	});
+}
 
 io.on("connection", (socket: Socket) => {
-  socket.on("user-joined", ({ data, type }) => {
-    if (!data) return;
+	socket.on("user-joined", async ({ data, type }) => {
+		if (!data) return;
 
-    logger.debug("User joined");
-    const { roomId } = data;
+		logger.debug("User joined");
 
-    myRoomId = roomId;
-    socket.join(roomId);
+		const { roomId, hostName, username, streamId, streamType, avatar } =
+			data;
 
-    if (type === "host") {
-      const { roomId, allowVideo, allowAudio } = data;
-      let room: Room = {
-        ...data,
-        hostId: socket.id,
-        allowVideo: Boolean(allowVideo),
-        allowAudio: Boolean(allowAudio),
-        users: [],
-      };
+		socket.join(roomId);
 
-      rooms[roomId] = room;
-      io.to(socket.id).emit("host-room-info", rooms[roomId]);
-    }
+		const user = new User({
+			username: type === "host" ? hostName : username,
+			socketId: socket.id,
+			currentRoomId: roomId,
+			streamId,
+			streamType,
+			avatar,
+		});
 
-    // Treat host as normal user
+		user.save();
 
-    const { hostName, username, streamId, streamType, avatar } = data;
-    const user = {
-      username: type === "host" ? hostName : username,
-      streamId,
-      streamType: streamType,
-      socketId: socket.id,
-      avatar,
-    } as User;
+		logger.info("user", user);
 
-    logger.info("user", user);
+		if (type === "host") {
+			const { allowVideo, allowAudio } = data;
+			let room = new Room({
+				...data,
+				roomId,
+				hostId: socket.id,
+				allowVideo: Boolean(allowVideo),
+				allowAudio: Boolean(allowAudio),
+				users: [user._id],
+			});
 
-    rooms[roomId].users.push(user);
+			io.to(socket.id).emit("host-room-info", { ...room, users: [user] });
 
-    io.in(roomId).emit("user-joined", user);
+			await room.save();
+			logger.debug("Room-1", room);
+		} else {
+			let room = await Room.findOne({ roomId });
 
-    logger.info("Rooms", rooms);
-  });
+			room.users.push(user._id);
 
-  socket.on("get-room-info", (roomId: string) => {
-    logger.debug("get-room-info", roomId);
+			room.save();
+			console.log("called user-joined");
+			io.in(roomId).emit("user-joined", user);
 
-    if (!rooms[roomId]) {
-      socket.emit("get-room-info", {
-        status: "failed",
-        message: "Room doesn't exist",
-      });
-    } else {
-      const response = {
-        ...rooms[roomId],
-      };
+			logger.info("Room-2", room);
+		}
+	});
 
-      delete response.password;
+	socket.on("get-room-info", async (roomId: string) => {
+		logger.debug("get-room-info", roomId);
 
-      socket.emit("get-room-info", {
-        status: "succeeded",
-        data: response,
-      });
-    }
-  });
+		let room = await Room.findOne({ roomId })
+			.populate("users")
+			.select(["-password"]);
 
-  socket.on("confirm-room-password", (roomId: string, password: string) => {
-    if (rooms[roomId].password === password) {
-      socket.emit("confirm-room-password", { status: "succeeded" });
-    } else {
-      socket.emit("confirm-room-password", { status: "failed" });
-    }
-  });
+		if (!room) {
+			socket.emit("get-room-info", {
+				status: "failed",
+				message: "Room doesn't exist",
+			});
+		} else {
+			socket.emit("get-room-info", {
+				status: "succeeded",
+				data: room,
+			});
+		}
+	});
 
-  socket.on("request-to-join", (roomId: string, username: string) => {
-    logger.debug("request-to-join");
-    io.to(rooms[myRoomId as string].hostId).emit(
-      "request-to-join",
-      socket.id,
-      username
-    );
-  });
+	socket.on(
+		"confirm-room-password",
+		async (roomId: string, password: string) => {
+			let room = await Room.findOne({ roomId });
 
-  socket.on(
-    "answer-request-to-join",
-    (data: { socketId: string; isAccepted: boolean }) => {
-      io.to(data.socketId).emit("answer-requeqst-to-join", data.isAccepted);
-    }
-  );
+			if (room.password === password) {
+				socket.emit("confirm-room-password", { status: "succeeded" });
+			} else {
+				socket.emit("confirm-room-password", { status: "failed" });
+			}
+		}
+	);
 
-  socket.on("broadcast-message", (data) => {
-    io.sockets.emit("broadcast-message", {
-      ...data,
-      socketId: socket.id,
-    });
-  });
+	socket.on("request-to-join", async (roomId: string, username: string) => {
+		logger.debug("request-to-join");
 
-  socket.on("share-screen", () => {
-    rooms[myRoomId as string].isShareScreen = true;
-    io.in(myRoomId as string).emit("share-screen");
-  });
+		let room = await Room.findOne({ roomId });
 
-  socket.on("white-board", () => {
-    logger.debug("white-board");
-    io.in(myRoomId as string).emit("white-board");
-  });
+		io.to(room.hostId).emit("request-to-join", socket.id, username);
+	});
 
-  socket.on("kick-user", (socketId: string) => {
-    logger.debug("kick-user " + socketId);
+	socket.on(
+		"answer-request-to-join",
+		(data: { socketId: string; isAccepted: boolean }) => {
+			io.to(data.socketId).emit(
+				"answer-requeqst-to-join",
+				data.isAccepted
+			);
+		}
+	);
 
-    io.to(socketId).emit("kick-user");
-  });
+	socket.on("broadcast-message", (data) => {
+		io.sockets.emit("broadcast-message", {
+			...data,
+			socketId: socket.id,
+		});
+	});
 
-  socket.on("disconnect", function () {
-    logger.debug("disconnect");
+	socket.on("share-screen", async (roomId: string) => {
+		await Room.findOneAndUpdate({ roomId }, { isShareScreen: true });
 
-    if (!rooms[myRoomId as string]) return;
+		io.in(roomId as string).emit("share-screen");
+	});
 
-    if (socket.id === rooms[myRoomId as string].hostId) {
-      // Host leave
-      socket.to(myRoomId as string).emit("host-leave");
-      delete rooms[myRoomId as string];
-      myRoomId = null;
-    } else {
-      rooms[myRoomId as string].users = rooms[myRoomId as string].users.filter(
-        (user) => user.socketId !== socket.id
-      );
+	socket.on("white-board", (roomId: string) => {
+		logger.debug("white-board");
+		io.in(roomId).emit("white-board");
+	});
 
-      // socket.to(myRoomId as string).emit("user-leave", socket.id);
-    }
-    logger.info("Rooms", rooms);
-  });
+	socket.on("kick-user", (socketId: string) => {
+		logger.debug("kick-user " + socketId);
+		io.to(socketId).emit("kick-user");
+	});
+
+	socket.on("disconnect", async function () {
+		logger.debug("disconnect");
+
+		let myRoomId = await getCurrentRoom(socket.id);
+		let leaveUser = await User.findOne({ socketId: socket.id });
+		logger.debug("leave user", leaveUser);
+
+		if (!myRoomId) return;
+
+		let room = await Room.findOne({ roomId: myRoomId });
+
+		if (socket.id === room.hostId) {
+			// Host leave
+			socket.to(myRoomId as string).emit("host-leave");
+			// delete rooms[myRoomId as string];
+			await Room.findOneAndRemove({ roomId: myRoomId });
+		} else {
+			let users = room.users.filter(
+				(user: any) => user._id !== leaveUser._id
+			);
+
+			// TODO: cannot remove user after leave yet
+			logger.debug("socketId", socket.id);
+			logger.debug("after out", users);
+			await Room.findOneAndUpdate(
+				{ roomId: myRoomId },
+				{
+					users,
+				}
+			);
+			// rooms[myRoomId as string].users = rooms[
+			// 	myRoomId as string
+			// ].users.filter((user) => user.socketId !== socket.id);
+
+			socket.to(myRoomId as string).emit("user-leave", socket.id);
+		}
+
+		// if (!rooms[myRoomId as string]) return;
+
+		// if (socket.id === rooms[myRoomId as string].hostId) {
+		// 	// Host leave
+		// 	socket.to(myRoomId as string).emit("host-leave");
+		// 	delete rooms[myRoomId as string];
+		// 	myRoomId = null;
+		// } else {
+		// 	rooms[myRoomId as string].users = rooms[
+		// 		myRoomId as string
+		// 	].users.filter((user) => user.socketId !== socket.id);
+
+		// 	socket.to(myRoomId as string).emit("user-leave", socket.id);
+		// }
+	});
 });
 
+main();
+
 httpServer.listen(PORT, () => {
-  logger.debug(`Listening at port ${PORT}`);
+	logger.debug(`Listening at port ${PORT}`);
 });
