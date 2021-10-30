@@ -25,6 +25,7 @@ const io = new Server(httpServer, {
 
 const getCurrentRoom = async (socketId: string) => {
 	let user = await User.findOne({ socketId });
+	if (!user) return;
 
 	return user.currentRoomId;
 };
@@ -214,6 +215,7 @@ io.on("connection", (socket: Socket) => {
 		if (!myRoomId) return;
 
 		let room = await Room.findOne({ roomId: myRoomId });
+		if (!room) return;
 
 		if (socket.id === room.hostId) {
 			// Host leave

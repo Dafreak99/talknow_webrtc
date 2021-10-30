@@ -50,7 +50,8 @@ const displaymediastreamconstraints = {
 const SERVER_URL =
 	process.env.NODE_ENV === "development"
 		? "ws://localhost:7000/ws"
-		: "wss://talkserver.tk/ws";
+		: // "ws://178.128.100.156:7000/ws"
+		  "wss://talkserver.tk/ws";
 
 /**
  * @description: Connect to IonSFU server as well as get local stream
