@@ -28,7 +28,6 @@ const roomSlice = createSlice({
         ...action.payload,
         isSpeaking: false,
         stream: null,
-        // TODO: Some how get from individual's config
         isCameraEnabled: false,
         isMicrophoneEnabled: true,
       });

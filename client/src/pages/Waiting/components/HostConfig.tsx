@@ -13,11 +13,11 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import { useUser, withUser } from "@clerk/clerk-react";
+import React from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { BsCheck } from "react-icons/bs";
 import { GrPowerReset } from "react-icons/gr";
-import Avatar, { genConfig } from "react-nice-avatar";
 import { useHistory } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { ConfigRoom } from "../../../types";
@@ -33,11 +33,15 @@ const HostConfig: React.FC<Props> = () => {
     formState: { errors },
   } = useForm<ConfigRoom>();
   const history = useHistory();
-  const [avatarGender, setAvatarGender] = useState("man");
-  const config = genConfig({ sex: avatarGender as any });
+
+  const { fullName, profileImageUrl } = useUser();
 
   const onSubmit: SubmitHandler<ConfigRoom> = (data) => {
-    createRoom(data, config);
+    createRoom({
+      ...data,
+      hostName: fullName as string,
+      avatar: profileImageUrl,
+    });
     history.push("/stream");
   };
 
@@ -51,42 +55,6 @@ const HostConfig: React.FC<Props> = () => {
         gridTemplateColumns="repeat(2, 1fr)"
         gridColumnGap={{ base: "0", md: "1rem", xl: "3rem" }}
       >
-        <FormControl gridColumn="span 2">
-          <FormLabel fontWeight="semibold">Avatar</FormLabel>
-          <Flex alignItems="center">
-            <Avatar
-              style={{
-                width: "3rem",
-                height: "3rem",
-                marginRight: "1rem",
-              }}
-              {...config}
-            />
-            <RadioGroup
-              onChange={(value) => setAvatarGender(value)}
-              value={avatarGender}
-            >
-              <Stack direction="row">
-                <Radio value="man">Male</Radio>
-                <Radio value="woman">Female</Radio>
-              </Stack>
-            </RadioGroup>
-          </Flex>
-        </FormControl>
-        <FormControl id="hostname">
-          <FormLabel fontWeight="semibold">Hostname</FormLabel>
-          <Input
-            type="text"
-            variant="filled"
-            placeholder="Enter hostname"
-            {...register("hostName", { required: true })}
-          />
-          {errors.hostName && (
-            <Text mt="5px" color="red.500">
-              Host name is required
-            </Text>
-          )}
-        </FormControl>
         <FormControl id="roomName">
           <FormLabel fontWeight="semibold">Room Name</FormLabel>
           <Input
@@ -102,7 +70,7 @@ const HostConfig: React.FC<Props> = () => {
             </Text>
           )}
         </FormControl>
-        <FormControl id="roomId" gridColumn="span 2">
+        <FormControl id="roomId">
           <FormLabel fontWeight="semibold">Room ID</FormLabel>
           <Controller
             name="roomId"
@@ -243,4 +211,4 @@ const HostConfig: React.FC<Props> = () => {
   );
 };
 
-export default HostConfig;
+export default withUser(HostConfig);

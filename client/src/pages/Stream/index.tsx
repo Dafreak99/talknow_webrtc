@@ -17,7 +17,6 @@ const Stream: React.FC<Props> = () => {
 
   useEffect(() => {
     publishPeer();
-
     // If host kick you, this'll be call
     listenToKick();
   }, []);

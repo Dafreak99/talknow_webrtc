@@ -1,8 +1,7 @@
-import { Box, Icon, Text } from "@chakra-ui/react";
+import { Box, Icon, Image, Text } from "@chakra-ui/react";
 import React, { useEffect, useRef } from "react";
 import { BsArrowsFullscreen } from "react-icons/bs";
 import { IoMic } from "react-icons/io5";
-import ReactNiceAvatar, { AvatarConfig, genConfig } from "react-nice-avatar";
 import { User } from "../types";
 
 interface Props {
@@ -42,8 +41,6 @@ const RemoteStream: React.FC<Props> = ({ user, count }) => {
     }
   };
 
-  const config = genConfig(user.avatar as AvatarConfig);
-
   return (
     <>
       <Text
@@ -66,10 +63,7 @@ const RemoteStream: React.FC<Props> = ({ user, count }) => {
           left="50%"
           transform="translate(-50%, -50%)"
         >
-          <ReactNiceAvatar
-            {...config}
-            style={{ width: "3rem", height: "3rem" }}
-          />
+          <Image src={user.avatar} boxSize="3rem" borderRadius="50%" />
         </Box>
       )}
       <video

@@ -5,16 +5,13 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Radio,
-  RadioGroup,
-  Stack,
   Text,
   useToast,
 } from "@chakra-ui/react";
+import { useUser } from "@clerk/clerk-react";
 import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
-import Avatar, { genConfig } from "react-nice-avatar";
 import { useHistory, useParams } from "react-router-dom";
 import {
   confirmRoomPassword,
@@ -46,18 +43,15 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
   const toast = useToast();
   const history = useHistory();
 
-  const [avatarGender, setAvatarGender] = useState("man");
-  const config = genConfig({ sex: avatarGender as any });
+  const { fullName, profileImageUrl } = useUser();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log("Config", config);
-
     if (admission === "none") {
-      userJoined(params.roomId, data.username, "guest", config);
+      userJoined(params.roomId, fullName as string, "guest", profileImageUrl);
       history.push("/stream");
     } else if (admission === "request") {
       setRequested(true);
-      const isAccepted = await requestToJoin(params.roomId, data.username);
+      const isAccepted = await requestToJoin(params.roomId, fullName as string);
       if (isAccepted) {
         history.push("/stream");
       } else {
@@ -66,7 +60,7 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
     } else {
       const res = await confirmRoomPassword(roomId, data.password);
       if (res.status === "succeeded") {
-        userJoined(params.roomId, data.username, "guest", config);
+        userJoined(params.roomId, fullName as string, "guest", profileImageUrl);
         history.push("/stream");
       } else if (res.status === "failed") {
         toast({
@@ -81,57 +75,9 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
     }
   };
 
-  const FillInfo = () => {
-    return (
-      <>
-        <FormControl id="hostname" p="0 15px">
-          <FormLabel fontWeight="semibold">Username</FormLabel>
-          <Input
-            type="text"
-            variant="filled"
-            placeholder="Enter username"
-            mr="2rem"
-            {...register("username", { required: true })}
-          />
-
-          {errors.username && (
-            <Text mt="5px" color="red.500">
-              Username is required
-            </Text>
-          )}
-        </FormControl>
-        <FormControl gridColumn="span 2">
-          <FormLabel fontWeight="semibold">Avatar</FormLabel>
-          <Flex alignItems="center">
-            <Avatar
-              style={{
-                width: "3rem",
-                height: "3rem",
-                marginRight: "1rem",
-              }}
-              {...config}
-            />
-            <RadioGroup
-              onChange={(value) => setAvatarGender(value)}
-              value={avatarGender}
-            >
-              <Stack direction="row">
-                <Radio value="man">Male</Radio>
-                <Radio value="woman">Female</Radio>
-              </Stack>
-            </RadioGroup>
-          </Flex>
-        </FormControl>
-      </>
-    );
-  };
-
   if (admission === "none") {
     return (
       <Box as="form" onSubmit={handleSubmit(onSubmit)}>
-        <Flex margin="0 -15px">
-          <FillInfo />
-        </Flex>
         <Button
           type="submit"
           leftIcon={<AiOutlineCheck />}
@@ -148,9 +94,6 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
   } else if (admission === "request") {
     return (
       <Box as="form" onSubmit={handleSubmit(onSubmit)}>
-        <Flex margin="0 -15px">
-          <FillInfo />
-        </Flex>
         {isDeclined ? (
           <Button
             type="submit"
@@ -185,7 +128,6 @@ const JoinRoom: React.FC<Props> = ({ admission, roomId }) => {
     return (
       <Box as="form" onSubmit={handleSubmit(onSubmit)}>
         <Flex margin="0 -15px">
-          <FillInfo />
           <FormControl id="password" p="0 15px">
             <FormLabel fontWeight="semibold">Password</FormLabel>
             <Input

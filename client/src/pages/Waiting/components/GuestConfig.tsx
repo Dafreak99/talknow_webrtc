@@ -7,6 +7,7 @@ import {
   Skeleton,
   Stack,
 } from "@chakra-ui/react";
+import { SignedIn, useUser } from "@clerk/clerk-react";
 import React from "react";
 import { AiFillThunderbolt } from "react-icons/ai";
 import { useAppSelector } from "../../../app/hooks";
@@ -26,6 +27,10 @@ const GuestConfig: React.FC<Props> = () => {
     users,
     admission,
   } = useAppSelector((state) => state.room.roomInfo);
+
+  const user = useUser();
+
+  console.log(user);
 
   return (
     <Box width={{ base: "60%", md: "50%" }}>
@@ -79,8 +84,9 @@ const GuestConfig: React.FC<Props> = () => {
                 </Badge>
               </ListItem>
             </List>
-
-            <JoinRoom admission={admission} roomId={roomId} />
+            <SignedIn>
+              <JoinRoom admission={admission} roomId={roomId} />
+            </SignedIn>
           </>
         ) : (
           <Stack>

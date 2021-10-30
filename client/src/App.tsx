@@ -1,17 +1,25 @@
+// import { GuestWaiting, Home, HostWaiting, Stream } from "./pages";
+import { ClerkProvider } from "@clerk/clerk-react";
 import React from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { Route, Switch, useHistory } from "react-router-dom";
+import Clerk from "./components/Clerk";
 import { GuestWaiting, Home, HostWaiting, Stream } from "./pages";
 
+const frontendApi = process.env.REACT_APP_CLERK_FRONTEND_API;
+
 function App() {
+  const { push } = useHistory();
+
   return (
-    <Router>
+    <ClerkProvider frontendApi={frontendApi} navigate={(to) => push(to)}>
       <Switch>
         <Route path="/" exact component={Home} />
         <Route path="/host-waiting" component={HostWaiting} exact />
         <Route path="/guest-waiting/:roomId" component={GuestWaiting} />
         <Route path="/stream" component={Stream} />
+        <Route path="/sign-in" component={Clerk} />
       </Switch>
-    </Router>
+    </ClerkProvider>
   );
 }
 

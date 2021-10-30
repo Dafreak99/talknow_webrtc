@@ -43,4 +43,5 @@ export interface ConfigRoom {
   allowAudio: string;
   admission: string;
   password: string;
+  avatar: string;
 }
