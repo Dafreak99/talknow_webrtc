@@ -1,7 +1,10 @@
 import { LocalStream } from 'ion-sdk-js';
 import io, { Socket } from 'socket.io-client';
 import { store } from '../app/store';
-import { setMessage } from '../features/message/messageSlice';
+import {
+  setMessage,
+  setToggleNewMessage,
+} from '../features/message/messageSlice';
 import {
   enqueueJoinRequests,
   receiveShareScreen,
@@ -49,7 +52,11 @@ export const connectSignallingServer = async () => {
   socket.on('signal-screen', handleScreen);
 
   socket.on('broadcast-message', (data) => {
-    console.log(data);
+    const { isShowedChat } = store.getState().message;
+
+    if (!isShowedChat) {
+      store.dispatch(setToggleNewMessage());
+    }
 
     store.dispatch(setMessage(data));
   });
@@ -202,10 +209,10 @@ export const screenShareSignaling2 = (
 };
 
 export const messaging = (message: string) => {
-  const { myAvatar } = store.getState().stream;
+  const { myAvatar, myUsername } = store.getState().stream;
 
   socket.emit('broadcast-message', {
-    from: 'haitran',
+    from: myUsername,
     content: message,
     timestamp: new Date(),
     avatar: myAvatar,
