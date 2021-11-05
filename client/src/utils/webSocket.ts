@@ -31,6 +31,7 @@ let socketId: undefined | string;
 export const connectSignallingServer = async () => {
   if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
     socket = io('http://localhost:5000');
+    // socket = io('http://signalling-server:5000');
     // socket = io('http://178.128.100.156:5000');
   } else {
     socket = io('https://talknowserver.tk/');
