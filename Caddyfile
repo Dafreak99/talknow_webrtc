@@ -1,4 +1,4 @@
-:80 {
+talkserver.tk {
     reverse_proxy signalling:5000
     @websockets {
         header Connection *Upgrade*
@@ -6,3 +6,5 @@
     }
     reverse_proxy @websockets sfu:7000
 }   
+
+
