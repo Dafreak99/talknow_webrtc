@@ -1,5 +1,16 @@
 version: '3'
 services:
+  caddy:
+    image: caddy:<version>
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - $PWD/site:/srv
+      - caddy_data:/data
+      - caddy_config:/config
   signalling:
     build:
       context: server
@@ -11,3 +22,7 @@ services:
     ports:
       - '5000-5200:5000-5200/udp'
       - '7000:7000'
+# volumes:
+#   caddy_data:
+#     external: true
+#   caddy_config:

@@ -1,8 +1,8 @@
 :80 {
-    reverse_proxy localhost:5000
-    @websockets {
-        header Connection *Upgrade*
-        header Upgrade    websocket
-    }
-    reverse_proxy @websockets localhost:7000
+    #reverse_proxy localhost:5000
+    #@websockets {
+    #    header Connection *Upgrade*
+    #    header Upgrade    websocket
+    #}
+    #reverse_proxy @websockets localhost:7000
 }   
