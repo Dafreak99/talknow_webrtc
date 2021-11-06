@@ -1,21 +1,13 @@
 version: '3'
 services:
-  caddy:
-    image: caddy/caddy:2.2.1-alpine
-    restart: unless-stopped
-    ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
   signalling:
     build:
       context: server
       dockerfile: Dockerfile
     ports:
       - '5000:5000'
-  # sfu:
-  #   image: pionwebrtc/ion-sfu:latest-jsonrpc
-  #   ports:
-  #     - '5000-5200:5000-5200/udp'
-  #     - '7000:7000'
+  sfu:
+    image: pionwebrtc/ion-sfu:latest-jsonrpc
+    ports:
+      - '5000-5200:5000-5200/udp'
+      - '7000:7000'

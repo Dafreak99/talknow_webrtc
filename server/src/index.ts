@@ -120,6 +120,8 @@ io.on('connection', (socket: Socket) => {
     } else {
       let room = await Room.findOne({ roomId });
 
+      if (!room) return;
+
       room.users.push(user._id);
 
       room.save();
@@ -154,6 +156,7 @@ io.on('connection', (socket: Socket) => {
     'confirm-room-password',
     async (roomId: string, password: string) => {
       let room = await Room.findOne({ roomId });
+      if (!room) return;
 
       if (room.password === password) {
         socket.emit('confirm-room-password', { status: 'succeeded' });
@@ -167,6 +170,7 @@ io.on('connection', (socket: Socket) => {
     logger.debug('request-to-join');
 
     let room = await Room.findOne({ roomId });
+    if (!room) return;
 
     io.to(room.hostId).emit('request-to-join', socket.id, username);
   });

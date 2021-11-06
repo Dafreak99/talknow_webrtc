@@ -99,9 +99,16 @@ export const connectIonSFU = async () => {
       };
     };
 
+    let devices = await navigator.mediaDevices.enumerateDevices();
+
+    let hasAudio =
+      devices.filter((device) => device.kind === 'audioinput').length > 0;
+    let hasVideo =
+      devices.filter((device) => device.kind === 'videoinput').length > 0;
+
     local = await LocalStream.getUserMedia({
-      audio: true,
-      video: true,
+      audio: hasAudio,
+      video: hasVideo,
       resolution: 'vga',
       codec: 'vp8',
     } as Constraints);
