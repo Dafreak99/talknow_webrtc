@@ -1,4 +1,4 @@
-talknow.tk{
+:80 {
     reverse_proxy localhost:5000
     @websockets {
         header Connection *Upgrade*

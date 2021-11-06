@@ -1,12 +1,14 @@
 version: '3'
 services:
-  react-app:
-    build:
-      context: client
-      dockerfile: Dockerfile
+  caddy:
+    image: caddy/caddy:2.2.1-alpine
+    restart: unless-stopped
     ports:
-      - '3000:3000'
-  signalling-server:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+  signalling:
     build:
       context: server
       dockerfile: Dockerfile
