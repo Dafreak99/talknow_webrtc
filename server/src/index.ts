@@ -223,7 +223,11 @@ io.on('connection', (socket: Socket) => {
       // delete rooms[myRoomId as string];
       await Room.findOneAndRemove({ roomId: myRoomId });
     } else {
-      let users = room.users.filter((user: any) => user._id !== leaveUser._id);
+      if (!leaveUser) return;
+
+      let users = room.users!.filter(
+        (user: any) => user!._id !== leaveUser!._id
+      );
 
       // TODO: cannot remove user after leave yet
       logger.debug('socketId', socket.id);
