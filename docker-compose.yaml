@@ -3,19 +3,17 @@ services:
   react-app:
     build:
       context: client
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     ports:
       - '3000:3000'
-    volumes:
-      - ./client/src:/src
   signalling-server:
     build:
       context: server
       dockerfile: Dockerfile
     ports:
       - '5000:5000'
-  sfu:
-    image: pionwebrtc/ion-sfu:latest-jsonrpc
-    ports:
-      - '5000-5200:5000-5200/udp'
-      - '7000:7000'
+  # sfu:
+  #   image: pionwebrtc/ion-sfu:latest-jsonrpc
+  #   ports:
+  #     - '5000-5200:5000-5200/udp'
+  #     - '7000:7000'

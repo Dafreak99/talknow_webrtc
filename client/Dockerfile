@@ -13,5 +13,9 @@ ENV REACT_APP_EMAILJS_TEMPLATE_ID=${REACT_APP_EMAILJS_TEMPLATE_ID}
 
 RUN npm run build
 
-FROM nginx
-COPY --from=build /app/build /usr/share/nginx/html
+# FROM nginx
+# COPY --from=build /app/build /usr/share/nginx/html
+
+FROM caddy:2-alpine
+COPY conf/Caddyfile /etc/Caddyfile
+COPY --from=build /app/build /usr/share/caddy/html
