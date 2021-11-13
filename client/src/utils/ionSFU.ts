@@ -1,3 +1,4 @@
+import { useToast } from '@chakra-ui/toast';
 import { Client, Constraints, LocalStream, RemoteStream } from 'ion-sdk-js';
 import { Configuration } from 'ion-sdk-js/lib/client';
 import { IonSFUJSONRPCSignal } from 'ion-sdk-js/lib/signal/json-rpc-impl';
@@ -52,7 +53,7 @@ const SERVER_URL =
     ? 'ws://localhost:7000/ws'
     : // 'ws://178.128.100.156:7000/ws'
       // 'ws://sfu:7000/ws'
-      'wss://talknowserver.tk/ws';
+      'wss://talkserver.tk:7000/ws';
 
 /**
  * @description: Connect to IonSFU server as well as get local stream
@@ -105,6 +106,15 @@ export const connectIonSFU = async () => {
       devices.filter((device) => device.kind === 'audioinput').length > 0;
     let hasVideo =
       devices.filter((device) => device.kind === 'videoinput').length > 0;
+
+    // Redirect if no video && audio supported
+    if (!hasAudio && !hasVideo) {
+      alert('Your computer does not support video and audio');
+      setTimeout(() => {
+        window.history.back();
+      }, 1000);
+      return;
+    }
 
     local = await LocalStream.getUserMedia({
       audio: hasAudio,

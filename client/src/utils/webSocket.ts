@@ -34,7 +34,7 @@ export const connectSignallingServer = async () => {
     // socket = io('http://signalling-server:5000');
     // socket = io('http://178.128.100.156:5000');
   } else {
-    socket = io('https://talknowserver.tk/');
+    socket = io('https://talkserver.tk/');
   }
 
   socket.on('connect', function () {

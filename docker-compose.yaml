@@ -1,7 +1,7 @@
 version: '3'
 services:
   caddy:
-    image: caddy:<version>
+    image: caddy:2
     restart: unless-stopped
     ports:
       - '80:80'
