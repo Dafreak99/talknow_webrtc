@@ -9,15 +9,15 @@ import {
   InputGroup,
   InputLeftElement,
   Text,
-} from "@chakra-ui/react";
-import React from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { AiOutlinePlus } from "react-icons/ai";
-import { IoEnterOutline } from "react-icons/io5";
-import { SiGoogleclassroom } from "react-icons/si";
-import { useHistory } from "react-router-dom";
-import Navbar from "../../components/Navbar";
-import Video from "../../images/video.svg";
+} from '@chakra-ui/react';
+import React from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { AiOutlinePlus } from 'react-icons/ai';
+import { IoEnterOutline } from 'react-icons/io5';
+import { SiGoogleclassroom } from 'react-icons/si';
+import { useHistory } from 'react-router-dom';
+import Navbar from '../../components/Navbar';
+import Video from '../../images/video.svg';
 
 interface Props {}
 interface Inputs {
@@ -40,14 +40,14 @@ const Home: React.FC<Props> = () => {
     <Box h="100vh" w="100vw">
       <Grid gridTemplateColumns="repeat(12,1fr)" className="container">
         <Navbar />
-        <Box gridColumn={{ base: "span 12", lg: "span 6" }}>
+        <Box gridColumn={{ base: 'span 12', lg: 'span 6' }}>
           <Heading
             color="gray.900"
-            fontSize={{ base: "2xl", md: "4xl", xl: "5xl" }}
+            fontSize={{ base: '2xl', md: '4xl', xl: '5xl' }}
           >
-            Real time communation powered by webRTC peer to peer connection.{" "}
+            Real time communation powered by WebRTC peer to peer connection.{' '}
           </Heading>
-          <Text mt="2rem" fontSize={{ base: "14px", lg: "1rem" }}>
+          <Text mt="2rem" fontSize={{ base: '14px', lg: '1.2rem' }}>
             Real-time meetings by Video Conf. Using your browser, share your
             video, desktop, and presentations with teammates and customers.
             Working remotely with ease.
@@ -67,7 +67,7 @@ const Home: React.FC<Props> = () => {
               <Input
                 variant="filled"
                 placeholder="Enter room ID"
-                {...register("roomId", { required: true })}
+                {...register('roomId', { required: true })}
               />
             </InputGroup>
 
@@ -81,7 +81,7 @@ const Home: React.FC<Props> = () => {
             </Text>
           )}
           <Text
-            fontSize={{ lg: "2xl", xl: "3xl" }}
+            fontSize={{ lg: '2xl', xl: '3xl' }}
             my="2rem"
             fontWeight="semibold"
           >
@@ -90,17 +90,17 @@ const Home: React.FC<Props> = () => {
           <Button
             bg="primary"
             color="#fff"
-            leftIcon={<AiOutlinePlus style={{ color: "#f3f3f3" }} />}
-            onClick={() => history.push("/host-waiting")}
+            leftIcon={<AiOutlinePlus style={{ color: '#f3f3f3' }} />}
+            onClick={() => history.push('/host-waiting')}
           >
-            {" "}
+            {' '}
             Create room
           </Button>
         </Box>
 
         <Box
-          gridColumn={{ lg: "span 6" }}
-          display={{ base: "none", lg: "block" }}
+          gridColumn={{ lg: 'span 6' }}
+          display={{ base: 'none', lg: 'block' }}
         >
           <Image src={Video} />
         </Box>
