@@ -1,4 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { store } from "../../app/store";
+import { updateLayout } from "../room/roomSlice";
 
 interface InitialState {
 	isShowedChat: boolean;
@@ -31,6 +33,7 @@ const messageSlice = createSlice({
 			}
 
 			state.isShowedChat = !state.isShowedChat;
+
 		},
 		setToggleNewMessage: (state) => {
 			state.newMessage = !state.newMessage;

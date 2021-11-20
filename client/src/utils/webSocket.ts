@@ -29,13 +29,9 @@ let socketId: undefined | string;
  * Connect to Node.js signalling server
  */
 export const connectSignallingServer = async () => {
-  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-    socket = io('http://localhost:5000');
-    // socket = io('http://signalling-server:5000');
-    // socket = io('http://178.128.100.156:5000');
-  } else {
-    socket = io('https://talkserver.tk/');
-  }
+  socket = process.env.NODE_ENV === 'development'
+  ? io('http://localhost:5000')
+  : io('https://talkserver.tk/')
 
   socket.on('connect', function () {
     socketId = socket.id;

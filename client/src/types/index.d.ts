@@ -16,6 +16,7 @@ export interface Room {
   screenId: string;
   users: Array<User>;
   joinRequests: Array<Request>;
+  updateLayout: number;
 }
 
 interface User {

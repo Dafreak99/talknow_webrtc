@@ -1,75 +1,80 @@
 *,
 *::before,
 *::after {
-	padding: 0;
-	margin: 0;
+  padding: 0;
+  margin: 0;
 }
 
 body {
-	overflow: hidden;
+  overflow: hidden;
 }
 
 .container {
-	width: 80vw;
-	margin: 0 auto;
+  width: 80vw;
+  margin: 0 auto;
 }
 
 .chakra-form-control {
-	margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .overlay__container {
-	position: relative;
+  position: relative;
+  height: 100%;
 }
 
 .overlay__container video {
-	transition: 350ms all;
-	border: 6px solid transparent;
+  transition: 350ms all;
+  border: 6px solid transparent;
 }
 
 .overlay__container:hover {
-	cursor: pointer;
-	border-color: teal;
+  cursor: pointer;
+  border-color: teal;
 }
 
 .overlay__content {
-	transition: 350ms all;
-	opacity: 0;
-	visibility: hidden;
+  transition: 350ms all;
+  opacity: 0;
+  visibility: hidden;
 }
 
 .overlay__container:hover video {
-	/* opacity: 0.7; */
-	border-color: teal !important;
+  /* opacity: 0.7; */
+  border-color: teal !important;
 }
 .overlay__container:hover .overlay__content {
-	opacity: 1;
-	visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Hide control in video(for fullscreen) */
 
 audio::-webkit-media-controls-timeline,
 video::-webkit-media-controls-timeline {
-	display: none;
+  display: none;
 }
 audio::-webkit-media-controls,
 video::-webkit-media-controls {
-	display: none;
+  display: none;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 .hide-scroll-bar::-webkit-scrollbar {
-	display: none;
+  display: none;
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .hide-scroll-bar {
-	-ms-overflow-style: none; /* IE and Edge */
-	scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .cl-component.cl-user-button {
-	height: 3rem;
-	width: 3rem;
+  height: 3rem;
+  width: 3rem;
+}
+
+.swiper-container.swiper-container-initialized.swiper-container-vertical.swiper-container-pointer-events {
+  height: 100%;
 }

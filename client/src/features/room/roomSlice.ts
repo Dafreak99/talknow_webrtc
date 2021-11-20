@@ -12,6 +12,7 @@ const initialState: InitialState = {
     isShareScreen: false,
     isWhiteBoard: false,
     joinRequests: [] as Request[],
+    updateLayout: 1,
   } as Room,
 };
 
@@ -111,6 +112,10 @@ const roomSlice = createSlice({
         state.roomInfo.joinRequests.shift();
       }
     },
+    updateLayout: (state: InitialState)=>{
+      // Uses this function to update the layout by triggering the useEffect hook
+      state.roomInfo.updateLayout = Math.random() * 1000;
+    }
   },
 });
 
@@ -129,6 +134,7 @@ export const {
   stopSpeaking,
   enqueueJoinRequests,
   dequeueJoinRequests,
+  updateLayout
 } = roomSlice.actions;
 
 export default roomSlice.reducer;

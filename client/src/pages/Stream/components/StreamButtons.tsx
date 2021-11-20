@@ -21,6 +21,7 @@ import { MdScreenShare, MdStopScreenShare } from "react-icons/md";
 import { RiArtboardFill } from "react-icons/ri";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { setToggleShowChat } from "../../../features/message/messageSlice";
+import { updateLayout } from "../../../features/room/roomSlice";
 import {
 	leave,
 	toggleCamera,
@@ -49,8 +50,9 @@ const StreamButtons: React.FC<Props> = () => {
 
 	const dispatch = useAppDispatch();
 
-	const onToggleChat = () => {
-		dispatch(setToggleShowChat());
+	const onToggleChat = async () => {
+		 await dispatch(setToggleShowChat());
+		 await dispatch(updateLayout());
 	};
 
 	const buttons = [
