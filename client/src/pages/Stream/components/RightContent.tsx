@@ -1,11 +1,11 @@
-import { Flex, Icon, Text } from "@chakra-ui/react";
-import "emoji-mart/css/emoji-mart.css";
-import React, { useState } from "react";
-import { CgClose } from "react-icons/cg";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { setToggleShowChat } from "../../../features/message/messageSlice";
-import MessageTab from "./MessageTab";
-import ParticipantTab from "./ParticipantTab";
+import { Flex, Icon, Text } from '@chakra-ui/react';
+import 'emoji-mart/css/emoji-mart.css';
+import React, { useState } from 'react';
+import { CgClose } from 'react-icons/cg';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
+import { setToggleShowChat } from '../../../features/message/messageSlice';
+import MessageTab from './MessageTab';
+import ParticipantTab from './ParticipantTab';
 
 interface Props {}
 
@@ -27,7 +27,7 @@ const RightContent: React.FC<Props> = () => {
       borderRadius="10px"
       transition="350ms all"
       position="absolute"
-      right={isShowedChat ? "20px" : "-100%"}
+      right={isShowedChat ? '20px' : '-100%'}
     >
       <Flex
         p="1rem 2rem"
@@ -41,24 +41,26 @@ const RightContent: React.FC<Props> = () => {
           <Text
             fontWeight="semibold"
             p="10px 15px"
-            bg={index === 0 ? "#c2d6ef" : "transparent"}
-            color={index === 0 ? "#344880" : "gray.200"}
+            bg={index === 0 ? '#c2d6ef' : 'transparent'}
+            color={index === 0 ? '#344880' : 'gray.200'}
             borderRadius="10px"
             cursor="pointer"
             onClick={() => {
               setIndex(0);
               setIsMessageTab(true);
             }}
+            fontSize={{ md: '12px', '2xl': '1rem' }}
           >
             Messages
           </Text>
           <Text
             fontWeight="semibold"
             p="10px 15px"
-            bg={index === 1 ? "#c2d6ef" : "transparent"}
-            color={index === 1 ? "#344880" : "gray.200"}
+            bg={index === 1 ? '#c2d6ef' : 'transparent'}
+            color={index === 1 ? '#344880' : 'gray.200'}
             borderRadius="10px"
             cursor="pointer"
+            fontSize={{ md: '12px', '2xl': '1rem' }}
             onClick={() => {
               setIndex(1);
               setIsMessageTab(false);

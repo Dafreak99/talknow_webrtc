@@ -26,6 +26,7 @@ body {
 .overlay__container video {
   transition: 350ms all;
   border: 6px solid transparent;
+  background: #0e1012;
 }
 
 .overlay__container:hover {

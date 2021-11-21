@@ -28,7 +28,7 @@ const UsersStream: React.FC<Props> = () => {
           width: document.getElementById('video-container')!.clientWidth,
           height: document.getElementById('video-container')!.clientHeight,
           minRatio: 9 / 16,
-          maxRatio: 8 / 5,
+          maxRatio: 4 / 5,
           count: users.length - 1,
         });
         if (width) {
@@ -50,7 +50,7 @@ const UsersStream: React.FC<Props> = () => {
           flexWrap="wrap"
           h="calc(100vh - 100px - 40px)"
           justifyContent="center"
-          flexDirection="column"
+          flexDirection="row"
         >
           {users.map((user, i) => (
             <>

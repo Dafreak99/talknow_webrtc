@@ -40,14 +40,20 @@ const Home: React.FC<Props> = () => {
     <Box h="100vh" w="100vw">
       <Grid gridTemplateColumns="repeat(12,1fr)" className="container">
         <Navbar />
-        <Box gridColumn={{ base: 'span 12', lg: 'span 6' }}>
+        <Box
+          gridColumn={{ base: 'span 12', lg: 'span 6' }}
+          paddingBottom="4rem"
+        >
           <Heading
             color="gray.900"
-            fontSize={{ base: '2xl', md: '4xl', xl: '5xl' }}
+            fontSize={{ base: '2xl', md: '3xl', lg: '4xl', '2xl': '5xl' }}
           >
             Real time communation powered by WebRTC peer to peer connection.{' '}
           </Heading>
-          <Text mt="2rem" fontSize={{ base: '14px', lg: '1.2rem' }}>
+          <Text
+            mt="2rem"
+            fontSize={{ base: '14px', lg: '1rem', '2xl': '1.2rem' }}
+          >
             Real-time meetings by Video Conf. Using your browser, share your
             video, desktop, and presentations with teammates and customers.
             Working remotely with ease.
@@ -81,8 +87,8 @@ const Home: React.FC<Props> = () => {
             </Text>
           )}
           <Text
-            fontSize={{ lg: '2xl', xl: '3xl' }}
-            my="2rem"
+            fontSize={{ lg: '2xl', '2xl': '3xl' }}
+            my={{ base: '1rem', xl: '2rem' }}
             fontWeight="semibold"
           >
             OR

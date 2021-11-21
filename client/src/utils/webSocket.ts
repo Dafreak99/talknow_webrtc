@@ -31,7 +31,7 @@ let socketId: undefined | string;
 export const connectSignallingServer = async () => {
   socket = process.env.NODE_ENV === 'development'
   ? io('http://localhost:5000')
-  : io('https://talkserver.tk/')
+  : io('https://plentiful.ml/')
 
   socket.on('connect', function () {
     socketId = socket.id;

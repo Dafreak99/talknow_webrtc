@@ -100,6 +100,7 @@ const MessageTab: React.FC<Props> = () => {
               onChange={(e) => setMessage(e.target.value)}
               color="#fff"
               autoComplete="off"
+              fontSize={{ md: '12px', '2xl': '1rem' }}
             />
             <InputRightElement
               children={<FiSend color="rgb(146, 158, 150)" />}

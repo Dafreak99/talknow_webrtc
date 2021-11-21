@@ -1,9 +1,9 @@
-import { Box, Flex, Icon, Image, Text } from "@chakra-ui/react";
-import React, { useState } from "react";
-import { IoMdMic } from "react-icons/io";
-import { IoBan, IoVideocam } from "react-icons/io5";
-import { useAppSelector } from "../../../app/hooks";
-import KickDialog from "./KickDialog";
+import { Box, Flex, Icon, Image, Text } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import { IoMdMic } from 'react-icons/io';
+import { IoBan, IoVideocam } from 'react-icons/io5';
+import { useAppSelector } from '../../../app/hooks';
+import KickDialog from './KickDialog';
 
 interface Props {}
 
@@ -25,14 +25,14 @@ const ParticipantTab: React.FC<Props> = () => {
               <Box marginLeft="auto">
                 <Icon
                   as={IoMdMic}
-                  fontSize="1.5rem"
+                  fontSize={{ base: '1rem', '2xl': '1.5rem' }}
                   color="#77829c"
                   cursor="pointer"
                   mr="1rem"
                 />
                 <Icon
                   as={IoVideocam}
-                  fontSize="1.5rem"
+                  fontSize={{ base: '1rem', '2xl': '1.5rem' }}
                   color="#77829c"
                   cursor="pointer"
                   mr="1rem"
@@ -41,7 +41,7 @@ const ParticipantTab: React.FC<Props> = () => {
                   <>
                     <Icon
                       as={IoBan}
-                      fontSize="1.5rem"
+                      fontSize={{ base: '1rem', '2xl': '1.5rem' }}
                       color="#77829c"
                       cursor="pointer"
                       mr="1rem"

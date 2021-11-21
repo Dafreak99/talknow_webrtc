@@ -14,8 +14,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - '5000:5000'
-  # sfu:
-  #   image: pionwebrtc/ion-sfu:latest-jsonrpc
-  #   ports:
-  #     - '5000-5200:5000-5200/udp'
-  #     - '7000:7000'
+  sfu:
+    image: pionwebrtc/ion-sfu:latest-jsonrpc
+    ports:
+      - '5000-5200:5000-5200/udp'
+      - '7000:7000'
