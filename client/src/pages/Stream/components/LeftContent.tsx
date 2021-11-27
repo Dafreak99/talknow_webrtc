@@ -1,26 +1,49 @@
-import { Box } from "@chakra-ui/react";
-import React from "react";
-import { useAppSelector } from "../../../app/hooks";
-import LocalStream from "./LocalStream";
-import UsersStream from "./UsersStream";
-import Whiteboard from "./Whiteboard";
+import { Flex, Box } from '@chakra-ui/react';
+import React from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { useAppSelector } from '../../../app/hooks';
+import RemoteStream from '../../../components/RemoteStream';
+import UsersStream from './UsersStream';
+import Whiteboard from './Whiteboard';
 
 interface Props {}
 
 const RightContent: React.FC<Props> = () => {
-  const { minimizeLocalStream } = useAppSelector((state) => state.stream);
   const { isShowedChat } = useAppSelector((state) => state.message);
   const { isWhiteBoard } = useAppSelector((state) => state.room.roomInfo);
+  const { users } = useAppSelector((state) => state.room.roomInfo);
+  const { mySocketId } = useAppSelector((state) => state.stream);
 
   return (
-    <Box
+    <Flex
       transition="350ms all"
-      width={isShowedChat ? "77vw" : "100vw"}
+      width={isShowedChat ? '77vw' : '100vw'}
       position="relative"
     >
-      {isWhiteBoard ? <Whiteboard /> : <UsersStream />}
-      {!minimizeLocalStream && <LocalStream />}
-    </Box>
+      {isWhiteBoard ? (
+        <>
+          <Whiteboard />
+          <Box ml="10px">
+            <Swiper direction={'vertical'} slidesPerView={3}>
+              {users.map((user, i) => (
+                <>
+                  {user.socketId !== mySocketId &&
+                    user.streamType !== 'screen' && (
+                      <SwiperSlide>
+                        <Box key={i} className="overlay__container">
+                          <RemoteStream user={user} count={users.length - 1} />
+                        </Box>
+                      </SwiperSlide>
+                    )}
+                </>
+              ))}
+            </Swiper>
+          </Box>
+        </>
+      ) : (
+        <UsersStream />
+      )}
+    </Flex>
   );
 };
 

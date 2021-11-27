@@ -2,7 +2,6 @@ import { Box, Flex, Heading } from '@chakra-ui/react';
 import { RedirectToSignIn, SignedIn, SignedOut } from '@clerk/clerk-react';
 import React, { useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import Logo from '../../components/Logo';
 import Navbar from '../../components/Navbar';
 import ReviewStream from '../../components/ReviewStream';
 import { connectIonSFU } from '../../utils/ionSFU';
@@ -16,6 +15,8 @@ const GuestWaiting: React.FC<Props> = () => {
   const history = useHistory();
 
   useEffect(() => {
+    localStorage.setItem('roomId', params.roomId);
+
     connectSignallingServer();
     roomInfo();
   }, []);

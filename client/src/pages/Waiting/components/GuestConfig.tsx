@@ -6,12 +6,12 @@ import {
   ListItem,
   Skeleton,
   Stack,
-} from "@chakra-ui/react";
-import { SignedIn, useUser } from "@clerk/clerk-react";
-import React from "react";
-import { AiFillThunderbolt } from "react-icons/ai";
-import { useAppSelector } from "../../../app/hooks";
-import JoinRoom from "./JoinRoom";
+} from '@chakra-ui/react';
+import { SignedIn } from '@clerk/clerk-react';
+import React from 'react';
+import { AiFillThunderbolt } from 'react-icons/ai';
+import { useAppSelector } from '../../../app/hooks';
+import JoinRoom from './JoinRoom';
 
 interface Props {}
 
@@ -28,12 +28,8 @@ const GuestConfig: React.FC<Props> = () => {
     admission,
   } = useAppSelector((state) => state.room.roomInfo);
 
-  const user = useUser();
-
-  console.log(user);
-
   return (
-    <Box width={{ base: "60%", md: "50%" }}>
+    <Box width={{ base: '60%', md: '50%' }}>
       <Box
         p="3rem 2rem"
         bg="#fff"
@@ -64,7 +60,7 @@ const GuestConfig: React.FC<Props> = () => {
                 <Box as="span" fontWeight="semibold" mr="5px">
                   <Icon as={AiFillThunderbolt} /> Video:
                 </Box>
-                <Badge colorScheme={allowVideo ? "green" : "red"}>
+                <Badge colorScheme={allowVideo ? 'green' : 'red'}>
                   {allowVideo.toString()}
                 </Badge>
               </ListItem>
@@ -79,7 +75,7 @@ const GuestConfig: React.FC<Props> = () => {
                 <Box as="span" fontWeight="semibold" mr="5px">
                   <Icon as={AiFillThunderbolt} /> Audio:
                 </Box>
-                <Badge colorScheme={allowAudio ? "green" : "red"}>
+                <Badge colorScheme={allowAudio ? 'green' : 'red'}>
                   {allowAudio.toString()}
                 </Badge>
               </ListItem>

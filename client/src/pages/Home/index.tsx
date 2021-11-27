@@ -10,7 +10,7 @@ import {
   InputLeftElement,
   Text,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { IoEnterOutline } from 'react-icons/io5';
@@ -25,12 +25,18 @@ interface Inputs {
 }
 const Home: React.FC<Props> = () => {
   const history = useHistory();
-
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm();
+
+  useEffect(() => {
+    const roomId = localStorage.getItem('roomId');
+    if (roomId) {
+      history.push(`/guest-waiting/${roomId}`);
+    }
+  }, []);
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     history.push(`/guest-waiting/${data.roomId}`);

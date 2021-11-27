@@ -1,5 +1,5 @@
-import { Box } from "@chakra-ui/react";
-import React from "react";
+import { Box } from '@chakra-ui/react';
+import React from 'react';
 
 interface Props {}
 
@@ -9,8 +9,8 @@ const Whiteboard: React.FC<Props> = () => {
       h="calc(100vh - 100px - 40px)"
       as="iframe"
       src="https://app.tryeraser.com/workspace/PlyCw5ua9AjjUkTaqE2C"
-      title="W3Schools Free Online Web Tutorials"
-      w="100%"
+      title="Whiteboarding"
+      w="80%"
     />
   );
 };

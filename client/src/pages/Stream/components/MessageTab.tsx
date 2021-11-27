@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import { BaseEmoji, Picker } from 'emoji-mart';
-import React, { FormEvent, useRef, useState } from 'react';
+import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import { FiSend } from 'react-icons/fi';
 import { MdInsertEmoticon } from 'react-icons/md';
 import { useAppSelector } from '../../../app/hooks';
@@ -34,6 +34,10 @@ const MessageTab: React.FC<Props> = () => {
     handler: () => setIsModalOpen(false),
   });
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!message) return;
@@ -53,7 +57,11 @@ const MessageTab: React.FC<Props> = () => {
 
   return (
     <>
-      <Box h="60vh" overflow="scroll" className="hide-scroll-bar">
+      <Box
+        h={{ base: '390px', '2xl': '60vh' }}
+        overflow="scroll"
+        className="hide-scroll-bar"
+      >
         {messages.map(({ from, socketId, content, timestamp, avatar }) => (
           <Flex
             key={timestamp}
@@ -82,7 +90,7 @@ const MessageTab: React.FC<Props> = () => {
             </Box>
           </Flex>
         ))}
-        <Box ref={messagesEndRef} />
+        <Box ref={messagesEndRef} marginBottom="30px" />
       </Box>
       <Box mt="auto">
         <Flex

@@ -1,9 +1,10 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Request, Room } from "../../types";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Request, Room } from '../../types';
 
 interface InitialState {
   roomInfoReady: boolean;
   roomInfo: Room;
+  roomId: null;
 }
 
 const initialState: InitialState = {
@@ -14,10 +15,11 @@ const initialState: InitialState = {
     joinRequests: [] as Request[],
     updateLayout: 1,
   } as Room,
+  roomId: null,
 };
 
 const roomSlice = createSlice({
-  name: "room",
+  name: 'room',
   initialState,
   reducers: {
     setRoomInfo: (state: InitialState, action) => {
@@ -64,7 +66,7 @@ const roomSlice = createSlice({
     },
     removeUserScreen: (state: InitialState) => {
       state.roomInfo.users = state.roomInfo.users.filter(
-        (user) => user.streamType !== "screen"
+        (user) => user.streamType !== 'screen'
       );
     },
     clearRoomInfo: (state: InitialState, action) => {
@@ -112,10 +114,10 @@ const roomSlice = createSlice({
         state.roomInfo.joinRequests.shift();
       }
     },
-    updateLayout: (state: InitialState)=>{
+    updateLayout: (state: InitialState) => {
       // Uses this function to update the layout by triggering the useEffect hook
       state.roomInfo.updateLayout = Math.random() * 1000;
-    }
+    },
   },
 });
 
@@ -134,7 +136,7 @@ export const {
   stopSpeaking,
   enqueueJoinRequests,
   dequeueJoinRequests,
-  updateLayout
+  updateLayout,
 } = roomSlice.actions;
 
 export default roomSlice.reducer;

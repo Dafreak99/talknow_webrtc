@@ -29,9 +29,11 @@ let socketId: undefined | string;
  * Connect to Node.js signalling server
  */
 export const connectSignallingServer = async () => {
-  socket = process.env.NODE_ENV === 'development'
-  ? io('http://localhost:5000')
-  : io('https://talkserver.gq/')
+  socket =
+    process.env.NODE_ENV === 'development'
+      ? // ? io('http://localhost:5000')
+        io('https://talkserver.gq/')
+      : io('https://talkserver.gq/');
 
   socket.on('connect', function () {
     socketId = socket.id;
@@ -137,7 +139,7 @@ export const requestToJoin = (
   socket.emit('request-to-join', roomId, username);
 
   return new Promise((resolve, reject) => {
-    socket.on('answer-requeqst-to-join', (isAccepted) => {
+    socket.on('answer-requeqst-to-join', (isAccepted: boolean) => {
       resolve(isAccepted);
     });
   });

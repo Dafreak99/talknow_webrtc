@@ -1,12 +1,13 @@
-import { Flex, useToast } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { closeMediaStream, leave, publishPeer } from "../../utils/ionSFU";
-import { forceToLeave, listenToKickUser } from "../../utils/webSocket";
-import JoinRequest from "./components/JoinRequest";
-import LeftContent from "./components/LeftContent";
-import RightContent from "./components/RightContent";
-import StreamButtons from "./components/StreamButtons";
+import { Flex, useToast } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { closeMediaStream, leave, publishPeer } from '../../utils/ionSFU';
+import { forceToLeave, listenToKickUser } from '../../utils/webSocket';
+import JoinRequest from './components/JoinRequest';
+import LeftContent from './components/LeftContent';
+import LocalStream from './components/LocalStream';
+import RightContent from './components/RightContent';
+import StreamButtons from './components/StreamButtons';
 
 interface Props {}
 
@@ -19,6 +20,8 @@ const Stream: React.FC<Props> = () => {
     publishPeer();
     // If host kick you, this'll be call
     listenToKick();
+
+    return localStorage.removeItem('roomId');
   }, []);
 
   const listenToKick = async () => {
@@ -27,13 +30,13 @@ const Stream: React.FC<Props> = () => {
     toast({
       title: "Host've ask you to leave.",
       description: `You'll be automatically removed from the room after ${second} seconds`,
-      status: "warning",
+      status: 'warning',
       duration: 5000,
       onCloseComplete: () => {
         closeMediaStream();
         leave();
         forceToLeave();
-        history.push("/");
+        history.push('/');
       },
     });
 
@@ -48,6 +51,7 @@ const Stream: React.FC<Props> = () => {
       <Flex position="relative" p="20px" bg="#13141b">
         <LeftContent />
         <RightContent />
+        <LocalStream />
       </Flex>
       <StreamButtons />
     </>

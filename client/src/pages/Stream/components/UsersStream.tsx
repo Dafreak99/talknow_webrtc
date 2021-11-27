@@ -50,7 +50,9 @@ const UsersStream: React.FC<Props> = () => {
           flexWrap="wrap"
           h="calc(100vh - 100px - 40px)"
           justifyContent="center"
+          alignItems="center"
           flexDirection="row"
+          w="100%"
         >
           {users.map((user, i) => (
             <>

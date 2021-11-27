@@ -18,7 +18,7 @@ const ParticipantTab: React.FC<Props> = () => {
       {users.map(({ socketId, username, avatar }) => (
         <>
           {socketId !== mySocketId && (
-            <Flex alignItems="center" key={socketId}>
+            <Flex alignItems="center" key={socketId} mb="0.5rem">
               <Image src={avatar} boxSize="3rem" borderRadius="50%" mr="5px" />
 
               <Text>{username}</Text>

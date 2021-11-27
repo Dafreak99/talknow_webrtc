@@ -1,7 +1,7 @@
-import { Box, Text } from "@chakra-ui/react";
-import React, { useEffect, useRef } from "react";
-import Draggable from "react-draggable";
-import { useAppSelector } from "../../../app/hooks";
+import { Box, Text } from '@chakra-ui/react';
+import React, { useEffect, useRef } from 'react';
+import Draggable from 'react-draggable';
+import { useAppSelector } from '../../../app/hooks';
 
 interface Props {}
 const LocalStream: React.FC<Props> = () => {
@@ -16,7 +16,14 @@ const LocalStream: React.FC<Props> = () => {
 
   return (
     <Draggable bounds="parent">
-      <Box position="absolute" top="5%" right="5%" height="150px" width="250px">
+      <Box
+        position="absolute"
+        top="5%"
+        right="5%"
+        height="150px"
+        width="250px"
+        zIndex="100"
+      >
         {!localCameraEnabled && (
           <Text
             color="#fff"

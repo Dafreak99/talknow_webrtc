@@ -22,7 +22,12 @@ import {
 } from '../features/stream/streamSlice';
 import { User } from '../types';
 import SoundMeter from './soundmeter';
-import { shareScreenSignal, userJoined, whiteBoardSignal } from './webSocket';
+import {
+  forceToLeave,
+  shareScreenSignal,
+  userJoined,
+  whiteBoardSignal,
+} from './webSocket';
 
 let client: any;
 let screenClient: any;
@@ -50,7 +55,8 @@ const displaymediastreamconstraints = {
 
 const SERVER_URL =
   process.env.NODE_ENV === 'development'
-    ? 'ws://localhost:7000/ws'
+    ? // ? 'ws://localhost:7000/ws'
+      'wss://talkserver.gq/ws'
     : 'wss://talkserver.gq/ws';
 
 /**
@@ -261,9 +267,9 @@ export const toggleRecord = async () => {
 
   if (!recordScreenEnabled) {
     // @ts-ignore
-    let screen = await navigator.mediaDevices.getDisplayMedia(
-      displaymediastreamconstraints
-    );
+    let screen = await navigator.mediaDevices.getDisplayMedia({
+      displaymediastreamconstraints,
+    });
 
     recorder = new RecordRTC(
       screen as MediaStream,
@@ -302,6 +308,8 @@ const invokeSaveAsDialog = (file: Blob, fileName: string) => {
   // if navigator is not present, manually create file and download
   var hyperlink = document.createElement('a');
   hyperlink.href = URL.createObjectURL(file);
+
+  console.log(generateFileFullName(file, fileName));
   hyperlink.download = generateFileFullName(file, fileName);
 
   // @ts-ignore
@@ -339,11 +347,11 @@ const generateFileFullName = (file: Blob, fileName: string) => {
     fileName = splitted[0];
     fileExtension = splitted[1];
   }
+  let date = new Date();
 
-  const fileFullName =
-    (fileName || Math.round(Math.random() * 9999999999) + 888888888) +
-    '.' +
-    fileExtension;
+  const fileFullName = `${date.getFullYear()}/${
+    date.getMonth() + 1
+  }/${date.getDate()}_talknowrecord.mp4`;
 
   return fileFullName;
 };
@@ -363,7 +371,11 @@ export const leave = () => {
 
   client.close();
 
+  forceToLeave();
+
   store.dispatch(removeUserBySocketId(mySocketId));
+
+  window.location.href = 'https://talknow.tk';
 };
 
 /**

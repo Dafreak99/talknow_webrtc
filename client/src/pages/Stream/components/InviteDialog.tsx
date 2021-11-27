@@ -12,12 +12,12 @@ import {
   InputLeftElement,
   MenuItem,
   useToast,
-} from "@chakra-ui/react";
-import emailjs from "emailjs-com";
-import React, { useRef, useState } from "react";
-import { MdEmail } from "react-icons/md";
-import { RiUserAddFill } from "react-icons/ri";
-import { useAppSelector } from "../../../app/hooks";
+} from '@chakra-ui/react';
+import emailjs from 'emailjs-com';
+import React, { useRef, useState } from 'react';
+import { MdEmail } from 'react-icons/md';
+import { RiUserAddFill } from 'react-icons/ri';
+import { useAppSelector } from '../../../app/hooks';
 
 interface Props {}
 
@@ -26,7 +26,7 @@ const InviteDialog: React.FC<Props> = () => {
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef(null);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
   const [isInvite, setIsInvite] = useState(false);
   const toast = useToast();
 
@@ -46,15 +46,18 @@ const InviteDialog: React.FC<Props> = () => {
         process.env.REACT_APP_EMAILJS_TEMPLATE_ID!,
         {
           to_mail: to,
-          from_name: "haitran",
-          url: `http://localhost:3000/guest-waiting/${roomId}`,
+          from_name: 'haitran',
+          url:
+            process.env.NODE_ENV === 'production'
+              ? `https://talknow.tk/guest-waiting/${roomId}`
+              : `http://localhost:3000/guest-waiting/${roomId}`,
           roomId,
-          roomPassword: password ? password : "none",
+          roomPassword: password ? password : 'none',
         },
         process.env.REACT_APP_EMAILJS_USER_ID
       );
       showToastAfterInviteSuccess();
-      setValue("");
+      setValue('');
     } catch (error) {
       console.log(error);
     }
@@ -64,9 +67,9 @@ const InviteDialog: React.FC<Props> = () => {
 
   const showToastAfterInviteSuccess = () => {
     toast({
-      position: "top",
-      description: "Email has been sent to the user",
-      status: "success",
+      position: 'top',
+      description: 'Email has been sent to the user',
+      status: 'success',
       duration: 1000,
     });
   };
@@ -97,7 +100,7 @@ const InviteDialog: React.FC<Props> = () => {
               <InputGroup>
                 <InputLeftElement
                   pointerEvents="none"
-                  children={<MdEmail style={{ color: "#cfd5e0" }} />}
+                  children={<MdEmail style={{ color: '#cfd5e0' }} />}
                 />
                 <Input
                   type="email"

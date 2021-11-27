@@ -79,3 +79,13 @@ video::-webkit-media-controls {
 .swiper-container.swiper-container-initialized.swiper-container-vertical.swiper-container-pointer-events {
   height: 100%;
 }
+
+.review-stream {
+  height: 25rem;
+}
+
+@media (max-width: 1377px) {
+  .review-stream {
+    height: 20rem;
+  }
+}
