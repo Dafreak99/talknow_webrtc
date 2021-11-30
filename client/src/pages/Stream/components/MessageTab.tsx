@@ -27,7 +27,7 @@ const MessageTab: React.FC<Props> = () => {
   const { mySocketId } = useAppSelector((state) => state.stream);
 
   const ref = useRef<HTMLDivElement>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messageEl = useRef<HTMLDivElement>(null);
 
   useOutsideClick({
     ref: ref,
@@ -35,10 +35,16 @@ const MessageTab: React.FC<Props> = () => {
   });
 
   useEffect(() => {
-    if (isShowedChat) {
-      scrollToBottom();
+    if (messageEl) {
+      messageEl!.current!.addEventListener('DOMNodeInserted', (event) => {
+        const { currentTarget: target } = event;
+        (target as Element).scroll({
+          top: (target as Element).scrollHeight,
+          behavior: 'smooth',
+        });
+      });
     }
-  }, [isShowedChat]);
+  }, []);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -46,11 +52,6 @@ const MessageTab: React.FC<Props> = () => {
 
     messaging(message);
     setMessage('');
-    scrollToBottom();
-  };
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const onSelectEmoji = (data: BaseEmoji) => {
@@ -63,6 +64,7 @@ const MessageTab: React.FC<Props> = () => {
         h={{ base: '390px', '2xl': '60vh' }}
         overflow="scroll"
         className="hide-scroll-bar"
+        ref={messageEl}
       >
         {messages.map(({ from, socketId, content, timestamp, avatar }) => (
           <Flex
@@ -92,7 +94,6 @@ const MessageTab: React.FC<Props> = () => {
             </Box>
           </Flex>
         ))}
-        <Box ref={messagesEndRef} marginBottom="30px" />
       </Box>
       <Box mt="auto">
         <Flex
