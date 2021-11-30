@@ -1,4 +1,3 @@
-import { string } from '@tensorflow/tfjs-core';
 import { LocalStream } from 'ion-sdk-js';
 import io, { Socket } from 'socket.io-client';
 import { store } from '../app/store';

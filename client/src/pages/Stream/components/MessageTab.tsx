@@ -23,7 +23,7 @@ const MessageTab: React.FC<Props> = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [message, setMessage] = useState('');
 
-  const { messages } = useAppSelector((state) => state.message);
+  const { messages, isShowedChat } = useAppSelector((state) => state.message);
   const { mySocketId } = useAppSelector((state) => state.stream);
 
   const ref = useRef<HTMLDivElement>(null);
@@ -35,8 +35,10 @@ const MessageTab: React.FC<Props> = () => {
   });
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (isShowedChat) {
+      scrollToBottom();
+    }
+  }, [isShowedChat]);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();

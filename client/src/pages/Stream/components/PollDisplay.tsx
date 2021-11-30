@@ -6,7 +6,6 @@ import {
   ModalHeader,
   ModalBody,
 } from '@chakra-ui/react';
-import 'react-leaf-polls/dist/index.css';
 
 import { useAppSelector } from '../../../app/hooks';
 import Poll from './Poll';

@@ -89,8 +89,3 @@ video::-webkit-media-controls {
     height: 20rem;
   }
 }
-
-.canva {
-  background-image: url('./images/argentina.jpg');
-  background-size: cover;
-}
