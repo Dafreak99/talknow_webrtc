@@ -73,7 +73,7 @@ async function main() {
     return res.send('Finish');
   });
 
-  app.get('/show', async (req, res) => {
+  app.get('/show', async (req: Request, res: Response) => {
     let room = await Room.find().populate('users');
     res.send(room);
   });
@@ -85,7 +85,8 @@ io.on('connection', (socket: Socket) => {
 
     logger.debug('User joined');
 
-    const { roomId, hostName, username, streamId, streamType, avatar } = data;
+    const { roomId, hostName, username, streamId, streamType, avatar, hostId } =
+      data;
 
     socket.join(roomId);
 
@@ -104,6 +105,7 @@ io.on('connection', (socket: Socket) => {
 
     if (type === 'host') {
       const { allowVideo, allowAudio } = data;
+
       let room = new Room({
         ...data,
         roomId,
@@ -205,6 +207,18 @@ io.on('connection', (socket: Socket) => {
     io.to(socketId).emit('kick-user');
   });
 
+  socket.on('send-poll-data', (data: any, roomId: string) => {
+    logger.debug('poll', data);
+    logger.debug('roomIddđ', roomId);
+
+    socket.to(roomId).emit('send-poll-data', data);
+  });
+
+  socket.on('send-vote', (data: { hostId: string; answer: string }) => {
+    const { hostId, answer } = data;
+    io.to(hostId).emit('send-vote', answer);
+  });
+
   socket.on('disconnect', async function () {
     logger.debug('disconnect');
 
@@ -238,27 +252,9 @@ io.on('connection', (socket: Socket) => {
           users,
         }
       );
-      // rooms[myRoomId as string].users = rooms[
-      // 	myRoomId as string
-      // ].users.filter((user) => user.socketId !== socket.id);
 
       socket.to(myRoomId as string).emit('user-leave', socket.id);
     }
-
-    // if (!rooms[myRoomId as string]) return;
-
-    // if (socket.id === rooms[myRoomId as string].hostId) {
-    // 	// Host leave
-    // 	socket.to(myRoomId as string).emit("host-leave");
-    // 	delete rooms[myRoomId as string];
-    // 	myRoomId = null;
-    // } else {
-    // 	rooms[myRoomId as string].users = rooms[
-    // 		myRoomId as string
-    // 	].users.filter((user) => user.socketId !== socket.id);
-
-    // 	socket.to(myRoomId as string).emit("user-leave", socket.id);
-    // }
   });
 });
 

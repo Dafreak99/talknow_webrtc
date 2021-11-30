@@ -111,6 +111,7 @@ const MessageTab: React.FC<Props> = () => {
               fontSize={{ md: '12px', '2xl': '1rem' }}
             />
             <InputRightElement
+              zIndex="1"
               children={<FiSend color="rgb(146, 158, 150)" />}
             />
           </InputGroup>

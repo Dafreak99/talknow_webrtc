@@ -3,10 +3,11 @@ import {
   configureStore,
   getDefaultMiddleware,
   ThunkAction,
-} from "@reduxjs/toolkit";
-import messageSlice from "../features/message/messageSlice";
-import roomSlice from "../features/room/roomSlice";
-import streamSlice from "../features/stream/streamSlice";
+} from '@reduxjs/toolkit';
+import messageSlice from '../features/message/messageSlice';
+import pollSlice from '../features/poll/pollSlice';
+import roomSlice from '../features/room/roomSlice';
+import streamSlice from '../features/stream/streamSlice';
 
 const customizedMiddleware = getDefaultMiddleware({
   serializableCheck: false,
@@ -17,6 +18,7 @@ export const store = configureStore({
     stream: streamSlice,
     message: messageSlice,
     room: roomSlice,
+    poll: pollSlice,
   },
   middleware: customizedMiddleware,
 });

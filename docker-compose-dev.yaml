@@ -6,6 +6,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - '5000:5000'
+    volumes:
+      - './server/src:/app/server/src'
+
   sfu:
     image: pionwebrtc/ion-sfu:latest-jsonrpc
     ports:

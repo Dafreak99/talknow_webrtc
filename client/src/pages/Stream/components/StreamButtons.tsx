@@ -31,6 +31,8 @@ import {
   toggleWhiteboard,
 } from '../../../utils/ionSFU';
 import InviteDialog from './InviteDialog';
+import PollDialog from './PollDialog';
+import PollDisplay from './PollDisplay';
 import RoomInfo from './RoomInfo';
 
 interface Props {}
@@ -42,9 +44,10 @@ const StreamButtons: React.FC<Props> = () => {
     localMicrophoneEnabled,
     shareScreenEnabled,
     recordScreenEnabled,
+    mySocketId,
   } = useAppSelector((state) => state.stream);
   const { newMessage } = useAppSelector((state) => state.message);
-  const { isWhiteBoard, roomId } = useAppSelector(
+  const { isWhiteBoard, roomId, hostId } = useAppSelector(
     (state) => state.room.roomInfo
   );
 
@@ -158,6 +161,8 @@ const StreamButtons: React.FC<Props> = () => {
           </MenuButton>
           <MenuList>
             <RoomInfo />
+            {/* Host only */}
+            {mySocketId === hostId && <PollDialog />}
             <InviteDialog />
           </MenuList>
         </Menu>

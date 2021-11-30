@@ -6,6 +6,8 @@ import { forceToLeave, listenToKickUser } from '../../utils/webSocket';
 import JoinRequest from './components/JoinRequest';
 import LeftContent from './components/LeftContent';
 import LocalStream from './components/LocalStream';
+import PollDialog from './components/PollDialog';
+import PollDisplay from './components/PollDisplay';
 import RightContent from './components/RightContent';
 import StreamButtons from './components/StreamButtons';
 
@@ -53,6 +55,7 @@ const Stream: React.FC<Props> = () => {
         <RightContent />
         <LocalStream />
       </Flex>
+      <PollDisplay />
       <StreamButtons />
     </>
   );

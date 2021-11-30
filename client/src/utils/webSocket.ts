@@ -1,3 +1,4 @@
+import { string } from '@tensorflow/tfjs-core';
 import { LocalStream } from 'ion-sdk-js';
 import io, { Socket } from 'socket.io-client';
 import { store } from '../app/store';
@@ -5,6 +6,11 @@ import {
   setMessage,
   setToggleNewMessage,
 } from '../features/message/messageSlice';
+import {
+  Answer,
+  setPollData,
+  updatePollVotes,
+} from '../features/poll/pollSlice';
 import {
   enqueueJoinRequests,
   receiveShareScreen,
@@ -31,9 +37,9 @@ let socketId: undefined | string;
 export const connectSignallingServer = async () => {
   socket =
     process.env.NODE_ENV === 'development'
-      ? // ? io('http://localhost:5000')
-        io('https://talkserver.gq/')
-      : io('https://talkserver.gq/');
+      ? io('http://localhost:5000')
+      : // io('https://talkserver.gq/')
+        io('https://talkserver.gq/');
 
   socket.on('connect', function () {
     socketId = socket.id;
@@ -76,10 +82,21 @@ export const connectSignallingServer = async () => {
   socket.on('request-to-join', (socketId, username) => {
     store.dispatch(enqueueJoinRequests({ socketId, username }));
   });
+
+  socket.on(
+    'send-poll-data',
+    (data: { question: string; answers: Answer[] }) => {
+      store.dispatch(setPollData(data));
+    }
+  );
+
+  socket.on('send-vote', (answer: string) => {
+    store.dispatch(updatePollVotes(answer));
+  });
 };
 
 export const createRoom = (data: ConfigRoom) => {
-  const { localStream } = store.getState().stream;
+  const { localStream, mySocketId } = store.getState().stream;
 
   socket.emit('user-joined', {
     data: {
@@ -94,11 +111,17 @@ export const createRoom = (data: ConfigRoom) => {
   store.dispatch(setAvatar(data.avatar));
 
   store.dispatch(
-    setRoomInfo({ ...data, streamId: localStream!.id, users: [] })
+    setRoomInfo({
+      ...data,
+      streamId: localStream!.id,
+      users: [],
+    })
   );
 
   socket.on('host-room-info', (data) => {
-    store.dispatch(setRoomInfo({ ...data, streamId: localStream!.id }));
+    store.dispatch(
+      setRoomInfo({ ...data, streamId: localStream!.id, hostId: mySocketId })
+    );
   });
 };
 
@@ -251,4 +274,22 @@ export const listenToKickUser = (): Promise<boolean> => {
  */
 export const forceToLeave = () => {
   socket.disconnect();
+};
+
+/**
+ * @description: Host sends poll question and answers to users
+ */
+export const sendPollData = (data: { question: string; answers: Answer[] }) => {
+  const { roomId } = store.getState().room.roomInfo;
+
+  socket.emit('send-poll-data', data, roomId);
+};
+
+/**
+ * @description: User sends their vote's selection back to host
+ */
+export const sendvote = (answer: string) => {
+  const { hostId } = store.getState().room.roomInfo;
+
+  socket.emit('send-vote', { hostId, answer });
 };

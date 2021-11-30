@@ -75,7 +75,6 @@ export const connectIonSFU = async () => {
 
     // Setup handlers
     client.ontrack = (track: MediaStreamTrack, stream: RemoteStream) => {
-      console.log('on track');
       track.onmute = () => {
         store.dispatch(appendStreamToUser(stream));
       };
