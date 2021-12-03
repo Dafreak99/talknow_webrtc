@@ -12,6 +12,7 @@ interface Props {}
 const HostWaiting: React.FC<Props> = () => {
   useEffect(() => {
     connectSignallingServer();
+
     //Connect Media Server
     connectIonSFU();
   }, []);

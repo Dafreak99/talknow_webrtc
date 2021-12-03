@@ -14,17 +14,18 @@ import {
   UnorderedList,
   useDisclosure,
   useToast,
-} from '@chakra-ui/react';
-import React from 'react';
-import { AiOutlineCopy } from 'react-icons/ai';
-import { BsFillInfoCircleFill } from 'react-icons/bs';
-import { useAppSelector } from '../../../app/hooks';
+} from "@chakra-ui/react";
+import React from "react";
+import { AiOutlineCopy } from "react-icons/ai";
+import { BsFillInfoCircleFill } from "react-icons/bs";
+import { useAppSelector } from "../../../app/hooks";
 
 interface Props {}
 
 const RoomInfo: React.FC<Props> = () => {
-  const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
+
   const { hostName, roomId, roomName, password } = useAppSelector(
     (state) => state.room.roomInfo
   );
@@ -52,7 +53,7 @@ const RoomInfo: React.FC<Props> = () => {
               mb="1rem"
             >
               <Text>
-                {process.env.NODE_ENV === 'production'
+                {process.env.NODE_ENV === "production"
                   ? `http://talknow.tk/guest-waiting/${roomId}`
                   : `http://localhost:3000/guest-waiting/${roomId}`}
               </Text>
@@ -61,12 +62,12 @@ const RoomInfo: React.FC<Props> = () => {
                 color="#fff"
                 onClick={() => {
                   toast({
-                    description: 'Copy to clipboard',
-                    status: 'success',
+                    description: "Copy to clipboard",
+                    status: "success",
                     duration: 1000,
                   });
                   navigator.clipboard.writeText(
-                    process.env.NODE_ENV === 'production'
+                    process.env.NODE_ENV === "production"
                       ? `http://talknow.tk/guest-waiting/${roomId}`
                       : `http://localhost:3000/guest-waiting/${roomId}`
                   );
@@ -87,7 +88,17 @@ const RoomInfo: React.FC<Props> = () => {
                 </Text>
               </ListItem>
               <ListItem>
-                <Text>
+                <Text
+                  cursor="pointer"
+                  onClick={() => {
+                    toast({
+                      description: "Copy to clipboard",
+                      status: "success",
+                      duration: 1000,
+                    });
+                    navigator.clipboard.writeText(roomId);
+                  }}
+                >
                   Room ID: <strong>{roomId}</strong>
                 </Text>
               </ListItem>

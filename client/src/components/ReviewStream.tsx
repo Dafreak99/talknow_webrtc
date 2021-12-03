@@ -1,7 +1,7 @@
-import { Box, Flex, Spinner, Text } from '@chakra-ui/react';
-import React, { useEffect, useRef } from 'react';
-import { useAppSelector } from '../app/hooks';
-import MediaButton from './MediaButton';
+import { Box, Flex, Spinner, Text } from "@chakra-ui/react";
+import React, { useEffect, useRef } from "react";
+import { useAppSelector } from "../app/hooks";
+import MediaButton from "./MediaButton";
 
 interface Props {}
 
@@ -16,7 +16,7 @@ const ReviewStream: React.FC<Props> = () => {
   }, [localStream]);
 
   return (
-    <Box width={{ base: '40%', md: '50%' }}>
+    <Box width={{ base: "40%", md: "50%" }}>
       <Box height="auto" position="relative">
         {/* Video */}
         <video
@@ -26,11 +26,11 @@ const ReviewStream: React.FC<Props> = () => {
           autoPlay
           className="review-stream"
           style={{
-            borderRadius: '10px',
-            width: '100%',
-            background: '#000',
-            objectFit: 'cover',
-            objectPosition: 'top',
+            borderRadius: "10px",
+            width: "100%",
+            background: "#000",
+            objectFit: "cover",
+            objectPosition: "top",
           }}
         />
 
@@ -46,7 +46,7 @@ const ReviewStream: React.FC<Props> = () => {
             left="50%"
           >
             <Spinner mr="1rem" />
-            <Text fontSize="1.5rem" whiteSpace="nowrap">
+            <Text fontSize={{ md: "1rem", lg: "1.5rem" }} whiteSpace="nowrap">
               Loading your video/audio
             </Text>
           </Flex>

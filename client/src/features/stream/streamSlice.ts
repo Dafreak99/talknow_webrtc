@@ -12,6 +12,7 @@ interface InitialState {
   mySocketId: null | string;
   myUsername: null | string;
   myAvatar: null | string;
+  shareScreenStream: null | MediaStream;
 }
 
 export interface RemoteStream {
@@ -33,6 +34,7 @@ const initialState: InitialState = {
   mySocketId: null,
   myUsername: null,
   myAvatar: null,
+  shareScreenStream: null,
 };
 
 const streamSlice = createSlice({
@@ -84,6 +86,9 @@ const streamSlice = createSlice({
     setAvatar: (state: InitialState, action) => {
       state.myAvatar = action.payload;
     },
+    setShareScreenStream: (state: InitialState, action) => {
+      state.shareScreenStream = action.payload;
+    },
   },
 });
 
@@ -100,6 +105,7 @@ export const {
   setSocketId,
   setUsername,
   setAvatar,
+  setShareScreenStream,
 } = streamSlice.actions;
 
 export default streamSlice.reducer;

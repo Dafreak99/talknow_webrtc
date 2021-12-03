@@ -8,20 +8,20 @@ import {
   InputRightElement,
   Text,
   useOutsideClick,
-} from '@chakra-ui/react';
-import { format } from 'date-fns';
-import { BaseEmoji, Picker } from 'emoji-mart';
-import React, { FormEvent, useEffect, useRef, useState } from 'react';
-import { FiSend } from 'react-icons/fi';
-import { MdInsertEmoticon } from 'react-icons/md';
-import { useAppSelector } from '../../../app/hooks';
-import { messaging } from '../../../utils/webSocket';
+} from "@chakra-ui/react";
+import { format } from "date-fns";
+import { BaseEmoji, Picker } from "emoji-mart";
+import React, { FormEvent, useEffect, useRef, useState } from "react";
+import { FiSend } from "react-icons/fi";
+import { MdInsertEmoticon } from "react-icons/md";
+import { useAppSelector } from "../../../app/hooks";
+import { messaging } from "../../../utils/webSocket";
 
 interface Props {}
 
 const MessageTab: React.FC<Props> = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   const { messages, isShowedChat } = useAppSelector((state) => state.message);
   const { mySocketId } = useAppSelector((state) => state.stream);
@@ -36,11 +36,11 @@ const MessageTab: React.FC<Props> = () => {
 
   useEffect(() => {
     if (messageEl) {
-      messageEl!.current!.addEventListener('DOMNodeInserted', (event) => {
+      messageEl!.current!.addEventListener("DOMNodeInserted", (event) => {
         const { currentTarget: target } = event;
         (target as Element).scroll({
           top: (target as Element).scrollHeight,
-          behavior: 'smooth',
+          behavior: "smooth",
         });
       });
     }
@@ -51,7 +51,7 @@ const MessageTab: React.FC<Props> = () => {
     if (!message) return;
 
     messaging(message);
-    setMessage('');
+    setMessage("");
   };
 
   const onSelectEmoji = (data: BaseEmoji) => {
@@ -61,7 +61,8 @@ const MessageTab: React.FC<Props> = () => {
   return (
     <>
       <Box
-        h={{ base: '390px', '2xl': '60vh' }}
+        // h={{ base: '390px', '2xl': '60vh' }}
+        h="calc(100% - 120px)"
         overflow="scroll"
         className="hide-scroll-bar"
         ref={messageEl}
@@ -69,7 +70,7 @@ const MessageTab: React.FC<Props> = () => {
         {messages.map(({ from, socketId, content, timestamp, avatar }) => (
           <Flex
             key={timestamp}
-            alignItems={socketId === mySocketId ? 'flex-end' : 'flex-start'}
+            alignItems={socketId === mySocketId ? "flex-end" : "flex-start"}
             mb="15px"
           >
             {socketId !== mySocketId && (
@@ -81,11 +82,11 @@ const MessageTab: React.FC<Props> = () => {
                 mr="1rem"
               />
             )}
-            <Box marginLeft={socketId === mySocketId ? 'auto' : '0'}>
+            <Box marginLeft={socketId === mySocketId ? "auto" : "0"}>
               <Text mb="5px" color="gray.300">
                 {socketId !== mySocketId
-                  ? `${from}, ${format(new Date(timestamp), 'hh:mm')}`
-                  : 'You, ' + format(new Date(timestamp), 'hh:mm')}
+                  ? `${from}, ${format(new Date(timestamp), "hh:mm")}`
+                  : "You, " + format(new Date(timestamp), "hh:mm")}
               </Text>
 
               <Box p="8px 30px" bg="#e7eff8" borderRadius="10px">
@@ -95,7 +96,7 @@ const MessageTab: React.FC<Props> = () => {
           </Flex>
         ))}
       </Box>
-      <Box mt="auto">
+      <Box>
         <Flex
           as="form"
           onSubmit={onSubmit}
@@ -111,7 +112,7 @@ const MessageTab: React.FC<Props> = () => {
               onChange={(e) => setMessage(e.target.value)}
               color="#fff"
               autoComplete="off"
-              fontSize={{ md: '12px', '2xl': '1rem' }}
+              fontSize={{ md: "12px", "2xl": "1rem" }}
             />
             <InputRightElement
               zIndex="1"
@@ -124,10 +125,10 @@ const MessageTab: React.FC<Props> = () => {
               <Picker
                 onSelect={onSelectEmoji}
                 style={{
-                  position: 'absolute',
-                  bottom: '150%',
+                  position: "absolute",
+                  bottom: "150%",
                   right: 0,
-                  cursor: 'pointer',
+                  cursor: "pointer",
                 }}
               />
               <Icon
