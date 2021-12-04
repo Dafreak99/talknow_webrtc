@@ -1,3 +1,4 @@
+import cors from "cors";
 import express, { Request, Response } from "express";
 import http from "http";
 import log4js from "log4js";
@@ -12,6 +13,7 @@ const logger = log4js.getLogger();
 logger.level = "debug";
 
 const app = express();
+app.use(cors());
 
 const httpServer = http.createServer(app);
 

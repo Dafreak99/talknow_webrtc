@@ -244,7 +244,7 @@ export const shareScreen = async () => {
     const screenShare = await LocalStream.getDisplayMedia({
       video: true,
       audio: true,
-      resolution: "hd",
+      resolution: "vga",
       codec: "vp8",
     } as Constraints);
 
