@@ -1,14 +1,15 @@
-import express, { Request, Response } from 'express';
-import http from 'http';
-import log4js from 'log4js';
-import mongoose from 'mongoose';
-import { Server, Socket } from 'socket.io';
-import Room from './models/Room';
-import User from './models/User';
+import express, { Request, Response } from "express";
+import http from "http";
+import log4js from "log4js";
+import mongoose from "mongoose";
+import { Server, Socket } from "socket.io";
+import Room from "./models/Room";
+import User from "./models/User";
+
 const logger = log4js.getLogger();
 
 // log4js by default will not output any logs
-logger.level = 'debug';
+logger.level = "debug";
 
 const app = express();
 
@@ -18,8 +19,8 @@ const PORT = 5000;
 
 const io = new Server(httpServer, {
   cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
+    origin: "*",
+    methods: ["GET", "POST"],
   },
 });
 
@@ -32,78 +33,80 @@ const getCurrentRoom = async (socketId: string) => {
 
 async function main() {
   await mongoose.connect(
-    'mongodb+srv://haitran99:programmer2211@cluster0.xpopo.mongodb.net/talknow?retryWrites=true&w=majority'
+    "mongodb+srv://haitran99:programmer2211@cluster0.xpopo.mongodb.net/talknow?retryWrites=true&w=majority"
   );
 
-  app.get('/', (req, res) => {
-    res.send('hello');
+  app.get("/", (req, res) => {
+    res.send("hello");
   });
 
-  app.get('/room', async (req: Request, res: Response) => {
+  app.get("/room", async (req: Request, res: Response) => {
     const room = new Room({
-      hostId: '123',
-      hostName: 'Haitran',
-      admission: 'none',
+      hostId: "123",
+      hostName: "Haitran",
+      admission: "none",
       allowAudio: true,
       allowVideo: true,
-      password: '',
+      password: "",
       isShareScreen: false,
-      roomId: '123',
-      roomName: 'Room 1',
-      screenId: '',
+      roomId: "123",
+      roomName: "Room 1",
+      screenId: "",
       users: [],
     });
 
     await room.save();
 
-    return res.send('Finish');
+    return res.send("Finish");
   });
 
-  app.get('/user', async (req: Request, res: Response) => {
-    const user = new User({
-      username: 'haitran',
-      socketId: '123',
-      streamId: '33333',
-      streamType: 'ok',
-      avatar: 'kdaokdskaod',
-    });
-
-    await user.save();
-
-    return res.send('Finish');
+  app.get("/", async (req: Request, res: Response) => {
+    return res.send("Hi");
   });
 
-  app.get('/show', async (req: Request, res: Response) => {
-    let room = await Room.find().populate('users');
+  app.get("/show", async (req: Request, res: Response) => {
+    let room = await Room.find().populate("users");
     res.send(room);
   });
 }
 
-io.on('connection', (socket: Socket) => {
-  socket.on('user-joined', async ({ data, type }) => {
+io.on("connection", (socket: Socket) => {
+  socket.on("user-joined", async ({ data, type }) => {
     if (!data) return;
 
-    logger.debug('User joined');
+    logger.debug("User joined");
 
-    const { roomId, hostName, username, streamId, streamType, avatar, hostId } =
-      data;
+    const {
+      roomId,
+      hostName,
+      username,
+      streamId,
+      streamType,
+      avatar,
+      isMicrophoneEnabled,
+    } = data;
 
     socket.join(roomId);
 
+    console.log(data);
+
     const user = new User({
-      username: type === 'host' ? hostName : username,
+      username: type === "host" ? hostName : username,
       socketId: socket.id,
       currentRoomId: roomId,
       streamId,
       streamType,
       avatar,
+      isMicrophoneEnabled,
     });
 
-    user.save();
+    user.isMicrophoneEnabled = "aaaaa";
 
-    logger.info('user', user);
+    await user.save();
 
-    if (type === 'host') {
+    logger.info("user", user);
+
+    if (type === "host") {
       const { allowVideo, allowAudio } = data;
 
       let room = new Room({
@@ -115,10 +118,10 @@ io.on('connection', (socket: Socket) => {
         users: [user._id],
       });
 
-      io.to(socket.id).emit('host-room-info', { ...room, users: [user] });
+      io.to(socket.id).emit("host-room-info", { ...room, users: [user] });
 
       await room.save();
-      logger.debug('Room-1', room);
+      logger.debug("Room-1", room);
     } else {
       let room = await Room.findOne({ roomId });
 
@@ -127,104 +130,103 @@ io.on('connection', (socket: Socket) => {
       room.users.push(user._id);
 
       room.save();
-      console.log('called user-joined');
-      io.in(roomId).emit('user-joined', user);
+      io.in(roomId).emit("user-joined", user);
 
-      logger.info('Room-2', room);
+      logger.info("Room-2", room);
     }
   });
 
-  socket.on('get-room-info', async (roomId: string) => {
-    logger.debug('get-room-info', roomId);
+  socket.on("get-room-info", async (roomId: string) => {
+    logger.debug("get-room-info", roomId);
 
     let room = await Room.findOne({ roomId })
-      .populate('users')
-      .select(['-password']);
+      .populate("users")
+      .select(["-password"]);
 
     if (!room) {
-      socket.emit('get-room-info', {
-        status: 'failed',
+      socket.emit("get-room-info", {
+        status: "failed",
         message: "Room doesn't exist",
       });
     } else {
-      socket.emit('get-room-info', {
-        status: 'succeeded',
+      socket.emit("get-room-info", {
+        status: "succeeded",
         data: room,
       });
     }
   });
 
   socket.on(
-    'confirm-room-password',
+    "confirm-room-password",
     async (roomId: string, password: string) => {
       let room = await Room.findOne({ roomId });
       if (!room) return;
 
       if (room.password === password) {
-        socket.emit('confirm-room-password', { status: 'succeeded' });
+        socket.emit("confirm-room-password", { status: "succeeded" });
       } else {
-        socket.emit('confirm-room-password', { status: 'failed' });
+        socket.emit("confirm-room-password", { status: "failed" });
       }
     }
   );
 
-  socket.on('request-to-join', async (roomId: string, username: string) => {
-    logger.debug('request-to-join');
+  socket.on("request-to-join", async (roomId: string, username: string) => {
+    logger.debug("request-to-join");
 
     let room = await Room.findOne({ roomId });
     if (!room) return;
 
-    io.to(room.hostId).emit('request-to-join', socket.id, username);
+    io.to(room.hostId).emit("request-to-join", socket.id, username);
   });
 
   socket.on(
-    'answer-request-to-join',
+    "answer-request-to-join",
     (data: { socketId: string; isAccepted: boolean }) => {
-      io.to(data.socketId).emit('answer-requeqst-to-join', data.isAccepted);
+      io.to(data.socketId).emit("answer-requeqst-to-join", data.isAccepted);
     }
   );
 
-  socket.on('broadcast-message', (data) => {
-    io.sockets.emit('broadcast-message', {
+  socket.on("broadcast-message", (data) => {
+    io.sockets.emit("broadcast-message", {
       ...data,
       socketId: socket.id,
     });
   });
 
-  socket.on('share-screen', async (roomId: string) => {
+  socket.on("share-screen", async (roomId: string) => {
     await Room.findOneAndUpdate({ roomId }, { isShareScreen: true });
 
-    io.in(roomId as string).emit('share-screen');
+    io.in(roomId as string).emit("share-screen");
   });
 
-  socket.on('white-board', (roomId: string) => {
-    logger.debug('white-board');
-    io.in(roomId).emit('white-board');
+  socket.on("white-board", (roomId: string) => {
+    logger.debug("white-board");
+    io.in(roomId).emit("white-board");
   });
 
-  socket.on('kick-user', (socketId: string) => {
-    logger.debug('kick-user ' + socketId);
-    io.to(socketId).emit('kick-user');
+  socket.on("kick-user", (socketId: string) => {
+    logger.debug("kick-user " + socketId);
+    io.to(socketId).emit("kick-user");
   });
 
-  socket.on('send-poll-data', (data: any, roomId: string) => {
-    logger.debug('poll', data);
-    logger.debug('roomIddđ', roomId);
+  socket.on("send-poll-data", (data: any, roomId: string) => {
+    logger.debug("poll", data);
+    logger.debug("roomIddđ", roomId);
 
-    socket.to(roomId).emit('send-poll-data', data);
+    socket.to(roomId).emit("send-poll-data", data);
   });
 
-  socket.on('send-vote', (data: { hostId: string; answer: string }) => {
+  socket.on("send-vote", (data: { hostId: string; answer: string }) => {
     const { hostId, answer } = data;
-    io.to(hostId).emit('send-vote', answer);
+    io.to(hostId).emit("send-vote", answer);
   });
 
-  socket.on('disconnect', async function () {
-    logger.debug('disconnect');
+  socket.on("disconnect", async function () {
+    logger.debug("disconnect");
 
     let myRoomId = await getCurrentRoom(socket.id);
     let leaveUser = await User.findOne({ socketId: socket.id });
-    logger.debug('leave user', leaveUser);
+    logger.debug("leave user", leaveUser);
 
     if (!myRoomId) return;
 
@@ -233,7 +235,7 @@ io.on('connection', (socket: Socket) => {
 
     if (socket.id === room.hostId) {
       // Host leave
-      socket.to(myRoomId as string).emit('host-leave');
+      socket.to(myRoomId as string).emit("host-leave");
       // delete rooms[myRoomId as string];
       await Room.findOneAndRemove({ roomId: myRoomId });
     } else {
@@ -244,8 +246,8 @@ io.on('connection', (socket: Socket) => {
       );
 
       // TODO: cannot remove user after leave yet
-      logger.debug('socketId', socket.id);
-      logger.debug('after out', users);
+      logger.debug("socketId", socket.id);
+      logger.debug("after out", users);
       await Room.findOneAndUpdate(
         { roomId: myRoomId },
         {
@@ -253,7 +255,7 @@ io.on('connection', (socket: Socket) => {
         }
       );
 
-      socket.to(myRoomId as string).emit('user-leave', socket.id);
+      socket.to(myRoomId as string).emit("user-leave", socket.id);
     }
   });
 });

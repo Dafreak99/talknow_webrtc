@@ -1,11 +1,13 @@
 import { Flex, useToast } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { useAppSelector } from "../../app/hooks";
 import { closeMediaStream, leave, publishPeer } from "../../utils/ionSFU";
 import { forceToLeave, listenToKickUser } from "../../utils/webSocket";
 import JoinRequest from "./components/JoinRequest";
 import LeftContent from "./components/LeftContent";
 import LocalStream from "./components/LocalStream";
+import MinimizeCircle from "./components/MinimizeCircle";
 import PollDisplay from "./components/PollDisplay";
 import RightContent from "./components/RightContent";
 import StreamButtons from "./components/StreamButtons";
@@ -15,6 +17,7 @@ interface Props {}
 const Stream: React.FC<Props> = () => {
   const toast = useToast();
   const history = useHistory();
+  const { minimizeLocalStream } = useAppSelector((state) => state.stream);
   const [second, setSecond] = useState(5);
 
   useEffect(() => {
@@ -52,7 +55,7 @@ const Stream: React.FC<Props> = () => {
       <Flex position="relative" p="20px" bg="#13141b">
         <LeftContent />
         <RightContent />
-        <LocalStream />
+        {minimizeLocalStream ? <MinimizeCircle /> : <LocalStream />}
       </Flex>
       <PollDisplay />
       <StreamButtons />

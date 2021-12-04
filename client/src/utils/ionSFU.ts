@@ -11,6 +11,7 @@ import {
   removeUserBySocketId,
   speaking,
   stopSpeaking,
+  updateLayout,
   userToggleVideo,
 } from "../features/room/roomSlice";
 import {
@@ -217,6 +218,7 @@ export const toggleShareScreen = () => {
     shareScreenSignal();
     screenClient.leave();
     shareScreenStream!.getTracks().forEach((track) => track.stop());
+    store.dispatch(updateLayout());
   } else {
     shareScreen();
   }

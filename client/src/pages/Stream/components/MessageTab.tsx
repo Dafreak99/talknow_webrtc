@@ -62,7 +62,9 @@ const MessageTab: React.FC<Props> = () => {
     <>
       <Box
         // h={{ base: '390px', '2xl': '60vh' }}
-        h="calc(100% - 120px)"
+        // h="calc(100vw - 100px - 120px - 70px)"
+        // h="calc(100% - 120px)"
+        flex="1"
         overflow="scroll"
         className="hide-scroll-bar"
         ref={messageEl}
@@ -96,7 +98,7 @@ const MessageTab: React.FC<Props> = () => {
           </Flex>
         ))}
       </Box>
-      <Box>
+      <Box mt={{ base: 0, "2xl": "auto" }}>
         <Flex
           as="form"
           onSubmit={onSubmit}

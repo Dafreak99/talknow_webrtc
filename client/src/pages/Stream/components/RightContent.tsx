@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { CgClose } from "react-icons/cg";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { setToggleShowChat } from "../../../features/message/messageSlice";
+import { updateLayout } from "../../../features/room/roomSlice";
 import MessageTab from "./MessageTab";
 import ParticipantTab from "./ParticipantTab";
 
@@ -40,7 +41,7 @@ const RightContent: React.FC<Props> = () => {
         <Flex>
           <Text
             fontWeight="semibold"
-            p="10px 15px"
+            p={{ base: "10px 10px", xl: "10px 15px" }}
             bg={index === 0 ? "#c2d6ef" : "transparent"}
             color={index === 0 ? "#344880" : "gray.200"}
             borderRadius="10px"
@@ -74,10 +75,13 @@ const RightContent: React.FC<Props> = () => {
           fontSize="1.5rem"
           cursor="pointer"
           color="gray.300"
-          onClick={() => dispatch(setToggleShowChat())}
+          onClick={() => {
+            dispatch(setToggleShowChat());
+            dispatch(updateLayout());
+          }}
         />
       </Flex>
-      <Flex p="2rem" flexDirection="column" h="100%">
+      <Flex p="2rem" flexDirection="column" h="calc(100vh - 200px)">
         {isMessageTab ? <MessageTab /> : <ParticipantTab />}
       </Flex>
     </Flex>

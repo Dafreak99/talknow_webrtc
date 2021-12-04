@@ -94,13 +94,15 @@ export const connectSignallingServer = async () => {
 };
 
 export const createRoom = (data: ConfigRoom) => {
-  const { localStream, mySocketId } = store.getState().stream;
+  const { localStream, mySocketId, localMicrophoneEnabled } =
+    store.getState().stream;
 
   socket.emit("user-joined", {
     data: {
       ...data,
       streamType: "host",
       streamId: localStream!.id,
+      isMicrophoneEnabled: String(localMicrophoneEnabled),
     },
     type: "host",
   });
@@ -139,6 +141,8 @@ export const userJoined = (
     localStream = screenShare as LocalStream;
   }
 
+  const { localMicrophoneEnabled } = store.getState().stream;
+
   store.dispatch(setAvatar(avatar));
 
   socket.emit("user-joined", {
@@ -148,6 +152,7 @@ export const userJoined = (
       streamId: localStream!.id,
       streamType: type,
       avatar,
+      isMicrophoneEnabled: localMicrophoneEnabled,
     },
     type,
   });

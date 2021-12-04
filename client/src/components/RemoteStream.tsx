@@ -75,7 +75,6 @@ const RemoteStream: React.FC<Props> = ({ user, count }) => {
           height: "100%",
           borderRadius: "10px",
           objectFit: count >= 5 ? "cover" : "fill",
-          transform: "scaleX(-1)",
           borderColor: !user.isCameraEnabled
             ? "#414144"
             : user.isSpeaking
