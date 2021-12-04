@@ -102,7 +102,7 @@ export const createRoom = (data: ConfigRoom) => {
       ...data,
       streamType: "host",
       streamId: localStream!.id,
-      isMicrophoneEnabled: String(localMicrophoneEnabled),
+      isMicrophoneEnabled: localMicrophoneEnabled,
     },
     type: "host",
   });

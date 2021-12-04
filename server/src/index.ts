@@ -13,7 +13,11 @@ const logger = log4js.getLogger();
 logger.level = "debug";
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://talknow.tk",
+  })
+);
 
 const httpServer = http.createServer(app);
 
@@ -101,8 +105,6 @@ io.on("connection", (socket: Socket) => {
       avatar,
       isMicrophoneEnabled,
     });
-
-    user.isMicrophoneEnabled = "aaaaa";
 
     await user.save();
 
