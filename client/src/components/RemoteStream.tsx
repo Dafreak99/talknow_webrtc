@@ -1,7 +1,7 @@
 import { Box, Icon, Image, Text } from "@chakra-ui/react";
 import React, { useEffect, useRef } from "react";
 import { BsArrowsFullscreen } from "react-icons/bs";
-import { IoMic } from "react-icons/io5";
+import { IoMdMic, IoMdMicOff } from "react-icons/io";
 import { User } from "../types";
 
 interface Props {
@@ -54,7 +54,8 @@ const RemoteStream: React.FC<Props> = ({ user, count }) => {
         p="5px 15px"
         borderRadius="3px"
       >
-        <Icon as={IoMic} /> {user.username}
+        <Icon as={user.isMicrophoneEnabled ? IoMdMic : IoMdMicOff} />{" "}
+        {user.username}
       </Text>
       {!user.isCameraEnabled && (
         <Box

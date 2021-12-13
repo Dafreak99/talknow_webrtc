@@ -94,8 +94,6 @@ io.on("connection", (socket: Socket) => {
 
     socket.join(roomId);
 
-    console.log(data);
-
     const user = new User({
       username: type === "host" ? hostName : username,
       socketId: socket.id,
@@ -223,6 +221,10 @@ io.on("connection", (socket: Socket) => {
   socket.on("send-vote", (data: { hostId: string; answer: string }) => {
     const { hostId, answer } = data;
     io.to(hostId).emit("send-vote", answer);
+  });
+
+  socket.on("toggle-mic", (boo: boolean, roomId: string, from: string) => {
+    socket.to(roomId).emit("toggle-mic", boo, from);
   });
 
   socket.on("disconnect", async function () {

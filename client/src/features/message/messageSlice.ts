@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 interface InitialState {
   isShowedChat: boolean;
@@ -21,7 +21,7 @@ const initialState: InitialState = {
 };
 
 const messageSlice = createSlice({
-  name: 'message',
+  name: "message",
   initialState: initialState,
   reducers: {
     setToggleShowChat: (state) => {
@@ -36,7 +36,16 @@ const messageSlice = createSlice({
       state.newMessage = !state.newMessage;
     },
     setMessage: (state, action) => {
-      state.messages.push(action.payload);
+      let current = state.messages[state.messages.length - 1];
+
+      if (!current) {
+        state.messages.push(action.payload);
+      } else if (
+        current.content !== action.payload.content ||
+        current.timestamp !== action.payload.timestamp
+      ) {
+        state.messages.push(action.payload);
+      }
     },
   },
 });

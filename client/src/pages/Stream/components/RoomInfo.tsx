@@ -102,11 +102,13 @@ const RoomInfo: React.FC<Props> = () => {
                   Room ID: <strong>{roomId}</strong>
                 </Text>
               </ListItem>
-              <ListItem>
-                <Text>
-                  Password: <strong>{password}</strong>
-                </Text>
-              </ListItem>
+              {password && (
+                <ListItem>
+                  <Text>
+                    Password: <strong>{password}</strong>
+                  </Text>
+                </ListItem>
+              )}
             </UnorderedList>
           </ModalBody>
         </ModalContent>

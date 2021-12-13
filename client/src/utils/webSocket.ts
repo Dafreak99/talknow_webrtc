@@ -16,6 +16,7 @@ import {
   removeUserScreen,
   setIsWhiteBoard,
   setRoomInfo,
+  switchMic,
 } from "../features/room/roomSlice";
 import {
   hostLeave,
@@ -90,6 +91,10 @@ export const connectSignallingServer = async () => {
 
   socket.on("send-vote", (answer: string) => {
     store.dispatch(updatePollVotes(answer));
+  });
+
+  socket.on("toggle-mic", (boo: boolean, from: string) => {
+    store.dispatch(switchMic({ boo, from }));
   });
 };
 
@@ -295,4 +300,14 @@ export const sendvote = (answer: string) => {
   const { hostId } = store.getState().room.roomInfo;
 
   socket.emit("send-vote", { hostId, answer });
+};
+
+/**
+ * @description: Send on/off microphone signal to other participants
+ */
+export const toggleMicSocket = (boo: boolean) => {
+  const { roomId } = store.getState().room.roomInfo;
+  const { mySocketId } = store.getState().stream;
+
+  socket.emit("toggle-mic", boo, roomId, mySocketId);
 };

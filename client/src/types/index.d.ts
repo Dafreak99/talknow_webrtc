@@ -23,7 +23,7 @@ interface User {
   username: string;
   streamId: string;
   socketId: string;
-  stream: MediaStream;
+  stream: MediaStream | null;
   streamType: string;
   isSpeaking: boolean;
   isCameraEnabled: boolean;

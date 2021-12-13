@@ -26,8 +26,8 @@ const RightContent: React.FC<Props> = () => {
       {isWhiteBoard ? (
         <>
           <Whiteboard />
-          <Box ml="10px">
-            <Swiper direction={"vertical"} slidesPerView={3}>
+          <Box ml="10px" w={{ base: "30%", lg: "auto" }}>
+            <Swiper direction={"vertical"} slidesPerView={5}>
               {users.map((user, i) => (
                 <>
                   {user.socketId !== mySocketId &&

@@ -18,7 +18,7 @@ const Stream: React.FC<Props> = () => {
   const toast = useToast();
   const history = useHistory();
   const { minimizeLocalStream } = useAppSelector((state) => state.stream);
-  const [second, setSecond] = useState(5);
+  const [second, setSecond] = useState(2);
 
   useEffect(() => {
     publishPeer();
@@ -35,7 +35,7 @@ const Stream: React.FC<Props> = () => {
       title: "Host've ask you to leave.",
       description: `You'll be automatically removed from the room after ${second} seconds`,
       status: "warning",
-      duration: 5000,
+      duration: 2000,
       onCloseComplete: () => {
         closeMediaStream();
         leave();

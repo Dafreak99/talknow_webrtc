@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Request, Room } from '../../types';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Request, Room } from "../../types";
 
 interface InitialState {
   roomInfoReady: boolean;
@@ -19,7 +19,7 @@ const initialState: InitialState = {
 };
 
 const roomSlice = createSlice({
-  name: 'room',
+  name: "room",
   initialState,
   reducers: {
     setRoomInfo: (state: InitialState, action) => {
@@ -35,24 +35,36 @@ const roomSlice = createSlice({
         isMicrophoneEnabled: true,
       });
     },
-    appendStreamToUser: (state: InitialState, action) => {
+    appendStreamToUser: (
+      state: InitialState,
+      action: PayloadAction<{ stream: MediaStream; type: string }>
+    ) => {
+      const { stream, type } = action.payload;
+
       let index = state.roomInfo.users.findIndex(
-        (user) => user.streamId === action.payload.id
+        (user) => user.streamId === stream.id
       );
 
       if (index === -1) return;
 
-      state.roomInfo.users[index].stream = new MediaStream(action.payload);
+      console.log(type);
+      console.log("append", state.roomInfo.users[index].stream);
+
+      if (type === "mute") {
+        state.roomInfo.users[index].stream = null;
+      }
+      if (!state.roomInfo.users[index].stream) {
+        state.roomInfo.users[index].stream = new MediaStream(stream);
+      }
     },
     userToggleVideo: (state: InitialState, action) => {
       let index = state.roomInfo.users.findIndex(
-        (user) => user.streamId === action.payload.id
+        (user) => user.streamId === action.payload.stream.id
       );
 
       if (index === -1) return;
 
-      state.roomInfo.users[index].isCameraEnabled =
-        !state.roomInfo.users[index].isCameraEnabled;
+      state.roomInfo.users[index].isCameraEnabled = action.payload.mode;
     },
     removeUser: (state: InitialState, action) => {
       state.roomInfo.users = state.roomInfo.users.filter(
@@ -66,7 +78,7 @@ const roomSlice = createSlice({
     },
     removeUserScreen: (state: InitialState) => {
       state.roomInfo.users = state.roomInfo.users.filter(
-        (user) => user.streamType !== 'screen'
+        (user) => user.streamType !== "screen"
       );
     },
     clearRoomInfo: (state: InitialState, action) => {
@@ -118,6 +130,16 @@ const roomSlice = createSlice({
       // Uses this function to update the layout by triggering the useEffect hook
       state.roomInfo.updateLayout = Math.random() * 1000;
     },
+    switchMic(
+      state: InitialState,
+      action: PayloadAction<{ boo: boolean; from: string }>
+    ) {
+      const index = state.roomInfo.users.findIndex(
+        (user) => user.socketId === action.payload.from
+      );
+
+      state.roomInfo.users[index].isMicrophoneEnabled = action.payload.boo;
+    },
   },
 });
 
@@ -137,6 +159,7 @@ export const {
   enqueueJoinRequests,
   dequeueJoinRequests,
   updateLayout,
+  switchMic,
 } = roomSlice.actions;
 
 export default roomSlice.reducer;

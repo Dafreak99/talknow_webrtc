@@ -19,6 +19,7 @@ import {
   setLocalMicrophoneEnabled,
   setLocalStream,
   setRecordScreenEnabled,
+  setRecordStream,
   setShareScreenEnabled,
   setShareScreenStream,
 } from "../features/stream/streamSlice";
@@ -27,6 +28,7 @@ import SoundMeter from "./soundmeter";
 import {
   forceToLeave,
   shareScreenSignal,
+  toggleMicSocket,
   userJoined,
   whiteBoardSignal,
 } from "./webSocket";
@@ -68,20 +70,16 @@ export const connectIonSFU = async () => {
     // Setup handlers
     client.ontrack = (track: MediaStreamTrack, stream: RemoteStream) => {
       track.onmute = () => {
-        store.dispatch(appendStreamToUser(stream));
-      };
-
-      track.onmute = () => {
         if (track.kind === "video") {
-          store.dispatch(appendStreamToUser(stream));
-          store.dispatch(userToggleVideo(stream));
+          store.dispatch(appendStreamToUser({ stream, type: "mute" }));
+          store.dispatch(userToggleVideo({ stream, mode: false }));
         }
       };
 
       track.onunmute = () => {
         if (track.kind === "video") {
-          store.dispatch(appendStreamToUser(stream));
-          store.dispatch(userToggleVideo(stream));
+          store.dispatch(appendStreamToUser({ stream, type: "unmute" }));
+          store.dispatch(userToggleVideo({ stream, mode: true }));
         }
       };
 
@@ -166,7 +164,10 @@ export const connectIonSFU = async () => {
  */
 export const publishPeer = () => {
   const { localStream } = store.getState().stream;
-  client.publish(localStream);
+
+  setTimeout(() => {
+    client.publish(localStream);
+  }, 500);
 };
 
 /**
@@ -185,7 +186,6 @@ export const toggleCamera = () => {
 
   if (localCameraEnabled) {
     local.mute("video");
-    // HOW TO KNOW IF SOMEONE TURN OFF THERE CAM
   } else {
     local.unmute("video");
   }
@@ -206,6 +206,7 @@ export const toggleMic = () => {
   }
 
   store.dispatch(setLocalMicrophoneEnabled(!localMicrophoneEnabled));
+  toggleMicSocket(!localMicrophoneEnabled);
 };
 
 /**
@@ -214,13 +215,16 @@ export const toggleMic = () => {
 export const toggleShareScreen = () => {
   const { shareScreenEnabled, shareScreenStream } = store.getState().stream;
 
-  if (shareScreenEnabled) {
+  // ON
+  if (!shareScreenEnabled) {
+    shareScreen();
+  }
+  // OFF
+  else {
     shareScreenSignal();
     screenClient.leave();
     shareScreenStream!.getTracks().forEach((track) => track.stop());
     store.dispatch(updateLayout());
-  } else {
-    shareScreen();
   }
   store.dispatch(setShareScreenEnabled(!shareScreenEnabled));
 };
@@ -248,14 +252,6 @@ export const shareScreen = async () => {
       codec: "vp8",
     } as Constraints);
 
-    // If click stop share screen popup
-    screenShare.getVideoTracks()[0].onended = () => toggleShareScreen();
-
-    screenClient.publish(screenShare);
-
-    store.dispatch(setShareScreenStream(screenShare));
-
-    shareScreenSignal();
     userJoined(
       roomId,
       `${myUsername}  screen`,
@@ -263,9 +259,19 @@ export const shareScreen = async () => {
       myAvatar as string,
       screenShare
     );
+
+    setTimeout(() => {
+      // If click stop share screen popup
+      screenShare.getVideoTracks()[0].onended = () => toggleShareScreen();
+
+      screenClient.publish(screenShare);
+
+      store.dispatch(setShareScreenStream(screenShare));
+    }, 500);
+
+    shareScreenSignal();
   } catch (error) {
     store.dispatch(setShareScreenEnabled(false));
-    console.log("here");
     console.log(error);
   }
 };
@@ -274,7 +280,18 @@ export const shareScreen = async () => {
  * @description: Turn on/off record
  */
 export const toggleRecord = async () => {
-  const { recordScreenEnabled } = store.getState().stream;
+  const { recordScreenEnabled, recordStream } = store.getState().stream;
+
+  // ON
+  if (!recordScreenEnabled) {
+  }
+};
+
+/**
+ * @description: Record
+ */
+export const record = async () => {
+  const { recordScreenEnabled, recordStream } = store.getState().stream;
 
   if (!recordScreenEnabled) {
     // @ts-ignore
@@ -286,9 +303,7 @@ export const toggleRecord = async () => {
 
     screen.addTrack(audio.getTracks()[0]);
 
-    screen.getVideoTracks()[0].onended = () => {
-      console.log("stop recording");
-    };
+    screen.getVideoTracks()[0].onended = () => {};
 
     recorder = new RecordRTC(
       screen as MediaStream,
@@ -298,6 +313,8 @@ export const toggleRecord = async () => {
     );
 
     recorder.startRecording();
+
+    store.dispatch(setRecordStream(screen));
   } else {
     // @ts-ignore
     let { roomName } = store.getState().room.roomInfo;
@@ -307,6 +324,7 @@ export const toggleRecord = async () => {
       let fileName = `${roomName}_recording`;
 
       invokeSaveAsDialog(blob, fileName);
+      recordStream!.getTracks().forEach((track) => track.stop());
     }) as () => void);
   }
 
@@ -314,8 +332,6 @@ export const toggleRecord = async () => {
 };
 
 /**
- * @param file
- * @param fileName
  * @description: Open the dialog to save video into your machine
  */
 const invokeSaveAsDialog = (file: Blob, fileName: string) => {
