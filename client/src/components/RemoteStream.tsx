@@ -54,7 +54,10 @@ const RemoteStream: React.FC<Props> = ({ user, count }) => {
         p="5px 15px"
         borderRadius="3px"
       >
-        <Icon as={user.isMicrophoneEnabled ? IoMdMic : IoMdMicOff} />{" "}
+        <Icon
+          as={user.isMicrophoneEnabled ? IoMdMic : IoMdMicOff}
+          color={user.isMicrophoneEnabled ? "#fff" : "#ff4545"}
+        />{" "}
         {user.username}
       </Text>
       {!user.isCameraEnabled && (
