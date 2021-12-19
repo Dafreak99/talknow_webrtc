@@ -327,50 +327,6 @@ export const toggleRecord = async () => {
 };
 
 /**
- * @description: Record
- */
-export const record = async () => {
-  const { recordScreenEnabled, recordStream } = store.getState().stream;
-
-  if (!recordScreenEnabled) {
-    // @ts-ignore
-    let screen = await navigator.mediaDevices.getDisplayMedia({
-      video: true,
-    });
-
-    let audio = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-    screen.addTrack(audio.getTracks()[0]);
-
-    screen.getVideoTracks()[0].onended = () => {};
-
-    recorder = new RecordRTC(
-      screen as MediaStream,
-      {
-        showMousePointer: true,
-      } as {}
-    );
-
-    recorder.startRecording();
-
-    store.dispatch(setRecordStream(screen));
-  } else {
-    // @ts-ignore
-    let { roomName } = store.getState().room.roomInfo;
-
-    recorder.stopRecording((() => {
-      let blob = recorder.getBlob();
-      let fileName = `${roomName}_recording`;
-
-      invokeSaveAsDialog(blob, fileName);
-      recordStream!.getTracks().forEach((track) => track.stop());
-    }) as () => void);
-  }
-
-  store.dispatch(setRecordScreenEnabled(!recordScreenEnabled));
-};
-
-/**
  * @description: Open the dialog to save video into your machine
  */
 const invokeSaveAsDialog = (file: Blob, fileName: string) => {

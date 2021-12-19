@@ -41,14 +41,13 @@ const roomSlice = createSlice({
     ) => {
       const { stream, type } = action.payload;
 
+      if (!state.roomInfo.users) return;
+
       let index = state.roomInfo.users.findIndex(
         (user) => user.streamId === stream.id
       );
 
       if (index === -1) return;
-
-      console.log(type);
-      console.log("append", state.roomInfo.users[index].stream);
 
       if (type === "mute") {
         state.roomInfo.users[index].stream = null;
@@ -58,6 +57,8 @@ const roomSlice = createSlice({
       }
     },
     userToggleVideo: (state: InitialState, action) => {
+      if (!state.roomInfo.users) return;
+
       let index = state.roomInfo.users.findIndex(
         (user) => user.streamId === action.payload.stream.id
       );

@@ -46,30 +46,6 @@ async function main() {
     res.send("hello");
   });
 
-  app.get("/room", async (req: Request, res: Response) => {
-    const room = new Room({
-      hostId: "123",
-      hostName: "Haitran",
-      admission: "none",
-      allowAudio: true,
-      allowVideo: true,
-      password: "",
-      isShareScreen: false,
-      roomId: "123",
-      roomName: "Room 1",
-      screenId: "",
-      users: [],
-    });
-
-    await room.save();
-
-    return res.send("Finish");
-  });
-
-  app.get("/", async (req: Request, res: Response) => {
-    return res.send("Hi");
-  });
-
   app.get("/show", async (req: Request, res: Response) => {
     let room = await Room.find().populate("users");
     res.send(room);
@@ -232,6 +208,9 @@ io.on("connection", (socket: Socket) => {
 
     let myRoomId = await getCurrentRoom(socket.id);
     let leaveUser = await User.findOne({ socketId: socket.id });
+
+    if (!leaveUser) return;
+
     logger.debug("leave user", leaveUser);
 
     if (!myRoomId) return;
@@ -244,13 +223,11 @@ io.on("connection", (socket: Socket) => {
       socket.to(myRoomId as string).emit("host-leave");
       // delete rooms[myRoomId as string];
       await Room.findOneAndRemove({ roomId: myRoomId });
+      await User.deleteMany({ currentRoomId: myRoomId });
     } else {
-      if (!leaveUser) return;
-
       let users = room.users!.filter(
         (user: any) => user!._id !== leaveUser!._id
       );
-
       // TODO: cannot remove user after leave yet
       logger.debug("socketId", socket.id);
       logger.debug("after out", users);
@@ -263,6 +240,8 @@ io.on("connection", (socket: Socket) => {
 
       socket.to(myRoomId as string).emit("user-leave", socket.id);
     }
+
+    await User.findOneAndRemove({ _id: leaveUser._id });
   });
 });
 
