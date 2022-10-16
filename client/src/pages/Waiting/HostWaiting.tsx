@@ -1,11 +1,11 @@
-import { Box, Flex, Heading } from "@chakra-ui/react";
-import { RedirectToSignIn, SignedIn, SignedOut } from "@clerk/clerk-react";
-import React, { useEffect } from "react";
-import Navbar from "../../components/Navbar";
-import ReviewStream from "../../components/ReviewStream";
-import { connectIonSFU } from "../../utils/ionSFU";
-import { connectSignallingServer } from "../../utils/webSocket";
-import HostConfig from "./components/HostConfig";
+import { Box, Flex, Heading } from '@chakra-ui/react';
+import { RedirectToSignIn, SignedIn, SignedOut } from '@clerk/clerk-react';
+import React, { useEffect } from 'react';
+import Navbar from '../../components/Navbar';
+import ReviewStream from '../../components/ReviewStream';
+import { connectIonSFU } from '../../utils/ionSFU';
+import { connectSignallingServer } from '../../utils/webSocket';
+import HostConfig from './components/HostConfig';
 
 interface Props {}
 
@@ -18,17 +18,17 @@ const HostWaiting: React.FC<Props> = () => {
   }, []);
 
   return (
-    <Box h="100vh" w="100vw">
+    <Box h='100vh' w='100vw'>
       <SignedIn>
-        <Box className="container">
+        <Box className='container'>
           <Navbar />
         </Box>
 
-        <Box className="container">
-          <Flex justify="space-between" alignItems="center">
-            <Heading mb="3rem">Config Meeting Room</Heading>
+        <Box className='container'>
+          <Flex justify='space-between' alignItems='center'>
+            <Heading mb='3rem'>Config Meeting Room</Heading>
           </Flex>
-          <Flex style={{ gap: "40px" }}>
+          <Flex style={{ gap: '40px' }}>
             <ReviewStream />
             <HostConfig />
           </Flex>
